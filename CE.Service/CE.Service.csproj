@@ -9,8 +9,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CE_DataAccess\CE.DataAccess.csproj" />
-    <ProjectReference Include="..\CE_Repository\CE.Repository.csproj" />
+    <ProjectReference Include="..\CE.DataAccess\CE.DataAccess.csproj" />
+    <ProjectReference Include="..\CE.Repository\CE.Repository.csproj" />
   </ItemGroup>
 
 </Project>

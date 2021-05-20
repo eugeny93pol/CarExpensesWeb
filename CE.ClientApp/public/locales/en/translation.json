@@ -1,0 +1,13 @@
+{
+  "error.http.save": "Error sending data to the server",
+
+
+  "sidebar.logout": "Logout",
+  "sidebar.home": "Home",
+  "sidebar.profile": "Profile",
+  "sidebar.settings": "Settings",
+  "sidebar.settings.language": "Language",
+  "sidebar.settings.measurement": "Measurement system",
+  "sidebar.settings.theme": "Enable dark theme",
+  "sidebar.title": "Menu"
+}

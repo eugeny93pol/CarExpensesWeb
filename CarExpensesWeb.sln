@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31205.134
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CE.DataAccess", "CE_DataAccess\CE.DataAccess.csproj", "{7B213AA9-CA32-482D-BC52-88634669A718}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CE.DataAccess", "CE.DataAccess\CE.DataAccess.csproj", "{7B213AA9-CA32-482D-BC52-88634669A718}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CE.Repository", "CE_Repository\CE.Repository.csproj", "{A91E541E-69AC-4E5A-9C7E-9F6ED6B95D43}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CE.Repository", "CE.Repository\CE.Repository.csproj", "{A91E541E-69AC-4E5A-9C7E-9F6ED6B95D43}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CE.Service", "CE_Service\CE.Service.csproj", "{5684A2CE-6CBD-4AA8-AFDE-25A673AE8005}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CE.Service", "CE.Service\CE.Service.csproj", "{5684A2CE-6CBD-4AA8-AFDE-25A673AE8005}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CE.WebAPI", "CE_WebAPI\CE.WebAPI.csproj", "{3FF84D93-5B32-43FD-9BCF-1033C1D086FC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CE.WebAPI", "CE.WebAPI\CE.WebAPI.csproj", "{3FF84D93-5B32-43FD-9BCF-1033C1D086FC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

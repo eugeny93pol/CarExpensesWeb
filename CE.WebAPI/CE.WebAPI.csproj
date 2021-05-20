@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="5.0.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -14,8 +15,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CE_DataAccess\CE.DataAccess.csproj" />
-    <ProjectReference Include="..\CE_Service\CE.Service.csproj" />
+    <ProjectReference Include="..\CE.DataAccess\CE.DataAccess.csproj" />
+    <ProjectReference Include="..\CE.Service\CE.Service.csproj" />
   </ItemGroup>
 
 </Project>

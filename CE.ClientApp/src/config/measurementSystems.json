@@ -1,0 +1,38 @@
+{
+  "systems": [
+    {
+      "value": "imperial",
+      "labels": {
+        "en": "Imperial",
+        "ru": "Имперская"
+      },
+      "units": {
+        "en": {
+          "length": "mile",
+          "volume": "gallon"
+        },
+        "ru": {
+          "length": "миля",
+          "volume": "галлон"
+        }
+      }
+    },
+    {
+      "value": "metric",
+      "labels": {
+        "en": "Metric",
+        "ru": "Метрическая"
+      },
+      "units": {
+        "en": {
+          "length": "km",
+          "volume": "l"
+        },
+        "ru": {
+          "length": "км",
+          "volume": "л"
+        }
+      }
+    }
+  ]
+}
