@@ -15,7 +15,7 @@ export const MeasurementSystemSelector: React.FC = () => {
   }
 
   return (
-    <div className="custom-selector">
+    <div className="sidebar-selector">
       <button className="sidebar-button" type="button"
               id="measurementDropdown" data-bs-toggle="dropdown" aria-expanded="false">
         {t('sidebar.settings.measurement')}

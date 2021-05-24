@@ -1,10 +1,14 @@
 import React from 'react'
-import { Dropdown } from './Dropdown'
+import { Dropdown } from '../dropdowns/Dropdown'
+import { Route } from 'react-router-dom'
+import { MainNavigationButtons } from '../navigation/MainNavigationButtons'
+import { useTypedSelector } from '../../hooks'
 
 
 export const Navbar: React.FC = () => {
+  const {theme} = useTypedSelector(state => state.settings)
   return (
-    <nav className="navbar sticky-top navbar-dark bg-primary">
+    <nav className={`navbar sticky-top navbar-dark bg-${theme === 'dark' ? theme : 'primary'}`}>
 
       <div className="container">
 
@@ -12,6 +16,17 @@ export const Navbar: React.FC = () => {
                 data-bs-target="#sidebar" aria-controls="sidebar">
           <span className="navbar-toggler-icon"/>
         </button>
+
+
+          <Route path="/home" exact>
+            <div className="d-none d-sm-block">
+              <MainNavigationButtons/>
+            </div>
+          </Route>
+
+
+
+
         <Dropdown/>
 
       </div>

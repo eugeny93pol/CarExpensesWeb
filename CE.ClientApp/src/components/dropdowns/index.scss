@@ -1,0 +1,14 @@
+.dropdown-item {
+  transition: $transition-background-color;
+}
+
+body.dark {
+  .dropdown-item {
+    &:active, {
+      background-color: $gray-700;
+    }
+    &:focus-visible {
+      outline: none;
+    }
+  }
+}

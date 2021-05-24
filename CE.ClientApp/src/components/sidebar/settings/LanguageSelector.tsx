@@ -15,7 +15,7 @@ export const LanguageSelector: React.FC = () => {
   }
 
   return (
-    <div className="custom-selector">
+    <div className="sidebar-selector">
       <button className="sidebar-button" type="button"
            id="languageDropdown"
            data-bs-toggle="dropdown" aria-expanded="false">

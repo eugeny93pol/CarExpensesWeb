@@ -5,6 +5,9 @@ import { Navbar } from '../components/navbar/Navbar'
 import { Sidebar } from '../components/sidebar/Sidebar'
 import { useActions, useTypedSelector } from '../hooks'
 import { Profile } from '../pages/profile'
+import { AddActionButtons } from '../components/navigation/AddActionButtons'
+import { Modal } from '../components/modal/Modal'
+import { ModalContainer } from '../components/modal/ModalContainer'
 
 
 export const PrivateRoutes: React.FC = () => {
@@ -20,12 +23,16 @@ export const PrivateRoutes: React.FC = () => {
     <>
       <Navbar/>
       <Sidebar/>
-      <div className="container">
-        <Switch>
-          <Route path="/home" exact component={Index}/>
-          <Route path="/profile" exact component={Profile}/>
-          <Redirect to="/home"/>
-        </Switch>
+      <ModalContainer/>
+      <div className="overflow-auto scroll-area">
+        <div className="container">
+          <AddActionButtons/>
+          <Switch>
+            <Route path="/home" component={Index}/>
+            <Route path="/profile" exact component={Profile}/>
+            <Redirect to="/home"/>
+          </Switch>
+        </div>
       </div>
     </>
   )
