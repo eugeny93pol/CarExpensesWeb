@@ -32,7 +32,7 @@ namespace CE.WebAPI
 
             services.AddSpaStaticFiles(configuration =>
             {
-                configuration.RootPath = "../CE_ClientApp/buiid";
+                configuration.RootPath = "../CE.ClientApp/buiid";
             });
 
             services.Configure<AuthOptions>(Configuration.GetSection("Auth"));
@@ -101,7 +101,7 @@ namespace CE.WebAPI
 
             app.UseSpa(spa =>
             {
-                spa.Options.SourcePath = "../CE_ClientApp";
+                spa.Options.SourcePath = "../CE.ClientApp";
 
                 if (env.IsDevelopment())
                 {

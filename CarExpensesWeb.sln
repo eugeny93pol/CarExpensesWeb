@@ -11,6 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CE.Service", "CE.Service\CE
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CE.WebAPI", "CE.WebAPI\CE.WebAPI.csproj", "{3FF84D93-5B32-43FD-9BCF-1033C1D086FC}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{80248DA3-BE22-4713-A0DA-933EEEF58592}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
