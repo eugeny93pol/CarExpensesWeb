@@ -1,14 +1,18 @@
 # CarExpensesWeb (client)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project is a client application for [CarExpensesWeb](https://github.com/eugeny93pol/CarExpensesWeb) 
+
+## How To Run
+
+Follow the next steps:
+
+1. Run a command `npm install` to install package dependencies.
+2. Run a command `npm start` to run app in the development mode.
+3. Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 ## Available Scripts
 
 In the client project directory (`CE.ClientApp`), you can run:
-
-### `npm install`
-
-Run a command after cloning a repository to install package dependencies.
 
 ### `npm start`
 
@@ -24,7 +28,7 @@ Builds the client app for production to the `build` folder.\
 It correctly bundles React in production mode and optimizes the build for the best performance.
 
 The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+The app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
@@ -32,4 +36,3 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
-To learn React, check out the [React documentation](https://reactjs.org/).
