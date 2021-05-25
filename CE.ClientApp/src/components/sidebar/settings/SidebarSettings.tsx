@@ -11,13 +11,15 @@ export const SidebarSettings: React.FC = () => {
   return (
     <div className="accordion accordion-flush">
       <div className="accordion-item">
-        <h2 className="accordion-header" id="flush-headingOne">
-          <button className="sidebar-button collapsed" type="button" data-bs-toggle="collapse"
-                  data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+        <h3 className="accordion-header" id="sidebar-settings-header">
+          <button className="sidebar-button collapsed" type="button"
+                  data-bs-toggle="collapse" data-bs-target="#sidebar-settings-collapse"
+                  aria-expanded="false" aria-controls="sidebar-settings-collapse">
             {t('sidebar.settings')}<i className="bi bi-gear"/>
           </button>
-        </h2>
-        <div id="flush-collapseOne" className="accordion-collapse collapse" aria-labelledby="flush-headingOne">
+        </h3>
+        <div id="sidebar-settings-collapse" className="accordion-collapse collapse"
+             aria-labelledby="sidebar-settings-header">
           <ThemeSelector/>
           <LanguageSelector/>
           <MeasurementSystemSelector/>

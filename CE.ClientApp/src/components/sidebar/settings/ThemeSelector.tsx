@@ -17,7 +17,7 @@ export const ThemeSelector: React.FC = () => {
   }
 
   return (
-    <div className="sidebar-button form-switch">
+    <div className="sidebar-button form-switch focus-within">
       <label className="form-check-label flex-grow-1" htmlFor="themeSelector">
         {t('sidebar.settings.theme')}
       </label>

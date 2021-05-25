@@ -1,42 +1,174 @@
 @import "~bootstrap/scss/bootstrap.scss";
-@import "~bootstrap/scss/variables";
 @import "~bootstrap-icons/font/bootstrap-icons.css";
+@import "~bootstrap/scss/variables";
+@import "variables";
 @import "src/components/sidebar/index";
+@import "src/components/dropdowns/index";
 
 body {
-  min-height: 100vh;
+  overflow-x: hidden;
+  margin-right: calc(-1 * (100vw - 100%));
+  padding-right: 0 !important;
 }
 
 body.dark {
   color: $gray-300;
   background-color: $gray-700;
+}
 
-  .bg-primary {
-    background-color: $gray-900 !important;
+.focus-within:focus-within {
+  box-shadow: $focus-within-shadow-dark;
+
+  &.sidebar-button {
+    opacity: .75;
+  }
+}
+
+.navbar {
+  height: $height-navbar;
+}
+
+.btn-tab {
+  display: flex;
+  flex-direction: row;
+  background: transparent;
+  color: inherit;
+  border: none;
+  border-bottom: .125rem solid transparent;
+  align-items: center;
+  justify-content: center;
+  padding: .25rem;
+  min-width: 75px;
+  transition: $transition-ease;
+  opacity: .95;
+  user-select: none;
+
+  &:hover {
+    opacity: .75;
+    border-bottom-color: $cyan-700;
   }
 
-  .offcanvas {
-    background-color: $gray-800;
-    color: $gray-300;
+  &.active {
+    border-bottom-color: $cyan-500;
   }
 
-  .dropdown-item {
-    &:active, {
-      background-color: $gray-700;
+  &:active {
+    transform: scale(.95);
+  }
+
+  &:focus-visible {
+    outline: 0;
+    box-shadow: $focus-within-shadow-light;
+    border-radius: .25rem;
+  }
+
+  .bi {
+    font-size: 1.25rem;
+    line-height: 1;
+
+    &::before {
+      display: block;
     }
-
-    &:focus-visible {
-      outline: none;
-    }
   }
 
-  .custom-selector {
-    .dropdown-menu {
-      background-color: $gray-900;
+  .btn-tab-label {
+    font-size: 85%;
+  }
+}
+
+.light {
+  .navbar {
+    .btn-tab {
+      color: $white;
+
+      &.active {
+        border-bottom-color: $white;
+      }
+
+      &:hover {
+        border-bottom-color: $gray-300;
+      }
+
+      &:focus-visible {
+        box-shadow: $focus-within-shadow-light;
+      }
     }
   }
 }
 
-.dropdown-item {
-  transition: background-color 0.15s ease-in-out;
+.action-buttons-portal {
+  position: fixed;
+  bottom: 0;
+  width: 100vw;
+}
+
+.action-buttons-wrapper {
+  position: absolute;
+  bottom: var(--bs-gutter-x, 0.75rem);
+  right: var(--bs-gutter-x, 0.75rem);
+}
+
+
+.btn-add-action {
+  width: 2.75rem;
+  height: 2.75rem;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  padding: 0;
+  border-radius: 50%;
+  border: none;
+  color: $gray-300;
+  transition: $transition-ease;
+
+  &-blue {
+    background-color: $blue-500;
+  }
+
+  &-indigo {
+    background-color: $indigo-500;
+  }
+
+  &-purple {
+    background-color: $purple-500;
+  }
+
+  &-pink {
+    background-color: $pink-500;
+  }
+
+  &-cyan {
+    background-color: $cyan-500;
+  }
+
+  &:active {
+    transform: scale(.95);
+  }
+
+  &:hover {
+    color: $gray-300;
+    opacity: .85;
+  }
+
+  &:focus-visible {
+    outline: 0;
+    box-shadow: $focus-shadow-blue;
+  }
+
+  &.show:not(.collapsed) {
+    transform: rotate(135deg);
+  }
+}
+
+.add-action-buttons {
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+  border: none;
+  transition: $transition-ease;
+  grid-gap: .5rem;
+  gap: .5rem;
+
+  &.collapsing {
+    opacity: .5;
+  }
 }
