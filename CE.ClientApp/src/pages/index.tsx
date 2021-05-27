@@ -13,22 +13,10 @@ export const Index: React.FC = () => {
       <div className="pt-2 d-sm-none">
         <MainNavigationButtons/>
       </div>
-
-      <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalContainer">
-        Launch static backdrop modal
-      </button>
-
       <div className="pt-2">
-        {
-          view === 'overview' &&
-          <ViewOverview/>
-        }
-        {
-          view === 'records' &&
-          <ViewRecords/>
-        }
+        {view === 'overview' && <ViewOverview/>}
+        {view === 'records' && <ViewRecords/>}
       </div>
-
     </>
   )
 }

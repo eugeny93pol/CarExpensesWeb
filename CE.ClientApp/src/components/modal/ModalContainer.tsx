@@ -1,25 +1,23 @@
 import React from 'react'
-import { Portal } from '../portal/Portal'
 import { useTypedSelector } from '../../hooks'
-import { Modal } from './Modal'
+import { Portal } from '../portal/Portal'
+import { ModalAddMileage } from './modals/ModalAddMileage'
+import { ModalTypes } from '../../types'
+import { ModalAddRepair } from './modals/ModalAddRepair'
+import { ModalAddPurchases } from './modals/ModalAddPurchases'
+import { ModalAddRefill } from './modals/ModalAddRefill'
+import { ModalAddCar } from './modals/ModalAddCar'
 
 export const ModalContainer: React.FC = () => {
   const {modal} = useTypedSelector(state => state.app)
+
   return (
-    <Portal className="modal-portal">{true &&
-      <div className="modal fade"
-           id="modalContainer"
-           //data-bs-backdrop="static"
-           data-bs-keyboard="true"
-           tabIndex={-1}
-           aria-labelledby="modalTitle"
-           aria-hidden="true">
-        <Modal title="Test modal" cancelButtonText="Cancel" onSubmit={()=> {alert('aaa')}} submitButtonText="Save">
-          <h1>Lorem ipsum.</h1>
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci cum fuga labore, molestiae quaerat
-            reiciendis.</p>
-        </Modal>
-      </div>
-    }</Portal>
+    <Portal className="modal-root">
+      {modal === ModalTypes.ADD_MILEAGE && <ModalAddMileage/>}
+      {modal === ModalTypes.ADD_REPAIR && <ModalAddRepair/>}
+      {modal === ModalTypes.ADD_PURCHASES && <ModalAddPurchases/>}
+      {modal === ModalTypes.ADD_REFILL && <ModalAddRefill/>}
+      {modal === ModalTypes.ADD_CAR && <ModalAddCar/>}
+    </Portal>
   )
 }

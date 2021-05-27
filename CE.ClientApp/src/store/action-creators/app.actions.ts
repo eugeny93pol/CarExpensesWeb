@@ -1,23 +1,23 @@
-import { AppActionsTypes } from '../types'
+import { AppAction, AppActionsTypes } from '../types'
 
 
-const setView = (view: string) => {
+const setView = (view: string): AppAction => {
   return {type: AppActionsTypes.SET_VIEW, payload: view}
 }
 
-const showLoader = () => {
+const showLoader = (): AppAction => {
   return {type: AppActionsTypes.SHOW_LOADER}
 }
 
-const hideLoader = () => {
+const hideLoader = (): AppAction => {
   return {type: AppActionsTypes.HIDE_LOADER}
 }
 
-const openModal = (name: string) => {
+const openModal = (name: string): AppAction => {
   return {type: AppActionsTypes.OPEN_MODAL, payload: name}
 }
 
-const closeModal = () => {
+const closeModal = (): AppAction => {
   return {type: AppActionsTypes.CLOSE_MODAL}
 }
 

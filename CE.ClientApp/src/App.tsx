@@ -4,10 +4,12 @@ import { useActions, useTypedSelector } from './hooks'
 import { PrivateRoutes } from './routes/PrivateRoutes'
 import { PublicRoutes } from './routes/PublicRoutes'
 import { Toast } from './components/toast/Toast'
+import { Loader } from './components/Loader'
 
 
 export const App: React.FC = () => {
   const {loggedIn} = useTypedSelector(state => state.auth)
+  const {isLoading} = useTypedSelector(state => state.app)
   const {initializeSettings, initializeAuth} = useActions()
 
   useEffect(() => {
@@ -15,7 +17,8 @@ export const App: React.FC = () => {
     initializeSettings()
   }, [])
   return (
-    <Suspense fallback={<div>loading</div>}>
+    <Suspense fallback={<Loader/>}>
+      {isLoading && <Loader/>}
       <Toast/>
       <Router>
         {loggedIn && <PrivateRoutes/>}

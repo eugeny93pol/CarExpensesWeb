@@ -42,11 +42,11 @@ interface IActionLoginSuccess {
 }
 
 interface IActionLoginFailure {
-  type: AuthActionTypes.LOGIN_FAILURE;
+  type: AuthActionTypes.LOGIN_FAILURE
 }
 
 interface IActionLogout {
-  type: AuthActionTypes.LOGOUT;
+  type: AuthActionTypes.LOGOUT
 }
 
 interface IActionInitAuth {

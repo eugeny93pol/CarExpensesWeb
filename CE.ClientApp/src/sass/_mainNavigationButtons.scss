@@ -1,0 +1,47 @@
+.btn-tab {
+  display: flex;
+  flex-direction: row;
+  background: transparent;
+  color: inherit;
+  border: none;
+  border-bottom: .125rem solid transparent;
+  align-items: center;
+  justify-content: center;
+  padding: .25rem;
+  min-width: 75px;
+  transition: $transition-ease;
+  opacity: .95;
+  user-select: none;
+
+  &:hover {
+    opacity: .75;
+    border-bottom-color: $cyan-700;
+  }
+
+  &.active {
+    border-bottom-color: $cyan-500;
+  }
+
+  &:active {
+    transform: scale(.95);
+  }
+
+  &:focus-visible {
+    outline: 0;
+    box-shadow: $focus-within-shadow-light;
+    border-radius: .25rem;
+  }
+
+  .bi {
+    font-size: 1.25rem;
+    line-height: 1;
+
+    &::before {
+      display: block;
+    }
+  }
+
+  .btn-tab-label {
+    font-size: 85%;
+  }
+}

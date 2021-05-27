@@ -65,7 +65,7 @@ const initializeAuth = () => {
   }
 }
 
-const logout = () => {
+const logout = (): AuthAction => {
   authService.logout()
   return {type: AuthActionTypes.LOGOUT}
 }
