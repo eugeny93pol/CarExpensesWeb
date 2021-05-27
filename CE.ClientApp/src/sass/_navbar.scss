@@ -1,0 +1,23 @@
+.navbar {
+  height: $height-navbar;
+}
+
+.light {
+  .navbar {
+    .btn-tab {
+      color: $white;
+
+      &.active {
+        border-bottom-color: $white;
+      }
+
+      &:hover {
+        border-bottom-color: $gray-300;
+      }
+
+      &:focus-visible {
+        box-shadow: $focus-within-shadow-light;
+      }
+    }
+  }
+}
