@@ -8,7 +8,7 @@ export const ModalAddCar: React.FC = () => {
   }
 
   return (
-    <Modal title="Add Car" submitButtonText="Save" onSubmit={submitHandler}>
+    <Modal title="Add Car" submitButtonText="Save" onSubmit={submitHandler} isStaticBackdrop>
       <h3>Add Car</h3>
     </Modal>
   )
