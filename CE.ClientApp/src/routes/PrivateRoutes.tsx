@@ -5,7 +5,7 @@ import { Navbar } from '../components/navbar/Navbar'
 import { Sidebar } from '../components/sidebar/Sidebar'
 import { useActions, useTypedSelector } from '../hooks'
 import { Profile } from '../pages/profile'
-import { AddActionButtons } from '../components/navigation/AddActionButtons'
+import { AddActionButtons } from '../components/button-groups/AddActionButtons'
 import { ModalContainer } from '../components/modal/ModalContainer'
 
 

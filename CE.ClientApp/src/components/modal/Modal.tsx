@@ -6,7 +6,9 @@ interface IModalProps {
   children: React.ReactNode,
   cancelButtonText?: string,
   submitButtonText: string,
-  isStaticBackdrop?: boolean
+  isSubmitDisabled?: boolean,
+  isStaticBackdrop?: boolean,
+  className?: string
 
   onSubmit(event: React.MouseEvent<HTMLElement>): void,
 
@@ -14,7 +16,10 @@ interface IModalProps {
 }
 
 export const Modal: React.FC<IModalProps> = (props) => {
-  const {title, children, cancelButtonText, submitButtonText, onSubmit, onCancel, isStaticBackdrop = false} = props
+  const {
+    title, children, cancelButtonText, submitButtonText, onSubmit, onCancel,
+    className = '', isStaticBackdrop = false, isSubmitDisabled = false
+  } = props
   const {theme} = useTypedSelector(state => state.settings)
   const {modal} = useTypedSelector((state => state.app))
   const {closeModal} = useActions()
@@ -36,6 +41,8 @@ export const Modal: React.FC<IModalProps> = (props) => {
   if (!modal) {
     return null
   }
+
+  const modalClasses = 'modal-dialog modal-dialog-centered modal-dialog-scrollable ' + className
 
   const clearClasses = () => {
     modalRef.current?.classList.remove('show')
@@ -75,7 +82,6 @@ export const Modal: React.FC<IModalProps> = (props) => {
             current.style.transition = ''
           }, 150)
         }, 150)
-
       }
     }
   }
@@ -84,8 +90,8 @@ export const Modal: React.FC<IModalProps> = (props) => {
     <div className="modal fade d-block" id="modalContainer"
          onClick={onBackdropClickHandler} ref={modalRef}
          aria-labelledby="modalTitle" aria-hidden="false">
-      <div className="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-        <div className={`modal-content border-0 bg-${theme === 'dark' ? 'secondary text-light' : theme}`}>
+      <div className={modalClasses}>
+        <div className={`modal-content border-0 bg-${theme === 'dark' ? 'gray-dark text-light' : theme}`}>
           <div className="modal-header border-0">
             <h5 className="modal-title user-select-none" id="modalTitle">{title}</h5>
             <button type="button" className={`btn-close${theme === 'dark' ? ' btn-close-white' : ''}`}
@@ -102,6 +108,7 @@ export const Modal: React.FC<IModalProps> = (props) => {
               {cancelButtonText}
             </button>}
             <button type="button"
+                    disabled={isSubmitDisabled}
                     className="btn btn-info text-light"
                     onClick={onSubmitHandler}
                     data-bs-dismiss="modal">
