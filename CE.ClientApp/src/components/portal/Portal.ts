@@ -5,18 +5,16 @@ interface IPortal {
   children?: React.ReactNode,
   className?: string,
   el?: string,
-  id?: string,
-  ref?: React.RefObject<HTMLElement>
+  id?: string
 }
 
 export const Portal: React.FC<IPortal> = ({
   children,
   className = 'root-portal',
   el = 'div',
-  id,
-  ref
+  id
 }) => {
-  const [container] = useState(document.createElement('div'))
+  const [container] = useState(document.createElement(el))
 
   const modalRoot = document.getElementById('root')
 

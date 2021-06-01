@@ -1,6 +1,8 @@
 {
   "error.http.save": "Ошибка при отправке данных на сервер",
 
+  "modal.addCar.button.save": "Сохранить",
+  "modal.addCar.title": "Добавить новую машину",
 
   "sidebar.logout": "Выход",
   "sidebar.home": "Главная",

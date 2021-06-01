@@ -1,5 +1,8 @@
 {
   "apiUrl": "http://localhost:44321/api",
   "passwordLength": 8,
-  "nameLength": 2
+  "nameLength": 2,
+  "brandLength": 2,
+  "vinLength": 17,
+  "startCarYear": 1900
 }

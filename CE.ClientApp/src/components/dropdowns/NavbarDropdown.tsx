@@ -3,7 +3,7 @@ import { useActions, useTypedSelector } from '../../hooks'
 import { ModalTypes } from '../../types'
 
 
-export const Dropdown: React.FC = () => {
+export const NavbarDropdown: React.FC = () => {
   const {logout, openModal} = useActions()
   const {theme} = useTypedSelector(store => store.settings)
 
@@ -14,7 +14,7 @@ export const Dropdown: React.FC = () => {
               data-bs-toggle="dropdown" aria-expanded="false">
         Cars
       </button>
-      <ul className={`dropdown-menu dropdown-menu-end dropdown-menu-md-start dropdown-menu-${theme}`}
+      <ul className={`dropdown-menu dropdown-menu-end dropdown-menu-lg-start dropdown-menu-${theme}`}
           aria-labelledby="navbarDropdown">
         <li><button className="dropdown-item" onClick={() => openModal(ModalTypes.ADD_CAR)}>Add car</button></li>
         <li><button className="dropdown-item" onClick={logout}>Logout</button></li>

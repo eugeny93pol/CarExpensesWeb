@@ -1,5 +1,5 @@
 import React from 'react'
-import { MainNavigationButtons } from '../components/navigation/MainNavigationButtons'
+import { MainNavigationButtons } from '../components/button-groups/MainNavigationButtons'
 import { useTypedSelector } from '../hooks'
 import { ViewOverview } from './views/ViewOverview'
 import { ViewRecords } from './views/ViewRecords'

@@ -1,7 +1,7 @@
 import React from 'react'
-import { Dropdown } from '../dropdowns/Dropdown'
+import { NavbarDropdown } from '../dropdowns/NavbarDropdown'
 import { Route } from 'react-router-dom'
-import { MainNavigationButtons } from '../navigation/MainNavigationButtons'
+import { MainNavigationButtons } from '../button-groups/MainNavigationButtons'
 import { useTypedSelector } from '../../hooks'
 
 
@@ -27,7 +27,7 @@ export const Navbar: React.FC = () => {
 
 
 
-        <Dropdown/>
+        <NavbarDropdown/>
 
       </div>
 

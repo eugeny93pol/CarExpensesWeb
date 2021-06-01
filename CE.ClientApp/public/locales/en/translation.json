@@ -1,6 +1,9 @@
 {
   "error.http.save": "Error sending data to the server",
 
+  "modal.addCar.button.save": "Save",
+  "modal.addCar.title": "Add a new car",
+
 
   "sidebar.logout": "Logout",
   "sidebar.home": "Home",
