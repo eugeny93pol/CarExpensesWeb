@@ -1,16 +1,25 @@
 import React from 'react'
 import { Modal } from '../Modal'
 import { useTranslation } from 'react-i18next'
-import { useForm } from '../../../hooks'
+import { useActions, useForm, useTypedSelector } from '../../../hooks'
 import config from '../../../config/default.json'
 
 
 export const ModalAddCar: React.FC = () => {
   const {t} = useTranslation()
   const {form, validationResult, changeHandler} = useForm(['brand', 'model', 'year', 'vin'])
+  const {user, token} = useTypedSelector(state => state.auth)
+  const {createCar} = useActions()
 
   const submitHandler = () => {
-    console.log(form)
+    if (user && token) {
+      createCar(user.id, token, {
+        brand: form.brand,
+        model: form.model,
+        year: form.year,
+        vin: form.vin
+      })
+    }
   }
 
   return (
@@ -66,11 +75,8 @@ export const ModalAddCar: React.FC = () => {
                    placeholder={'Input VIN'}/>
           </div>
         </div>
-
-
         <h6 className="mt-3">Options</h6>
       </div>
-
     </Modal>
   )
 }
