@@ -1,5 +1,5 @@
 import { Dispatch } from 'react'
-import { AlertAction, AppAction, SettingsAction, SettingsActionTypes } from '../types'
+import { AlertAction, AppAction, ISettingsState, SettingsAction, SettingsActionTypes } from '../types'
 import { store } from '../index'
 import { settingsService } from '../../services'
 import { appActions } from './app.actions'
@@ -31,15 +31,18 @@ const setMeasurementSystem = (system: string) => {
 
 const initializeSettings = (initSettings: any = null) => {
   return async (dispatch: Dispatch<SettingsAction>) => {
-    const {settings} = store.getState()
     if (!initSettings) {
       initSettings = settingsService.loadSettingsFromLocalStorage()
     }
-    settingsService.combineSettings(settings, initSettings)
-    dispatch({type: SettingsActionTypes.INIT_SETTINGS, payload: settings})
-    settingsService.saveSettingsToLocalStorage(settings)
-    await settingsService.applyUserSettings()
+    await applySettings(dispatch, initSettings)
   }
+}
+
+async function applySettings(dispatch: Dispatch<SettingsAction>, initSettings: ISettingsState) {
+  let settings = settingsService.combineSettings(store.getState().settings, initSettings)
+  dispatch({type: SettingsActionTypes.INIT_SETTINGS, payload: settings})
+  settingsService.saveSettingsToLocalStorage(settings)
+  await settingsService.applyUserSettings()
 }
 
 async function saveSettings(dispatch: Dispatch<SettingsAction | AlertAction | AppAction>) {
@@ -57,6 +60,7 @@ async function saveSettings(dispatch: Dispatch<SettingsAction | AlertAction | Ap
 
 
 export const settingsActions = {
+  applySettings,
   setTheme,
   setLanguage,
   setMeasurementSystem,
