@@ -14,7 +14,7 @@ export const validateInput = (name: string, value: string) => {
     case 'brand':
       return value.length >= config.brandLength
     case 'vin':
-      return value.length === config.vinLength
+      return value.length === config.vinLength || value.length === 0
     case 'year':
       let year = Number.parseInt(value)
       return year >= config.startCarYear && year <= new Date().getFullYear()

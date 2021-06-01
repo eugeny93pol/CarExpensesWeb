@@ -2,9 +2,8 @@ import { Dispatch } from 'react'
 import { AlertAction, AppAction, SettingsAction, SettingsActionTypes } from '../types'
 import { store } from '../index'
 import { settingsService } from '../../services'
-import { alertActions } from './alert.actions'
-import { HttpError } from '../../exceptions'
 import { appActions } from './app.actions'
+import { errorHandler } from '../../helpers'
 
 
 const setTheme = (theme: string) => {
@@ -50,11 +49,7 @@ async function saveSettings(dispatch: Dispatch<SettingsAction | AlertAction | Ap
     dispatch(appActions.showLoader())
     await settingsService.saveSettingsToServer(settings)
   } catch (e) {
-    if (e instanceof HttpError) {
-      dispatch(alertActions.setErrorAlert('error.http.save', e.time))
-    } else {
-      dispatch(alertActions.setErrorAlert(e.message))
-    }
+    errorHandler(dispatch, e, 'error.http.save')
   } finally {
     dispatch(appActions.hideLoader())
   }

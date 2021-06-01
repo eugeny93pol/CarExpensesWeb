@@ -6,19 +6,18 @@ import config from '../../../config/default.json'
 
 
 export const ModalAddCar: React.FC = () => {
-  const {t} = useTranslation()
-  const {form, validationResult, changeHandler} = useForm(['brand', 'model', 'year', 'vin'])
   const {user, token} = useTypedSelector(state => state.auth)
+  const {temp} = useTypedSelector(state => state.cars)
+  const {form, validationResult, changeHandler} = useForm(temp ? temp : {
+    brand: '', model: '', year: '', vin: ''
+  })
+
+  const {t} = useTranslation()
   const {createCar} = useActions()
 
   const submitHandler = () => {
     if (user && token) {
-      createCar(user.id, token, {
-        brand: form.brand,
-        model: form.model,
-        year: form.year,
-        vin: form.vin
-      })
+      createCar(user.id, token, form)
     }
   }
 
@@ -27,10 +26,11 @@ export const ModalAddCar: React.FC = () => {
            submitButtonText={t('modal.addCar.button.save')}
            onSubmit={submitHandler}
            className="modal-fullscreen-lg-down modal-lg"
-           isSubmitDisabled={!(validationResult.brand && validationResult.year
-             && ((form.vin.length > 0) === validationResult.vin)
-           )}
-           isStaticBackdrop>
+           isStaticBackdrop
+           isSubmitDisabled={!(validationResult.brand
+             && validationResult.year
+             && (form.vin ? validationResult.vin : true)
+           )}>
       <div className="container-fluid">
         <div className="row mb-2">
           <div className="col-sm">
@@ -38,7 +38,7 @@ export const ModalAddCar: React.FC = () => {
             <input type="text"
                    className="form-control"
                    name="brand" id="brand"
-                   value={form.brand || ''}
+                   value={form.brand}
                    onChange={changeHandler}
                    placeholder="Input brand"/>
           </div>
@@ -47,7 +47,7 @@ export const ModalAddCar: React.FC = () => {
             <input type="text"
                    className="form-control"
                    name="model" id="model"
-                   value={form.model || ''}
+                   value={form.model}
                    onChange={changeHandler}
                    placeholder={'Input model'}/>
           </div>
@@ -57,7 +57,7 @@ export const ModalAddCar: React.FC = () => {
             <label htmlFor="year"><h6 className="mt-3">Year of manufacture</h6></label>
             <input type="number"
                    className="form-control"
-                   value={form.year || ''}
+                   value={form.year}
                    onChange={changeHandler}
                    name="year"
                    min={config.startCarYear}
@@ -69,7 +69,7 @@ export const ModalAddCar: React.FC = () => {
             <input type="text"
                    className="form-control"
                    name="vin" id="vin"
-                   value={form.vin || ''}
+                   value={form.vin}
                    onChange={changeHandler}
                    maxLength={config.vinLength}
                    placeholder={'Input VIN'}/>

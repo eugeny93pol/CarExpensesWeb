@@ -8,6 +8,7 @@ export enum CarsActionTypes {
 
 export interface ICarsState {
   cars: CarType[],
+  temp: ICarCreate | null,
   isPending: boolean
 }
 
@@ -31,4 +32,5 @@ interface IActionCreateCarSuccess {
 
 interface IActionCreateCarFailure {
   type: CarsActionTypes.CREATE_CAR_FAILURE
+  payload: ICarCreate
 }

@@ -1,10 +1,9 @@
 import { Dispatch } from 'react'
 import { AlertAction, AppAction, SettingsAction, SettingsActionTypes } from '../types'
-import { alertActions } from './alert.actions'
 import { appActions } from './app.actions'
 import { settingsService, userService } from '../../services'
 import { store } from '../index'
-import { HttpError } from '../../exceptions'
+import { errorHandler } from '../../helpers'
 
 
 const loadUserData = (id: string, token: string) => {
@@ -18,11 +17,7 @@ const loadUserData = (id: string, token: string) => {
       await settingsService.applyUserSettings()
       dispatch({type: SettingsActionTypes.SET_SERVER_SETTINGS, payload: initialSettings})
     } catch (e) {
-      if (e instanceof HttpError) {
-        dispatch(alertActions.setErrorAlert(e.message, e.time))
-      } else {
-        dispatch(alertActions.setErrorAlert(e.message))
-      }
+      errorHandler(dispatch, e)
     }
     finally {
       dispatch(appActions.hideLoader())
