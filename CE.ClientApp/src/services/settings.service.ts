@@ -21,12 +21,14 @@ function loadSettingsFromLocalStorage() {
   return local ? JSON.parse(local) : null
 }
 
-function combineSettings(settings: ISettingsState, initSettings: any) {
+function combineSettings(settings: ISettingsState, initSettings: any): ISettingsState {
+  const combined: ISettingsState = {...settings}
   Object.keys(settings).forEach(key => {
     if(initSettings && initSettings[key]) {
-      settings[key] = initSettings[key]
+      combined[key] = initSettings[key]
     }
   })
+  return combined
 }
 
 async function saveSettingsToServer(settings: ISettingsState) {

@@ -16,8 +16,6 @@ export const settingsReducer = (state = initialState, action: SettingsAction): I
       return { ...state, measurementSystem: action.payload }
     case SettingsActionTypes.INIT_SETTINGS:
       return { ...action.payload }
-    case SettingsActionTypes.SET_SERVER_SETTINGS:
-      return { ...action.payload }
     default:
       return state
   }

@@ -1,38 +1,29 @@
 import React, { useEffect, useState } from 'react'
 import { validateInput } from '../helpers'
 
-
-export const useForm = (fields: Array<'name' | 'email' | 'password' | 'brand' | 'model' | 'year' | 'vin'>) => {
-  interface IForm {
-    [key: string]: string
-  }
-
+export function useForm<T>(initialState: T) {
   interface IValidationResult {
     [key: string]: boolean
   }
 
-  let initialForm: IForm = {}
-  let initialValidationResult: IValidationResult = {}
+  const [form, setForm] = useState<T>(initialState)
+  const [validationResult, setValidationResult] = useState<IValidationResult>({})
 
-  const cleanup = (name: string, value: string): string => {
+  useEffect(() => {
+    for (let [key, value] of Object.entries(initialState)) {
+      setValidationResult(prev => (
+        {...prev, [key]: validateInput(key, value)}
+      ))
+    }
+  }, [])
+
+  function cleanup (name: string, value: string): string {
     value = value.replaceAll(/\s+\s/g, ' ')
     if (name === 'password' || name === 'email' || name === 'vin'){
       value = value.replaceAll(' ', '')
     }
     return value
   }
-
-  useEffect(() => {
-    fields.forEach(arg => {
-      initialForm[arg] = ''
-      initialValidationResult[arg] = false
-    })
-    setForm(initialForm)
-    setValidationResult(initialValidationResult)
-  }, [])
-
-  const [form, setForm] = useState<IForm>(initialForm)
-  const [validationResult, setValidationResult] = useState<IValidationResult>(initialValidationResult)
 
   const changeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     let name = event.target.name
@@ -42,6 +33,7 @@ export const useForm = (fields: Array<'name' | 'email' | 'password' | 'brand' | 
       event.target.classList.add('is-valid')
       setValidationResult({...validationResult, [name]: true})
     } else {
+      event.target.classList.remove('is-valid')
       event.target.classList.add('is-invalid')
       setValidationResult({...validationResult, [name]: false})
     }

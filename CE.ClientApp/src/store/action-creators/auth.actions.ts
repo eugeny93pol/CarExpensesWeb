@@ -1,9 +1,8 @@
 import { Dispatch } from 'react'
-import { alertActions } from './alert.actions'
 import { authService } from '../../services'
 import { AlertAction, AuthAction, AuthActionTypes, IAuthState } from '../types'
-import { HttpError } from '../../exceptions'
 import { UserType } from '../../types'
+import { errorHandler } from '../../helpers'
 
 
 const request = (): AuthAction => { return {type: AuthActionTypes.LOGIN_REQUEST} }
@@ -20,11 +19,7 @@ const login = (email: string, password: string) => {
       dispatch(success(user, token))
     } catch (e) {
       dispatch(failure())
-      if (e instanceof HttpError) {
-        dispatch(alertActions.setErrorAlert(e.message, e.time))
-      } else {
-        dispatch(alertActions.setErrorAlert(e.message))
-      }
+      errorHandler(dispatch, e)
     }
   }
 }
@@ -37,11 +32,7 @@ const registration = (name: string, email: string, password: string) => {
       dispatch(success(data.user, data.token))
     } catch (e) {
       dispatch(failure())
-      if (e instanceof HttpError) {
-        dispatch(alertActions.setErrorAlert(e.message, e.time))
-      } else {
-        dispatch(alertActions.setErrorAlert(e.message))
-      }
+      errorHandler(dispatch, e)
     }
   }
 }

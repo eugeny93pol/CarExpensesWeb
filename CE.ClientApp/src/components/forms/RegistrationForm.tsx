@@ -4,7 +4,9 @@ import { ButtonPrimary } from '../buttons/ButtonPrimary'
 import { LinkSecondary } from '../links/LinkSecondary'
 
 export const RegistrationForm: React.FC = () => {
-  const {form, validationResult, changeHandler} = useForm(['name', 'email', 'password'])
+  const {form, validationResult, changeHandler} = useForm(
+    {name: '', email: '', password: ''}
+  )
   const {registration} = useActions()
   const {isPending} = useTypedSelector(store => store.auth)
 
@@ -22,7 +24,7 @@ export const RegistrationForm: React.FC = () => {
           id="inputName"
           type="text"
           name="name"
-          value={form.name || ''}
+          value={form.name}
           onChange={changeHandler}
           className="form-control"
           placeholder="Enter your name"
@@ -34,7 +36,7 @@ export const RegistrationForm: React.FC = () => {
           id="inputEmail"
           type="email"
           name="email"
-          value={form.email || ''}
+          value={form.email}
           onChange={changeHandler}
           className="form-control"
           placeholder="name@example.com"
@@ -47,7 +49,7 @@ export const RegistrationForm: React.FC = () => {
           id="inputPassword"
           type="password"
           name="password"
-          value={form.password || ''}
+          value={form.password}
           onChange={changeHandler}
           className="form-control"
           placeholder="Your password"
