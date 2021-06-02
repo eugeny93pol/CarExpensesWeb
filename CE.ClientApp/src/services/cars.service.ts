@@ -10,8 +10,18 @@ const createCar = async (userId: string, token: string, car: ICarCreate): Promis
     {userId, ...car},
     getAuthHeader(token))
   const data = await response.json()
-
   return {car: data}
+}
+
+const loadCars = async (userId: string, token: string): Promise<{cars: CarType[]}> => {
+  const response = await request(
+    '/api/cars/',
+    'GET',
+    null,
+    getAuthHeader(token)
+  )
+  const data = await response.json()
+  return {cars: data}
 }
 
 export const carsService = {

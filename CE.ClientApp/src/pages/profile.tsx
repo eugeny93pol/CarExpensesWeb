@@ -1,7 +1,11 @@
 import React from 'react'
+import { SelectCar } from '../components/select/SelectCar'
 
 export const Profile: React.FC = () => {
   return(
-    <h1>PROFILE PAGE ROUTE</h1>
+    <div>
+      <h1>PROFILE PAGE ROUTE</h1>
+      <SelectCar/>
+    </div>
   )
 }

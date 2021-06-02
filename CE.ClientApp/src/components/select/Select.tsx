@@ -1,32 +1,39 @@
 import React, { useEffect, useState } from 'react'
 import { useTypedSelector } from '../../hooks'
+import { useTranslation } from 'react-i18next'
 
 export interface IOptionSelect {
-  key: number,
+  key: string,
   value: string,
+  selected?: boolean
 }
 
 interface IDropdownSelect {
   id: string
   placeholder: string
-  options?: IOptionSelect[],
-  onSelect?: (option: IOptionSelect | null) => void
+  options?: IOptionSelect[]
+  onSelect?: (option: IOptionSelect) => void
   searchable?: boolean
   disabled?: boolean
+  noOptionsText?: string
 }
 
-export const DropdownSelect: React.FC<IDropdownSelect> = (props) => {
+export const Select: React.FC<IDropdownSelect> = (props) => {
   const {
     id, placeholder,
     options = [],
     searchable = false,
     disabled = false,
-    onSelect = () => {}
+    onSelect = () => {},
+    noOptionsText = 'No options'
   } = props
+
   const [input, setInput] = useState<string>('')
   const [selected, setSelected] = useState<IOptionSelect | null>(null)
   const [show, setShow] = useState<IOptionSelect[]>([])
   const {theme} = useTypedSelector(store => store.settings)
+
+  const {t} = useTranslation()
 
   const clickHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
     let option = options.find(op => op.key.toString() === event.currentTarget.value)
@@ -45,10 +52,17 @@ export const DropdownSelect: React.FC<IDropdownSelect> = (props) => {
   }
 
   useEffect(() => {
-    onSelect(selected)
+    if (selected) {
+      onSelect(selected)
+    }
   }, [selected])
 
   useEffect(() => {
+    let defaultSelected = options.find(op => op.selected)
+    if (defaultSelected) {
+      setSelected(defaultSelected)
+      setInput(defaultSelected.value)
+    }
     setShow(options)
   }, [options])
 
@@ -72,7 +86,8 @@ export const DropdownSelect: React.FC<IDropdownSelect> = (props) => {
             </button>
           </li>
         )}
-        {!show.length && <li className="dropdown-header">No options</li>}
+        {!show.length && <li className="dropdown-header">{t(noOptionsText)}</li>}
+        {props.children}
       </ul>
     </div>
   )
