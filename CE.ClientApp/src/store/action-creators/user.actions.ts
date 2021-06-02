@@ -1,21 +1,19 @@
 import { Dispatch } from 'react'
-import { AlertAction, AppAction, SettingsAction, SettingsActionTypes } from '../types'
+import { AlertAction, AppAction, CarsAction, SettingsAction } from '../types'
 import { appActions } from './app.actions'
-import { settingsService, userService } from '../../services'
-import { store } from '../index'
+import { userService } from '../../services'
 import { errorHandler } from '../../helpers'
+import { settingsActions } from './settings.actions'
+import { carsActions } from './cars.actions'
 
 
 const loadUserData = (id: string, token: string) => {
-  return async (dispatch: Dispatch<SettingsAction | AlertAction | AppAction>) => {
-    const initialSettings = store.getState().settings
+  return async (dispatch: Dispatch<SettingsAction | AlertAction | AppAction | CarsAction>) => {
     try {
       dispatch(appActions.showLoader())
-      const {settings} = await userService.getUserData(id, token)
-      settingsService.combineSettings(initialSettings, settings)
-      settingsService.saveSettingsToLocalStorage(initialSettings)
-      await settingsService.applyUserSettings()
-      dispatch({type: SettingsActionTypes.SET_SERVER_SETTINGS, payload: initialSettings})
+      const {settings, cars} = await userService.getUserData(id, token)
+      await settingsActions.applySettings(dispatch, settings)
+      dispatch(carsActions.setCars(cars))
     } catch (e) {
       errorHandler(dispatch, e)
     }

@@ -3,6 +3,7 @@ import { AlertAction, AppAction, CarsAction, CarsActionTypes, ICarCreate } from 
 import { appActions } from './app.actions'
 import { carsService } from '../../services/cars.service'
 import { errorHandler } from '../../helpers'
+import { CarType } from '../../types/CarType'
 
 
 const createCar = (userId: string, token: string, form: ICarCreate) => {
@@ -21,6 +22,16 @@ const createCar = (userId: string, token: string, form: ICarCreate) => {
   }
 }
 
+const setCars = (cars: CarType[]): CarsAction => ({
+  type: CarsActionTypes.SET_CARS, payload: cars
+})
+
+const setDefaultCar = (carId: string): CarsAction => ({
+  type: CarsActionTypes.SET_DEFAULT_CAR, payload: carId
+})
+
 export const carsActions = {
-  createCar
+  createCar,
+  setCars,
+  setDefaultCar
 }

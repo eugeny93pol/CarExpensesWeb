@@ -42,9 +42,21 @@
   border: none;
   outline: 0;
   padding: 0;
+  &:disabled {
+    pointer-events: none;
+    cursor: pointer;
+  }
 }
 
 .select {
+  &.disabled {
+    opacity: .6;
+
+    .btn-select {
+      cursor: default !important;
+    }
+  }
+
   .dropdown-menu {
     width: 100%;
     padding: 0;
@@ -53,7 +65,7 @@
   }
 }
 
-.bg-gray-dark {
+.bg-gray-dark, .bg-dark {
   .dropdown-menu {
     background-color: $gray-700;
 
@@ -82,14 +94,6 @@
   }
 }
 
-.disabled {
-  opacity: .6;
-
-  .btn-select {
-    cursor: default !important;
-  }
-}
-
 .dropdown:not(.disabled) {
   .btn-select {
     &:hover {
@@ -99,5 +103,19 @@
   }
   .input-select::placeholder {
     color: inherit;
+  }
+}
+
+.navbar.bg-dark {
+  .dropdown-menu {
+    background-color: $gray-800;
+
+    .dropdown-item:active {
+      background-color: $gray-600;
+    }
+  }
+
+  .btn-select {
+    background-color: transparent;
   }
 }
