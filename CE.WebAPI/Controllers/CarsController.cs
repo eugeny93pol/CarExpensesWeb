@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CE.Service.Interfaces;
 
 
 namespace CE.WebAPI.Controllers
@@ -42,7 +43,7 @@ namespace CE.WebAPI.Controllers
             return cars.ToList();
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:long}")]
         public async Task<ActionResult<Car>> GetCar(long id, [FromQuery] string[] include)
         {
             var car = include.Length != 0 ?
@@ -67,7 +68,7 @@ namespace CE.WebAPI.Controllers
             return CreatedAtAction(nameof(GetCar), new { id = car.Id }, car);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id:long}")]
         public async Task<IActionResult> EditCar(long id, Car car)
         {
 
@@ -95,7 +96,7 @@ namespace CE.WebAPI.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:long}")]
         public async Task<IActionResult> DeleteCar(long id)
         {
             var car = await _carService.GetById(id);

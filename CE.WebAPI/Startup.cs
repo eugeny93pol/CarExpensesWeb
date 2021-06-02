@@ -1,5 +1,4 @@
 using CE.Repository;
-using CE.Service;
 using CE.WebAPI.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -11,6 +10,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using CE.Service.Implementations;
+using CE.Service.Interfaces;
 
 namespace CE.WebAPI
 {
@@ -32,7 +33,7 @@ namespace CE.WebAPI
 
             services.AddSpaStaticFiles(configuration =>
             {
-                configuration.RootPath = "../CE.ClientApp/buiid";
+                configuration.RootPath = "../CE.ClientApp/build";
             });
 
             services.Configure<AuthOptions>(Configuration.GetSection("Auth"));
@@ -99,15 +100,15 @@ namespace CE.WebAPI
                 endpoints.MapControllers();
             });
 
-            app.UseSpa(spa =>
-            {
-                spa.Options.SourcePath = "../CE.ClientApp";
+            //app.UseSpa(spa =>
+            //{
+            //    spa.Options.SourcePath = "../CE.ClientApp";
 
-                if (env.IsDevelopment())
-                {
-                    spa.UseReactDevelopmentServer(npmScript: "start");
-                }
-            });
+            //    if (env.IsDevelopment())
+            //    {
+            //        spa.UseReactDevelopmentServer(npmScript: "start");
+            //    }
+            //});
         }
     }
 }

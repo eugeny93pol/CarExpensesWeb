@@ -1,63 +1,64 @@
-﻿using CE.DataAccess;
-using CE.Repository;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using CE.DataAccess;
+using CE.Repository;
+using CE.Service.Interfaces;
 
-namespace CE.Service
+namespace CE.Service.Implementations
 {
     public abstract class BaseService<T> : IBaseService<T> where T : BaseEntity
     {
-        protected IRepository<T> _repository;
+        protected readonly IRepository<T> Repository;
 
-        public BaseService(IRepository<T> repository)
+        protected BaseService(IRepository<T> repository)
         {
-            _repository = repository;
+            Repository = repository;
         }
 
         //Create
         public async Task<T> Create(T item)
         {
-            return await _repository.Create(item);
+            return await Repository.Create(item);
         }
 
         //Get one
         public async Task<T> GetById(long id)
         {
-            return await _repository.GetById(id);
+            return await Repository.GetById(id);
         }
 
         public async Task<T> GetById(long id, params string[] includeProperties)
         {
-            return await _repository.GetById(id, includeProperties);
+            return await Repository.GetById(id, includeProperties);
         }
         
         public async Task<T> GetAsNoTracking(Expression<Func<T, bool>> predicate)
         {
-            return await _repository.GetAsNoTracking(predicate);
+            return await Repository.GetAsNoTracking(predicate);
         }
 
         public async Task<T> FirstOrDefault(Expression<Func<T, bool>> predicate)
         {
-            return await _repository.FirstOrDefault(predicate);
+            return await Repository.FirstOrDefault(predicate);
         }
 
         //Get many
         public async Task<IEnumerable<T>> GetAll()
         {
-            return await _repository.GetAll();
+            return await Repository.GetAll();
         }
 
         public async Task<IEnumerable<T>> GetAll(params Expression<Func<T, object>>[] includeProperties)
         {
-            return await _repository.GetAll(includeProperties);
+            return await Repository.GetAll(includeProperties);
         }
 
         public async Task<IEnumerable<T>> GetAll(Expression<Func<T, bool>> filter)
         {
-            return await _repository.GetAll(filter);
+            return await Repository.GetAll(filter);
         }
 
         /* 
@@ -72,7 +73,7 @@ namespace CE.Service
             params Expression<Func<T, object>>[] includeProperties
             )
         {
-            return await _repository.GetAll(filter, orderBy, includeProperties);
+            return await Repository.GetAll(filter, orderBy, includeProperties);
         }
 
         public async Task<IEnumerable<T>> GetAll(
@@ -81,19 +82,19 @@ namespace CE.Service
             params string[] includeProperties
             )
         {
-            return await _repository.GetAll(filter, orderBy, includeProperties);
+            return await Repository.GetAll(filter, orderBy, includeProperties);
         }
 
         //update
         public async Task Update(T item)
         {
-            await _repository.Update(item);
+            await Repository.Update(item);
         }
 
         //delete
         public async Task Remove(T item)
         {
-            await _repository.Remove(item);
+            await Repository.Remove(item);
         }
 
     }

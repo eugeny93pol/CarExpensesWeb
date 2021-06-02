@@ -11,7 +11,7 @@ namespace CE.Repository
     public class Repository<T> : IRepository<T> where T : BaseEntity
     {
         private readonly ApplicationContext _context;
-        private DbSet<T> _dbSet;
+        private readonly DbSet<T> _dbSet;
 
         public Repository(ApplicationContext context)
         {
@@ -71,7 +71,7 @@ namespace CE.Repository
             params Expression<Func<T, object>>[] includeProperties
             )
         {
-            IQueryable<T> query = Include(includeProperties);
+            var query = Include(includeProperties);
             if (filter != null)
             {
                 query = query.Where(filter);
@@ -85,7 +85,7 @@ namespace CE.Repository
             params string[] includeProperties
             )
         {
-            IQueryable<T> query = Include(includeProperties);
+            var query = Include(includeProperties);
             if (filter != null)
             {
                 query = query.Where(filter);
@@ -110,14 +110,14 @@ namespace CE.Repository
         //private
         private IQueryable<T> Include(params Expression<Func<T, object>>[] includeProperties)
         {
-            IQueryable<T> query = _dbSet.AsNoTracking();
+            var query = _dbSet.AsNoTracking();
             return includeProperties
                 .Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
         }
 
         private IQueryable<T> Include(params string[] includeProperties)
         {
-            IQueryable<T> query = _dbSet.AsNoTracking();
+            var query = _dbSet.AsNoTracking();
 
             foreach (var property in includeProperties)
             {

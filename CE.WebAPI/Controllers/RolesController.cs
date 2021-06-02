@@ -1,11 +1,9 @@
 ﻿using CE.DataAccess;
-using CE.Service;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CE.Service.Interfaces;
 
 
 namespace CE.WebAPI.Controllers
@@ -22,8 +20,6 @@ namespace CE.WebAPI.Controllers
             _roleService = roleService;
         }
 
-
-
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Role>>> GetRoles([FromQuery] string[] include)
         {
@@ -31,7 +27,7 @@ namespace CE.WebAPI.Controllers
             return roles.ToList();
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:long}")]
         public async Task<ActionResult<Role>> GetRole(long id, [FromQuery] string[] include)
         {
             var role = include.Length != 0 ?
@@ -48,7 +44,7 @@ namespace CE.WebAPI.Controllers
             return CreatedAtAction(nameof(GetRole), new { id = role.Id }, role);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id:long}")]
         public async Task<IActionResult> EditRole(long id, Role role)
         {
             if (id != role.Id)
@@ -68,7 +64,7 @@ namespace CE.WebAPI.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:long}")]
         public async Task<IActionResult> Delete(long id)
         {
             var role = await _roleService.GetById(id);

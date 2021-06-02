@@ -1,12 +1,11 @@
-﻿using CE.Service;
-using CE.WebAPI.Helpers;
+﻿using CE.WebAPI.Helpers;
 using CE.WebAPI.Models;
 using CE.WebAPI.Options;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using System;
 using System.Threading.Tasks;
+using CE.Service.Interfaces;
 
 namespace CE.WebAPI.Controllers
 {
@@ -42,9 +41,9 @@ namespace CE.WebAPI.Controllers
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
-            long UserID = AuthHelper.GetUserID(User);
+            var userId = AuthHelper.GetUserID(User);
 
-            return Ok(await _userService.GetById(UserID));
+            return Ok(await _userService.GetById(userId));
         }
     }
 }

@@ -1,7 +1,8 @@
 ﻿using CE.DataAccess;
 using CE.Repository;
+using CE.Service.Interfaces;
 
-namespace CE.Service
+namespace CE.Service.Implementations
 {
     public class CarSettingsService : BaseService<CarSettings>, ICarSettingsService
     {

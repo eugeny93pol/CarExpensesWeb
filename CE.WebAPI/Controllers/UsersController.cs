@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CE.Service.Interfaces;
 
 namespace CE.WebAPI.Controllers
 {
@@ -36,7 +37,7 @@ namespace CE.WebAPI.Controllers
             return users.ToList();
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:long}")]
         public async Task<ActionResult<User>> GetUser(long id, [FromQuery]string[] include)
         {
             if (!AuthHelper.IsHasAccess(User, id)) { return Forbid(); }
@@ -63,7 +64,7 @@ namespace CE.WebAPI.Controllers
             return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id:long}")]
         public async Task<IActionResult> EditUser(long id, PutUserRequest request)
         {
             if (!AuthHelper.IsHasAccess(User, id)) { return Forbid(); }
@@ -88,7 +89,7 @@ namespace CE.WebAPI.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:long}")]
         public async Task<IActionResult> DeleteUser(long id)
         {
             if (!AuthHelper.IsHasAccess(User, id)) { return Forbid(); }

@@ -1,10 +1,7 @@
-﻿using CE.DataAccess;
-using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using CE.DataAccess;
 
-namespace CE.Service
+namespace CE.Service.Interfaces
 {
     public interface IUserService : IBaseService<User>
     {

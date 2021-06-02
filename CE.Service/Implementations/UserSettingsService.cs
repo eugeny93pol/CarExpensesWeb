@@ -1,8 +1,10 @@
-﻿using CE.DataAccess;
+﻿using System.Threading.Tasks;
+using CE.DataAccess;
+using CE.DataAccess.DTO;
 using CE.Repository;
-using System.Threading.Tasks;
+using CE.Service.Interfaces;
 
-namespace CE.Service
+namespace CE.Service.Implementations
 {
     public class UserSettingsService : BaseService<UserSettings>, IUserSettingsService
     {
@@ -12,17 +14,12 @@ namespace CE.Service
 
         public async Task UpdatePartial(UserSettings userSettings, UserSettingsDTO settings)
         {
-            userSettings.Language = settings.Language == null ? 
-                userSettings.Language : 
-                settings.Language;
-            userSettings.Theme = settings.Theme == null ? 
-                userSettings.Theme : 
-                settings.Theme;
-            userSettings.MeasurementSystem = settings.MeasurementSystem == null ? 
-                userSettings.MeasurementSystem : 
-                settings.MeasurementSystem;
+            userSettings.Language = settings.Language ?? userSettings.Language;
+            userSettings.Theme = settings.Theme ?? userSettings.Theme;
+            userSettings.MeasurementSystem = settings.MeasurementSystem ?? userSettings.MeasurementSystem;
+            userSettings.DefaultCarId = settings.DefaultCarId != 0 ? settings.DefaultCarId : userSettings.DefaultCarId;
 
-            await _repository.Update(userSettings);
+            await Repository.Update(userSettings);
         }
     }
 }

@@ -1,14 +1,12 @@
 ﻿using CE.DataAccess;
-using CE.DataAccess.Constants;
-using CE.Service;
 using CE.WebAPI.Helpers;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CE.Service.Interfaces;
 
 namespace CE.WebAPI.Controllers
 {
@@ -29,15 +27,15 @@ namespace CE.WebAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CarAction>>> GetActions()
         {
-            long userId = AuthHelper.GetUserID(User);
-            long[] userCarsIds = await _carService.GetCarsIdsByUserId(userId);
+            var userId = AuthHelper.GetUserID(User);
+            var userCarsIds = await _carService.GetCarsIdsByUserId(userId);
 
             var actions = await _carActionService.GetAll(a => userCarsIds.Contains(a.CarId));
 
             return actions.ToList();
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:long}")]
         public async Task<ActionResult<CarAction>> GetAction(long id)
         {
             var userId = AuthHelper.GetUserID(User);
@@ -68,7 +66,7 @@ namespace CE.WebAPI.Controllers
             return CreatedAtAction(nameof(GetAction), new { id = action.Id }, action);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id:long}")]
         public async Task<IActionResult> EditAction(long id, CarAction action)
         {
             if (id != action.Id) { return BadRequest(); }
@@ -96,7 +94,7 @@ namespace CE.WebAPI.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:long}")]
         public async Task<IActionResult> DeleteAction(long id)
         {
             var action = await _carActionService.GetById(id);

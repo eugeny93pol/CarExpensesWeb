@@ -1,8 +1,8 @@
-﻿using CE.DataAccess;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using CE.DataAccess;
 
-namespace CE.Service
+namespace CE.Service.Interfaces
 {
     public interface ICarService : IBaseService<Car>
     {

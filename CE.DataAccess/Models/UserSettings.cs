@@ -10,6 +10,8 @@ namespace CE.DataAccess
 
         public string MeasurementSystem { set; get; }
 
+        public long DefaultCarId { set; get; }
+
         public long UserId { get; set; }
 
         public UserSettings(long userId)

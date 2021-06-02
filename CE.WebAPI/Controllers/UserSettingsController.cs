@@ -1,13 +1,11 @@
 ﻿using CE.DataAccess;
-using CE.Service;
 using CE.WebAPI.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
+using CE.DataAccess.DTO;
+using CE.Service.Interfaces;
 
 
 namespace CE.WebAPI.Controllers
