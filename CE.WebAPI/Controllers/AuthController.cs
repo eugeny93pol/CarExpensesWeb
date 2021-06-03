@@ -1,11 +1,11 @@
 ﻿using CE.WebAPI.Helpers;
-using CE.WebAPI.Models;
 using CE.WebAPI.Options;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using System.Threading.Tasks;
 using CE.Service.Interfaces;
+using CE.WebAPI.RequestModels;
 
 namespace CE.WebAPI.Controllers
 {
@@ -28,9 +28,7 @@ namespace CE.WebAPI.Controllers
             var user = await _userService.Authenticate(request.Email, request.Password);
 
             if (user == null)
-            {
                 return Unauthorized();
-            }
 
             var jwt = AuthHelper.GenerateToken(user, _authOptions);
 
@@ -38,10 +36,10 @@ namespace CE.WebAPI.Controllers
         }
 
         [Authorize]
-        [HttpPost("logout")]
+        [HttpPost("refresh")]
         public async Task<IActionResult> Logout()
         {
-            var userId = AuthHelper.GetUserID(User);
+            var userId = AuthHelper.GetUserId(User);
 
             return Ok(await _userService.GetById(userId));
         }

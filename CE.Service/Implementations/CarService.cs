@@ -28,6 +28,14 @@ namespace CE.Service.Implementations
         {
             return (await Repository.GetById(carId)).UserId == userId;
         }
-        
+
+        public async Task UpdatePartial(Car savedCar, Car car)
+        {
+            savedCar.Brand = car.Brand ?? savedCar.Brand;
+            savedCar.Model = car.Model ?? savedCar.Model;
+            savedCar.VIN = car.VIN ?? savedCar.VIN;
+            savedCar.Year = car.Year != 0 ? car.Year : savedCar.Year;
+            await Repository.Update(savedCar);
+        }
     }
 }

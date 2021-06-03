@@ -8,6 +8,9 @@ namespace CE.Service.Interfaces
         Task<User> CreateUser(User item, Role role);
 
         Task<User> Authenticate(string email, string password);
-        
+
+        Task UpdatePartial(User savedUser, User user);
+
+        string GeneratePasswordHash(string password);
     }
 }

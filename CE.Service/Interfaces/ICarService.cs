@@ -9,6 +9,9 @@ namespace CE.Service.Interfaces
         Task<IEnumerable<Car>> GetCarsByUserId(long id);
 
         Task<long[]> GetCarsIdsByUserId(long id);
+
         Task<bool> IsUserOwnerCar(long userId, long carId);
+
+        Task UpdatePartial(Car savedCar, Car car);
     }
 }

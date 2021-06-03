@@ -23,35 +23,32 @@ namespace CE.WebAPI.Controllers
             _userSettingsService = userSettingsService;
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<UserSettings>> GetUserSettings(long id)
+        [HttpGet]
+        public async Task<ActionResult<UserSettings>> GetUserSettings()
         {
-            if (!AuthHelper.IsHasAccess(User, id)) { return Forbid(); }
+            var userId = AuthHelper.GetUserId(User);
 
-            var userSettings = await _userSettingsService.FirstOrDefault(s => s.UserId == id);
-
-            return userSettings == null ? NotFound() : userSettings;
+            return await _userSettingsService.FirstOrDefault(s => s.UserId == userId);
         }
 
-        [HttpPatch("{id}")]
-        public async Task<IActionResult> UpdatePartial(long id, [FromBody] UserSettingsDTO settings)
+        [HttpPatch]
+        public async Task<IActionResult> UpdateUserSettings([FromBody] UserSettingsDTO settings)
         {
-            if (!AuthHelper.IsHasAccess(User, id)) { return Forbid(); }
+            var userId = AuthHelper.GetUserId(User);
+            var userSettings = await _userSettingsService.GetAsNoTracking(s => s.UserId == userId);
 
-            var userSettings = await _userSettingsService.GetAsNoTracking(s => s.UserId == id);
-
-            if (userSettings == null) { return NotFound(); }
+            if (userSettings == null)
+                return NotFound();
 
             try
             {
                 await _userSettingsService.UpdatePartial(userSettings, settings);
+                return Ok(userSettings);
             } 
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
-
-            return NoContent();
         }
     }
 }

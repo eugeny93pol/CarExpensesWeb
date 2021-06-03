@@ -1,8 +1,6 @@
 ﻿using CE.DataAccess;
 using CE.DataAccess.Constants;
-using CE.Service;
 using CE.WebAPI.Helpers;
-using CE.WebAPI.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -10,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CE.Service.Interfaces;
+using CE.WebAPI.RequestModels;
 
 namespace CE.WebAPI.Controllers
 {
@@ -29,24 +28,23 @@ namespace CE.WebAPI.Controllers
             _userSettingsService = userSettingsService;
         }
 
-        //[Authorize(Roles = RolesConstants.Admin)]
+        [Authorize(Roles = RolesConstants.Admin)]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers([FromQuery] string[] include)
+        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
-            var users = await _userService.GetAll(includeProperties: include);
+            var users = await _userService.GetAll();
             return users.ToList();
         }
 
         [HttpGet("{id:long}")]
-        public async Task<ActionResult<User>> GetUser(long id, [FromQuery]string[] include)
+        public async Task<ActionResult<User>> GetUser(long id)
         {
-            if (!AuthHelper.IsHasAccess(User, id)) { return Forbid(); }
+            if (!AuthHelper.IsHasAccess(User, id)) 
+                return Forbid();
 
-            var user = include.Length != 0 ? 
-                await _userService.GetById(id, include) : 
-                await _userService.GetById(id);
+            var user = await _userService.GetById(id);
 
-            return user == null ? NotFound() : user;
+            return user != null ? Ok(user) : NotFound();
         }
 
         [AllowAnonymous]
@@ -57,46 +55,69 @@ namespace CE.WebAPI.Controllers
 
             var user = await _userService.CreateUser(request.GetUser(), roleUser);
 
-            if (user == null) { return BadRequest("User already exist"); }
+            if (user == null) 
+                return BadRequest("User already exist");
 
             await _userSettingsService.Create(new UserSettings(user.Id));
 
             return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
         }
 
+        [Authorize(Roles = RolesConstants.Admin)]
         [HttpPut("{id:long}")]
-        public async Task<IActionResult> EditUser(long id, PutUserRequest request)
+        public async Task<IActionResult> EditUser(long id, PutUser request)
         {
-            if (!AuthHelper.IsHasAccess(User, id)) { return Forbid(); }
-
-            if (id != request.Id) { return BadRequest(); }
-
             var user = await _userService.GetAsNoTracking(u => u.Id == id);
 
-            if (user == null) { return NotFound(); }
+            if (user == null)
+                return NotFound();
 
-            user = request.GetUser(user);
+            request.UpdateUser(user);
+            user.Password = _userService.GeneratePasswordHash(request.Password);
 
             try
             {
                 await _userService.Update(user);
+                return Ok(user);
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
+        }
 
-            return NoContent();
+        [HttpPatch("{id:long}")]
+        public async Task<IActionResult> UpdateUser(long id, PatchUser user)
+        {
+            if (!AuthHelper.IsHasAccess(User, id))
+                return Forbid();
+
+            var saved = await _userService.GetById(id);
+
+            if (saved == null)
+                return NotFound();
+
+            try
+            {
+                await _userService.UpdatePartial(saved, user.GetUser());
+                return Ok(saved);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpDelete("{id:long}")]
         public async Task<IActionResult> DeleteUser(long id)
         {
-            if (!AuthHelper.IsHasAccess(User, id)) { return Forbid(); }
+            if (!AuthHelper.IsHasAccess(User, id)) 
+                return Forbid();
 
             var user = await _userService.GetById(id);
 
-            if (user == null) { return NotFound(); }
+            if (user == null) 
+                return NotFound();
 
             await _userService.Remove(user);
 

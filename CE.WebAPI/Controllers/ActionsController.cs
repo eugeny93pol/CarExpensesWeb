@@ -27,7 +27,7 @@ namespace CE.WebAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CarAction>>> GetActions()
         {
-            var userId = AuthHelper.GetUserID(User);
+            var userId = AuthHelper.GetUserId(User);
             var userCarsIds = await _carService.GetCarsIdsByUserId(userId);
 
             var actions = await _carActionService.GetAll(a => userCarsIds.Contains(a.CarId));
@@ -38,7 +38,7 @@ namespace CE.WebAPI.Controllers
         [HttpGet("{id:long}")]
         public async Task<ActionResult<CarAction>> GetAction(long id)
         {
-            var userId = AuthHelper.GetUserID(User);
+            var userId = AuthHelper.GetUserId(User);
             var action = await _carActionService.GetById(id);
 
             if (action == null) { return NotFound(); }
@@ -54,7 +54,7 @@ namespace CE.WebAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<CarAction>> CreateAction([FromBody] CarAction action)
         {
-            var userId = AuthHelper.GetUserID(User);
+            var userId = AuthHelper.GetUserId(User);
 
             if (!(await _carService.IsUserOwnerCar(userId, action.CarId)))
             {
@@ -75,7 +75,7 @@ namespace CE.WebAPI.Controllers
 
             if (saved == null) { return NotFound(); }
 
-            var userId = AuthHelper.GetUserID(User);
+            var userId = AuthHelper.GetUserId(User);
             if (!(await _carService.IsUserOwnerCar(userId, saved.CarId) && 
                 await _carService.IsUserOwnerCar(userId, action.CarId)))
             {
@@ -103,7 +103,7 @@ namespace CE.WebAPI.Controllers
                 return NotFound();
             }
 
-            var userId = AuthHelper.GetUserID(User);
+            var userId = AuthHelper.GetUserId(User);
             if (!(await _carService.IsUserOwnerCar(userId, action.CarId)))
             {
                 return Forbid();

@@ -17,7 +17,7 @@ namespace CE.Service.Implementations
             userSettings.Language = settings.Language ?? userSettings.Language;
             userSettings.Theme = settings.Theme ?? userSettings.Theme;
             userSettings.MeasurementSystem = settings.MeasurementSystem ?? userSettings.MeasurementSystem;
-            userSettings.DefaultCarId = settings.DefaultCarId != 0 ? settings.DefaultCarId : userSettings.DefaultCarId;
+            //userSettings.DefaultCarId = settings.DefaultCarId != 0 ? settings.DefaultCarId : userSettings.DefaultCarId;
 
             await Repository.Update(userSettings);
         }

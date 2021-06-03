@@ -17,11 +17,9 @@ namespace CE.Service.Implementations
             var candidate = await Repository.FirstOrDefault(u => u.Email == user.Email);
 
             if (candidate != null)
-            {
                 return null;
-            }
 
-            var passwordHash = BC.HashPassword(user.Password);
+            var passwordHash = GeneratePasswordHash(user.Password);
 
             user.Role = role.Name;
             user.Password = passwordHash;
@@ -34,12 +32,26 @@ namespace CE.Service.Implementations
             var user = await Repository.FirstOrDefault(u => u.Email == email);
 
             if (user != null && BC.Verify(password, user.Password))
-            {
                 return user;
-            }
 
             return null;
         }
 
+        public async Task UpdatePartial(User savedUser, User user)
+        {
+            savedUser.Name = user.Name ?? savedUser.Name;
+            savedUser.Email = user.Email ?? savedUser.Email;
+            if (user.Password != null)
+            {
+                savedUser.Password = GeneratePasswordHash(user.Password);
+            }
+
+            await Repository.Update(savedUser);
+        }
+
+        public string GeneratePasswordHash(string password)
+        {
+            return BC.HashPassword(password);
+        }
     }
 }

@@ -4,13 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CE.Service.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace CE.WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(Roles = "admin")]
+    [Authorize(Roles = "admin")]
     public class RolesController : ControllerBase
     {
         private readonly IRoleService _roleService;
@@ -28,12 +29,10 @@ namespace CE.WebAPI.Controllers
         }
 
         [HttpGet("{id:long}")]
-        public async Task<ActionResult<Role>> GetRole(long id, [FromQuery] string[] include)
+        public async Task<ActionResult<Role>> GetRole(long id)
         {
-            var role = include.Length != 0 ?
-                await _roleService.GetById(id, include) :
-                await _roleService.GetById(id);
-            return role == null ? NotFound() : role;
+            var role = await _roleService.GetById(id);
+            return role != null ? Ok(role) : NotFound();
         }
 
         [HttpPost]
@@ -48,20 +47,17 @@ namespace CE.WebAPI.Controllers
         public async Task<IActionResult> EditRole(long id, Role role)
         {
             if (id != role.Id)
-            {
                 return BadRequest();
-            }
 
             try
             {
                 await _roleService.Update(role);
+                return Ok(role);
             }
             catch
             {
                 return NotFound();
             }
-
-            return NoContent();
         }
 
         [HttpDelete("{id:long}")]
@@ -69,9 +65,7 @@ namespace CE.WebAPI.Controllers
         {
             var role = await _roleService.GetById(id);
             if (role == null)
-            {
                 return NotFound();
-            }
 
             await _roleService.Remove(role);
 
