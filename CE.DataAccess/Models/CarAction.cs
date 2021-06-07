@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using CE.DataAccess.Attributes;
 
 namespace CE.DataAccess
 {
@@ -7,14 +8,15 @@ namespace CE.DataAccess
         [Required]
         public string Type { get; set; }
 
+        [Required]
         public int Mileage { get; set; }
 
+        [Required]
         public long Date { get; set; }
 
         public string Description { get; set; }
 
-        //Navigation
         public long CarId { get; set; }
-        //public Car Car { get; set; }
+        
     }
 }

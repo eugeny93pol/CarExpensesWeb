@@ -71,7 +71,7 @@ namespace CE.WebAPI.Controllers
         {
             if (id != action.Id) { return BadRequest(); }
 
-            var saved = await _carActionService.GetAsNoTracking(a => a.Id == id);
+            var saved = await _carActionService.FirstOrDefault(a => a.Id == id);
 
             if (saved == null) { return NotFound(); }
 

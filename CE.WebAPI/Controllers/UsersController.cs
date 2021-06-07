@@ -36,13 +36,32 @@ namespace CE.WebAPI.Controllers
             return users.ToList();
         }
 
+        [Authorize(Roles = RolesConstants.Admin)]
+        [HttpGet("info")]
+        public async Task<ActionResult<IEnumerable<User>>> GetUsersFullInfo()
+        {
+            var users = await _userService.GetAll(u => u.Cars, u => u.Settings);
+            return users.ToList();
+        }
+
         [HttpGet("{id:long}")]
         public async Task<ActionResult<User>> GetUser(long id)
         {
-            if (!AuthHelper.IsHasAccess(User, id)) 
+            if (!AuthHelper.IsHasAccess(User, id))
                 return Forbid();
 
             var user = await _userService.GetById(id);
+
+            return user != null ? Ok(user) : NotFound();
+        }
+
+        [HttpGet("{id:long}/info")]
+        public async Task<ActionResult<User>> GetUserFullInfo(long id)
+        {
+            if (!AuthHelper.IsHasAccess(User, id))
+                return Forbid();
+
+            var user = await _userService.GetById(id, u => u.Cars, u => u.Settings);
 
             return user != null ? Ok(user) : NotFound();
         }
@@ -67,7 +86,7 @@ namespace CE.WebAPI.Controllers
         [HttpPut("{id:long}")]
         public async Task<IActionResult> EditUser(long id, PutUser request)
         {
-            var user = await _userService.GetAsNoTracking(u => u.Id == id);
+            var user = await _userService.FirstOrDefault(u => u.Id == id);
 
             if (user == null)
                 return NotFound();

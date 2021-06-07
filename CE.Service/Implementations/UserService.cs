@@ -2,7 +2,6 @@
 using CE.DataAccess;
 using CE.Repository;
 using CE.Service.Interfaces;
-using BC = BCrypt.Net.BCrypt;
 
 namespace CE.Service.Implementations
 {
@@ -31,7 +30,7 @@ namespace CE.Service.Implementations
         {
             var user = await Repository.FirstOrDefault(u => u.Email == email);
 
-            if (user != null && BC.Verify(password, user.Password))
+            if (user != null && BCrypt.Net.BCrypt.Verify(password, user.Password))
                 return user;
 
             return null;
@@ -51,7 +50,7 @@ namespace CE.Service.Implementations
 
         public string GeneratePasswordHash(string password)
         {
-            return BC.HashPassword(password);
+            return BCrypt.Net.BCrypt.HashPassword(password);
         }
     }
 }

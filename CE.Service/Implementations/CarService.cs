@@ -33,7 +33,7 @@ namespace CE.Service.Implementations
         {
             savedCar.Brand = car.Brand ?? savedCar.Brand;
             savedCar.Model = car.Model ?? savedCar.Model;
-            savedCar.VIN = car.VIN ?? savedCar.VIN;
+            savedCar.Vin = car.Vin ?? savedCar.Vin;
             savedCar.Year = car.Year != 0 ? car.Year : savedCar.Year;
             await Repository.Update(savedCar);
         }

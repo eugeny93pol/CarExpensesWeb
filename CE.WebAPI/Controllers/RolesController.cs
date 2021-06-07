@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CE.DataAccess.Constants;
 using CE.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 
@@ -11,7 +12,7 @@ namespace CE.WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "admin")]
+    [Authorize(Roles = RolesConstants.Admin)]
     public class RolesController : ControllerBase
     {
         private readonly IRoleService _roleService;
@@ -22,9 +23,9 @@ namespace CE.WebAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Role>>> GetRoles([FromQuery] string[] include)
+        public async Task<ActionResult<IEnumerable<Role>>> GetRoles()
         {
-            var roles = await _roleService.GetAll(includeProperties: include);
+            var roles = await _roleService.GetAll();
             return roles.ToList();
         }
 

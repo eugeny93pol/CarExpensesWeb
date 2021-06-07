@@ -10,16 +10,20 @@ namespace CE.DataAccess
 
         public string Model { get; set; }
 
-        public ushort Year { get; set; }
+        public ushort? Year { get; set; }
 
-        [MaxLength(17)]
-        public string VIN { get; set; }
+        [MinLength(17), MaxLength(17)]
+        public string Vin { get; set; }
 
         public CarSettings Settings { get; set; }
 
-        //Navigation
         public long UserId { get; set; }
 
         public ICollection<CarAction> Actions { get; set; }
+
+        public Car()
+        {
+            Actions = new List<CarAction>();
+        }
     }
 }

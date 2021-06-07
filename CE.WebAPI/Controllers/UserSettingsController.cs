@@ -35,7 +35,7 @@ namespace CE.WebAPI.Controllers
         public async Task<IActionResult> UpdateUserSettings([FromBody] UserSettingsDTO settings)
         {
             var userId = AuthHelper.GetUserId(User);
-            var userSettings = await _userSettingsService.GetAsNoTracking(s => s.UserId == userId);
+            var userSettings = await _userSettingsService.FirstOrDefault(s => s.UserId == userId);
 
             if (userSettings == null)
                 return NotFound();

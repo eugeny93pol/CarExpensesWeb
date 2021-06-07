@@ -62,12 +62,13 @@ namespace CE.WebAPI
 
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             
-            services.AddTransient<ICarService, CarService>();
             services.AddTransient<ICarActionService, CarActionService>();
+            services.AddTransient<IActionTypeService, ActionTypeService>();
+            services.AddTransient<ICarService, CarService>();
             services.AddTransient<ICarSettingsService, CarSettingsService>();
+            services.AddTransient<IRoleService, RoleService>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IUserSettingsService, UserSettingsService>();
-            services.AddTransient<IRoleService, RoleService>();
 
         }
 

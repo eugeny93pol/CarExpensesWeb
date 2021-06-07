@@ -18,34 +18,36 @@ namespace CE.Service.Implementations
             Repository = repository;
         }
 
-        //Create
+        
         public async Task<T> Create(T item)
         {
             return await Repository.Create(item);
         }
 
-        //Get one
+        
         public async Task<T> GetById(long id)
         {
             return await Repository.GetById(id);
         }
 
-        public async Task<T> GetById(long id, params string[] includeProperties)
+        public async Task<T> GetById(long id, params Expression<Func<T, object>>[] includeProperties)
         {
             return await Repository.GetById(id, includeProperties);
         }
         
-        public async Task<T> GetAsNoTracking(Expression<Func<T, bool>> predicate)
-        {
-            return await Repository.GetAsNoTracking(predicate);
-        }
 
         public async Task<T> FirstOrDefault(Expression<Func<T, bool>> predicate)
         {
             return await Repository.FirstOrDefault(predicate);
         }
+        
+        public async Task<T> FirstOrDefault(Expression<Func<T, bool>> predicate,
+            params Expression<Func<T, object>>[] includeProperties)
+        {
+            return await Repository.FirstOrDefault(predicate, includeProperties);
+        }
 
-        //Get many
+        
         public async Task<IEnumerable<T>> GetAll()
         {
             return await Repository.GetAll();
@@ -76,26 +78,16 @@ namespace CE.Service.Implementations
             return await Repository.GetAll(filter, orderBy, includeProperties);
         }
 
-        public async Task<IEnumerable<T>> GetAll(
-            Expression<Func<T, bool>> filter = null,
-            Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
-            params string[] includeProperties
-            )
-        {
-            return await Repository.GetAll(filter, orderBy, includeProperties);
-        }
 
-        //update
         public async Task Update(T item)
         {
             await Repository.Update(item);
         }
 
-        //delete
+        
         public async Task Remove(T item)
         {
             await Repository.Remove(item);
         }
-
     }
 }

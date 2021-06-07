@@ -62,7 +62,7 @@ namespace CE.WebAPI.Controllers
             if (id != car.Id) 
                 return BadRequest();
 
-            var saved = await _carService.GetAsNoTracking(c => c.Id == id);
+            var saved = await _carService.FirstOrDefault(c => c.Id == id);
 
             if (!(AuthHelper.IsHasAccess(User, car.UserId) && 
                   AuthHelper.IsHasAccess(User, saved?.UserId))) 
@@ -101,7 +101,7 @@ namespace CE.WebAPI.Controllers
         [HttpPatch("{id:long}")]
         public async Task<IActionResult> UpdateCar(long id, Car car)
         {
-            var saved = await _carService.GetAsNoTracking(c => c.Id == id);
+            var saved = await _carService.FirstOrDefault(c => c.Id == id);
 
             if (!(AuthHelper.IsHasAccess(User, car.UserId) && 
                   AuthHelper.IsHasAccess(User, saved?.UserId)))

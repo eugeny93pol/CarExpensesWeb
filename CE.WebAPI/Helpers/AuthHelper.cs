@@ -19,7 +19,7 @@ namespace CE.WebAPI.Helpers
 
         public static bool IsHasAccess(ClaimsPrincipal user, long? id)
         {
-            return user.IsInRole(RolesConstants.User) || GetUserId(user) == id;
+            return user.IsInRole(RolesConstants.Admin) || GetUserId(user) == id;
         }
 
         public static string GenerateToken(User user, AuthOptions authOptions)
