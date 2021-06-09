@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace CE.Repository.Migrations
 {
@@ -6,6 +7,20 @@ namespace CE.Repository.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "ActionTypes",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ActionTypes", x => x.Id);
+                    table.UniqueConstraint("AK_ActionTypes_Name", x => x.Name);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Roles",
                 columns: table => new
@@ -50,8 +65,8 @@ namespace CE.Repository.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Brand = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Model = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Year = table.Column<int>(type: "int", nullable: false),
-                    VIN = table.Column<string>(type: "nvarchar(17)", maxLength: 17, nullable: true),
+                    Year = table.Column<int>(type: "int", nullable: true),
+                    Vin = table.Column<string>(type: "nvarchar(17)", maxLength: 17, nullable: true),
                     UserId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
@@ -74,6 +89,7 @@ namespace CE.Repository.Migrations
                     Language = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Theme = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     MeasurementSystem = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DefaultCarId = table.Column<long>(type: "bigint", nullable: true),
                     UserId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
@@ -93,15 +109,22 @@ namespace CE.Repository.Migrations
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Mileage = table.Column<int>(type: "int", nullable: false),
-                    Date = table.Column<long>(type: "bigint", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Amount = table.Column<decimal>(type: "money", nullable: true),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CarId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Actions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Actions_ActionTypes_Type",
+                        column: x => x.Type,
+                        principalTable: "ActionTypes",
+                        principalColumn: "Name",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Actions_Cars_CarId",
                         column: x => x.CarId,
@@ -131,19 +154,34 @@ namespace CE.Repository.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "Roles",
+                table: "ActionTypes",
                 columns: new[] { "Id", "Name" },
-                values: new object[] { 1L, "admin" });
+                values: new object[,]
+                {
+                    { 1L, "mileage" },
+                    { 2L, "purchases" },
+                    { 3L, "refill" },
+                    { 4L, "repair" }
+                });
 
             migrationBuilder.InsertData(
                 table: "Roles",
                 columns: new[] { "Id", "Name" },
-                values: new object[] { 2L, "user" });
+                values: new object[,]
+                {
+                    { 1L, "admin" },
+                    { 2L, "user" }
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Actions_CarId",
                 table: "Actions",
                 column: "CarId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Actions_Type",
+                table: "Actions",
+                column: "Type");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Cars_UserId",
@@ -184,6 +222,9 @@ namespace CE.Repository.Migrations
 
             migrationBuilder.DropTable(
                 name: "UsersSettings");
+
+            migrationBuilder.DropTable(
+                name: "ActionTypes");
 
             migrationBuilder.DropTable(
                 name: "Cars");

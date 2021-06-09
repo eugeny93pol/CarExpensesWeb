@@ -40,7 +40,6 @@ namespace CE.WebAPI.Controllers
         public async Task<ActionResult<Role>> CreateRole([FromBody] Role role)
         {
             await _roleService.Create(role);
-
             return CreatedAtAction(nameof(GetRole), new { id = role.Id }, role);
         }
 

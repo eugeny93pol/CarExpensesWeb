@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CE.Service.Interfaces;
 
@@ -28,20 +29,37 @@ namespace CE.WebAPI.Controllers
         public async Task<IEnumerable<Car>> GetCars()
         {
             var userId = AuthHelper.GetUserId(User);
-
             return await _carService.GetCarsByUserId(userId);
         }
 
+        [HttpGet("info")]
+        public async Task<IEnumerable<Car>> GetCarsFullInfo()
+        {
+            var userId = AuthHelper.GetUserId(User);
+            return await _carService
+                .GetAll(c => c.UserId == userId, null, c => c.Settings, c => c.Actions);
+        }
+
         [HttpGet("{id:long}")]
-        public async Task<ActionResult<Car>> GetCarById(long id)
+        public async Task<ActionResult<Car>> GetCar(long id)
         {
             var car = await _carService.GetById(id);
 
             if (!AuthHelper.IsHasAccess(User, car?.UserId))
                 return Forbid();
             
-
             return car != null ? Ok(car) : NotFound();
+        }
+
+        [HttpGet("{id:long}/info")]
+        public async Task<ActionResult<Car>> GetCarFullInfo(long id)
+        {
+            var car = await _carService.GetById(id, c => c.Settings, c => c.Actions);
+
+            if (!AuthHelper.IsHasAccess(User, car?.UserId))
+                return Forbid();
+
+            return car != null ? Ok(car) : NotFound("Fuck off");
         }
 
         [HttpPost]
@@ -52,7 +70,7 @@ namespace CE.WebAPI.Controllers
             await _carService.Create(car);
             await _carSettingsService.Create(new CarSettings(car.Id));
 
-            return CreatedAtAction(nameof(GetCarById), new { id = car.Id }, car);
+            return CreatedAtAction(nameof(GetCar), new { id = car.Id }, car);
         }
 
         [HttpPut("{id:long}")]

@@ -69,7 +69,6 @@ namespace CE.WebAPI
             services.AddTransient<IRoleService, RoleService>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IUserSettingsService, UserSettingsService>();
-
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

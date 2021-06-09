@@ -19,7 +19,7 @@ namespace CE.Service.Implementations
         }
 
         
-        public async Task<T> Create(T item)
+        public virtual async Task<T> Create(T item)
         {
             return await Repository.Create(item);
         }
@@ -48,26 +48,20 @@ namespace CE.Service.Implementations
         }
 
         
-        public async Task<IEnumerable<T>> GetAll()
+        public virtual async Task<IEnumerable<T>> GetAll()
         {
             return await Repository.GetAll();
         }
 
-        public async Task<IEnumerable<T>> GetAll(params Expression<Func<T, object>>[] includeProperties)
+        public virtual async Task<IEnumerable<T>> GetAll(params Expression<Func<T, object>>[] includeProperties)
         {
             return await Repository.GetAll(includeProperties);
         }
 
-        public async Task<IEnumerable<T>> GetAll(Expression<Func<T, bool>> filter)
+        public virtual async Task<IEnumerable<T>> GetAll(Expression<Func<T, bool>> filter)
         {
             return await Repository.GetAll(filter);
         }
-
-        /* 
-         * var users = await _userService.GetAll(orderBy: q => q.OrderByDescending(u => u.Id), includeProperties: u => u.Cars);
-         * var users = await _userService.GetAll(orderBy: q => q.OrderByDescending(u => u.Id));
-         * var users = await _userService.GetAll(null, q => q.OrderByDescending(u => u.Id), u => u.Cars);
-         */
 
         public async Task<IEnumerable<T>> GetAll(
             Expression<Func<T, bool>> filter = null,
@@ -79,7 +73,7 @@ namespace CE.Service.Implementations
         }
 
 
-        public async Task Update(T item)
+        public virtual async Task Update(T item)
         {
             await Repository.Update(item);
         }

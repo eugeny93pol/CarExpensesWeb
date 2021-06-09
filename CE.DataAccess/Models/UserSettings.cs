@@ -17,6 +17,10 @@ namespace CE.DataAccess
 
         public long UserId { get; set; }
 
+        public UserSettings()
+        {
+        }
+
         public UserSettings(long userId)
         {
             UserId = userId;

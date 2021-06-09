@@ -27,21 +27,15 @@ namespace CE.Repository
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Role>()
-                .HasData(new[]
-                {
-                    new Role { Id = 1, Name = RolesConstants.Admin },
-                    new Role { Id = 2, Name = RolesConstants.User }
-                });
+            modelBuilder.Entity<Role>().HasData(
+                new Role { Id = 1, Name = RolesConstants.Admin }, 
+                new Role { Id = 2, Name = RolesConstants.User });
 
-            modelBuilder.Entity<ActionType>()
-                .HasData(new[]
-                {
-                    new ActionType() { Id = 1, Name = ActionTypesConstants.Mileage },
-                    new ActionType() { Id = 2, Name = ActionTypesConstants.Purchases },
-                    new ActionType() { Id = 3, Name = ActionTypesConstants.Refill },
-                    new ActionType() { Id = 4, Name = ActionTypesConstants.Repair },
-                });
+            modelBuilder.Entity<ActionType>().HasData(
+                new ActionType() { Id = 1, Name = ActionTypesConstants.Mileage },
+                new ActionType() { Id = 2, Name = ActionTypesConstants.Purchases },
+                new ActionType() { Id = 3, Name = ActionTypesConstants.Refill },
+                new ActionType() { Id = 4, Name = ActionTypesConstants.Repair });
 
             modelBuilder.Entity<User>()
                 .HasOne<Role>()
@@ -61,6 +55,5 @@ namespace CE.Repository
 
             base.OnModelCreating(modelBuilder);
         }
-
     }
 }

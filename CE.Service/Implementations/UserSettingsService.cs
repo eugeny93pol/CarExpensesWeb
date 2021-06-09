@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using CE.DataAccess;
-using CE.DataAccess.DTO;
 using CE.Repository;
 using CE.Service.Interfaces;
 
@@ -12,7 +11,7 @@ namespace CE.Service.Implementations
         {
         }
 
-        public async Task UpdatePartial(UserSettings userSettings, UserSettingsDTO settings)
+        public async Task UpdatePartial(UserSettings userSettings, UserSettings settings)
         {
             userSettings.Language = settings.Language ?? userSettings.Language;
             userSettings.Theme = settings.Theme ?? userSettings.Theme;

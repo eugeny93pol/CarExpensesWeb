@@ -26,7 +26,7 @@ namespace CE.Service.Implementations
 
         public async Task<bool> IsUserOwnerCar(long userId, long carId)
         {
-            return (await Repository.GetById(carId)).UserId == userId;
+            return (await Repository.GetById(carId))?.UserId == userId;
         }
 
         public async Task UpdatePartial(Car savedCar, Car car)

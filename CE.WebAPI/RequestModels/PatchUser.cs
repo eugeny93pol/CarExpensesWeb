@@ -5,12 +5,11 @@ namespace CE.WebAPI.RequestModels
 {
     public class PatchUser
     {
-        [Required]
         public string Name { get; set; }
-        [Required, EmailAddress]
+
+        [EmailAddress]
         public string Email { get; set; }
 
-        [Required]
         public string Password { get; set; }
 
         public User GetUser()

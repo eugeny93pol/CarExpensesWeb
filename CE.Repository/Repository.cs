@@ -24,7 +24,6 @@ namespace CE.Repository
         {
             await _dbSet.AddAsync(item);
             await _context.SaveChangesAsync();
-
             return item;
         }
 
@@ -93,7 +92,6 @@ namespace CE.Repository
             await _context.SaveChangesAsync();
         }
 
-        
         private IQueryable<T> Include(params Expression<Func<T, object>>[] includeProperties)
         {
             var query = _dbSet.AsNoTracking();

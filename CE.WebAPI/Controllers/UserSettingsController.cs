@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
-using CE.DataAccess.DTO;
 using CE.Service.Interfaces;
+using CE.WebAPI.RequestModels;
 
 
 namespace CE.WebAPI.Controllers
@@ -17,10 +17,13 @@ namespace CE.WebAPI.Controllers
     {
 
         private readonly IUserSettingsService _userSettingsService;
+        private readonly ICarService _carService;
 
-        public UserSettingsController(IUserSettingsService userSettingsService)
+        public UserSettingsController(IUserSettingsService userSettingsService,
+            ICarService carService)
         {
             _userSettingsService = userSettingsService;
+            _carService = carService;
         }
 
         [HttpGet]
@@ -32,9 +35,14 @@ namespace CE.WebAPI.Controllers
         }
 
         [HttpPatch]
-        public async Task<IActionResult> UpdateUserSettings([FromBody] UserSettingsDTO settings)
+        public async Task<IActionResult> UpdateUserSettings([FromBody] PatchUserSettings settings)
         {
             var userId = AuthHelper.GetUserId(User);
+
+            if (settings.DefaultCarId != null &&
+                !await _carService.IsUserOwnerCar(userId, (long) settings.DefaultCarId))
+                return Forbid();
+
             var userSettings = await _userSettingsService.FirstOrDefault(s => s.UserId == userId);
 
             if (userSettings == null)
@@ -42,7 +50,7 @@ namespace CE.WebAPI.Controllers
 
             try
             {
-                await _userSettingsService.UpdatePartial(userSettings, settings);
+                await _userSettingsService.UpdatePartial(userSettings, settings.GetUserSettings());
                 return Ok(userSettings);
             } 
             catch (Exception ex)

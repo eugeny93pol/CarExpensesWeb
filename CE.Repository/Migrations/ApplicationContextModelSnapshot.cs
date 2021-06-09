@@ -95,16 +95,21 @@ namespace CE.Repository.Migrations
                         .HasColumnType("bigint")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<decimal?>("Amount")
+                        .HasColumnType("money");
+
                     b.Property<long>("CarId")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("Date")
-                        .HasColumnType("bigint");
+                    b.Property<DateTime?>("Date")
+                        .IsRequired()
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Mileage")
+                    b.Property<int?>("Mileage")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<string>("Type")
