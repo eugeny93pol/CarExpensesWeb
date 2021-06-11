@@ -1,4 +1,5 @@
-﻿using CE.DataAccess;
+﻿using System;
+using CE.DataAccess;
 using CE.DataAccess.Constants;
 using Microsoft.EntityFrameworkCore;
 
@@ -28,14 +29,14 @@ namespace CE.Repository
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Role>().HasData(
-                new Role { Id = 1, Name = RolesConstants.Admin }, 
-                new Role { Id = 2, Name = RolesConstants.User });
+                new Role { Id = Guid.NewGuid(), Name = RolesConstants.Admin }, 
+                new Role { Id = Guid.NewGuid(), Name = RolesConstants.User });
 
             modelBuilder.Entity<ActionType>().HasData(
-                new ActionType() { Id = 1, Name = ActionTypesConstants.Mileage },
-                new ActionType() { Id = 2, Name = ActionTypesConstants.Purchases },
-                new ActionType() { Id = 3, Name = ActionTypesConstants.Refill },
-                new ActionType() { Id = 4, Name = ActionTypesConstants.Repair });
+                new ActionType() { Id = Guid.NewGuid(), Name = ActionTypesConstants.Mileage },
+                new ActionType() { Id = Guid.NewGuid(), Name = ActionTypesConstants.Purchases },
+                new ActionType() { Id = Guid.NewGuid(), Name = ActionTypesConstants.Refill },
+                new ActionType() { Id = Guid.NewGuid(), Name = ActionTypesConstants.Repair });
 
             modelBuilder.Entity<User>()
                 .HasOne<Role>()

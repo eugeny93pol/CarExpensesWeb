@@ -21,10 +21,9 @@ namespace CE.Repository.Migrations
 
             modelBuilder.Entity("CE.DataAccess.ActionType", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -37,32 +36,31 @@ namespace CE.Repository.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1L,
+                            Id = new Guid("16ab5101-3894-4d31-82b9-1974410fab4f"),
                             Name = "mileage"
                         },
                         new
                         {
-                            Id = 2L,
+                            Id = new Guid("22ac6a73-86ac-4a19-a70f-680b71c8b0e6"),
                             Name = "purchases"
                         },
                         new
                         {
-                            Id = 3L,
+                            Id = new Guid("bf9216fd-dd03-4c4e-8719-0841b68f5f6f"),
                             Name = "refill"
                         },
                         new
                         {
-                            Id = 4L,
+                            Id = new Guid("db8a37e2-57db-486b-8a67-0867dfab1a67"),
                             Name = "repair"
                         });
                 });
 
             modelBuilder.Entity("CE.DataAccess.Car", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Brand")
                         .IsRequired()
@@ -71,8 +69,8 @@ namespace CE.Repository.Migrations
                     b.Property<string>("Model")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Vin")
                         .HasMaxLength(17)
@@ -90,16 +88,15 @@ namespace CE.Repository.Migrations
 
             modelBuilder.Entity("CE.DataAccess.CarAction", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal?>("Amount")
                         .HasColumnType("money");
 
-                    b.Property<long>("CarId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid>("CarId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("Date")
                         .IsRequired()
@@ -127,13 +124,12 @@ namespace CE.Repository.Migrations
 
             modelBuilder.Entity("CE.DataAccess.CarSettings", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<long>("CarId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid>("CarId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("MeasurementSystem")
                         .HasColumnType("nvarchar(max)");
@@ -148,10 +144,9 @@ namespace CE.Repository.Migrations
 
             modelBuilder.Entity("CE.DataAccess.Role", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -164,22 +159,21 @@ namespace CE.Repository.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1L,
+                            Id = new Guid("3044c5e7-e87c-4c25-a2a4-5c3c254250c0"),
                             Name = "admin"
                         },
                         new
                         {
-                            Id = 2L,
+                            Id = new Guid("ccc8575e-0af1-4c27-82c8-5caa1f50d8b4"),
                             Name = "user"
                         });
                 });
 
             modelBuilder.Entity("CE.DataAccess.User", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -209,13 +203,12 @@ namespace CE.Repository.Migrations
 
             modelBuilder.Entity("CE.DataAccess.UserSettings", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<long?>("DefaultCarId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid?>("DefaultCarId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Language")
                         .HasColumnType("nvarchar(max)");
@@ -226,8 +219,8 @@ namespace CE.Repository.Migrations
                     b.Property<string>("Theme")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 

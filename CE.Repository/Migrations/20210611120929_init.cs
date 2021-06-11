@@ -11,8 +11,7 @@ namespace CE.Repository.Migrations
                 name: "ActionTypes",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
@@ -25,8 +24,7 @@ namespace CE.Repository.Migrations
                 name: "Roles",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
@@ -39,8 +37,7 @@ namespace CE.Repository.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -61,13 +58,12 @@ namespace CE.Repository.Migrations
                 name: "Cars",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Brand = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Model = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Year = table.Column<int>(type: "int", nullable: true),
                     Vin = table.Column<string>(type: "nvarchar(17)", maxLength: 17, nullable: true),
-                    UserId = table.Column<long>(type: "bigint", nullable: false)
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -84,13 +80,12 @@ namespace CE.Repository.Migrations
                 name: "UsersSettings",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Language = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Theme = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     MeasurementSystem = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DefaultCarId = table.Column<long>(type: "bigint", nullable: true),
-                    UserId = table.Column<long>(type: "bigint", nullable: false)
+                    DefaultCarId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -107,14 +102,13 @@ namespace CE.Repository.Migrations
                 name: "Actions",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Type = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Mileage = table.Column<int>(type: "int", nullable: false),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Amount = table.Column<decimal>(type: "money", nullable: true),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CarId = table.Column<long>(type: "bigint", nullable: false)
+                    CarId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -137,10 +131,9 @@ namespace CE.Repository.Migrations
                 name: "CarsSettings",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     MeasurementSystem = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CarId = table.Column<long>(type: "bigint", nullable: false)
+                    CarId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -158,10 +151,10 @@ namespace CE.Repository.Migrations
                 columns: new[] { "Id", "Name" },
                 values: new object[,]
                 {
-                    { 1L, "mileage" },
-                    { 2L, "purchases" },
-                    { 3L, "refill" },
-                    { 4L, "repair" }
+                    { new Guid("16ab5101-3894-4d31-82b9-1974410fab4f"), "mileage" },
+                    { new Guid("22ac6a73-86ac-4a19-a70f-680b71c8b0e6"), "purchases" },
+                    { new Guid("bf9216fd-dd03-4c4e-8719-0841b68f5f6f"), "refill" },
+                    { new Guid("db8a37e2-57db-486b-8a67-0867dfab1a67"), "repair" }
                 });
 
             migrationBuilder.InsertData(
@@ -169,8 +162,8 @@ namespace CE.Repository.Migrations
                 columns: new[] { "Id", "Name" },
                 values: new object[,]
                 {
-                    { 1L, "admin" },
-                    { 2L, "user" }
+                    { new Guid("3044c5e7-e87c-4c25-a2a4-5c3c254250c0"), "admin" },
+                    { new Guid("ccc8575e-0af1-4c27-82c8-5caa1f50d8b4"), "user" }
                 });
 
             migrationBuilder.CreateIndex(

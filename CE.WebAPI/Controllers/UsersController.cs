@@ -44,8 +44,8 @@ namespace CE.WebAPI.Controllers
             return users.ToList();
         }
 
-        [HttpGet("{id:long}")]
-        public async Task<ActionResult<User>> GetUser(long id)
+        [HttpGet("{id:Guid}")]
+        public async Task<ActionResult<User>> GetUser(Guid id)
         {
             if (!AuthHelper.IsHasAccess(User, id))
                 return Forbid();
@@ -55,8 +55,8 @@ namespace CE.WebAPI.Controllers
             return user != null ? Ok(user) : NotFound();
         }
 
-        [HttpGet("{id:long}/info")]
-        public async Task<ActionResult<User>> GetUserFullInfo(long id)
+        [HttpGet("{id:Guid}/info")]
+        public async Task<ActionResult<User>> GetUserFullInfo(Guid id)
         {
             if (!AuthHelper.IsHasAccess(User, id))
                 return Forbid();
@@ -83,8 +83,8 @@ namespace CE.WebAPI.Controllers
         }
 
         [Authorize(Roles = RolesConstants.Admin)]
-        [HttpPut("{id:long}")]
-        public async Task<IActionResult> EditUser(long id, PutUser request)
+        [HttpPut("{id:Guid}")]
+        public async Task<IActionResult> EditUser(Guid id, PutUser request)
         {
             var user = await _userService.FirstOrDefault(u => u.Id == id);
 
@@ -105,8 +105,8 @@ namespace CE.WebAPI.Controllers
             }
         }
 
-        [HttpPatch("{id:long}")]
-        public async Task<IActionResult> UpdateUser(long id, PatchUser user)
+        [HttpPatch("{id:Guid}")]
+        public async Task<IActionResult> UpdateUser(Guid id, PatchUser user)
         {
             if (!AuthHelper.IsHasAccess(User, id))
                 return Forbid();
@@ -127,8 +127,8 @@ namespace CE.WebAPI.Controllers
             }
         }
 
-        [HttpDelete("{id:long}")]
-        public async Task<IActionResult> DeleteUser(long id)
+        [HttpDelete("{id:Guid}")]
+        public async Task<IActionResult> DeleteUser(Guid id)
         {
             if (!AuthHelper.IsHasAccess(User, id)) 
                 return Forbid();

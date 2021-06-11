@@ -1,4 +1,5 @@
-﻿using CE.DataAccess;
+﻿using System;
+using CE.DataAccess;
 using CE.DataAccess.Attributes;
 
 namespace CE.WebAPI.RequestModels
@@ -10,7 +11,7 @@ namespace CE.WebAPI.RequestModels
         public string Theme { get; set; }
         [ValidMeasurementSystems]
         public string MeasurementSystem { get; set; }
-        public long? DefaultCarId { get; set; }
+        public Guid? DefaultCarId { get; set; }
 
         public UserSettings GetUserSettings()
         {

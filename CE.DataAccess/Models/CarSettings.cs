@@ -1,4 +1,5 @@
-﻿using CE.DataAccess.Constants;
+﻿using System;
+using CE.DataAccess.Constants;
 
 namespace CE.DataAccess
 {
@@ -6,9 +7,9 @@ namespace CE.DataAccess
     {
         public string MeasurementSystem { get; set; }
 
-        public long CarId { get; set; }
+        public Guid CarId { get; set; }
 
-        public CarSettings(long carId)
+        public CarSettings(Guid carId)
         {
             MeasurementSystem = MeasurementSystemsConstants.km;
             CarId = carId;

@@ -1,4 +1,5 @@
-﻿using CE.DataAccess.Attributes;
+﻿using System;
+using CE.DataAccess.Attributes;
 using CE.DataAccess.Constants;
 
 namespace CE.DataAccess
@@ -13,15 +14,15 @@ namespace CE.DataAccess
         [ValidMeasurementSystems]
         public string MeasurementSystem { set; get; }
 
-        public long? DefaultCarId { set; get; }
+        public Guid? DefaultCarId { set; get; }
 
-        public long UserId { get; set; }
+        public Guid UserId { get; set; }
 
         public UserSettings()
         {
         }
 
-        public UserSettings(long userId)
+        public UserSettings(Guid userId)
         {
             UserId = userId;
             Language = LanguagesConstants.English;

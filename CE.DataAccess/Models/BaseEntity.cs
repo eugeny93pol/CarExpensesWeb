@@ -1,7 +1,9 @@
-﻿namespace CE.DataAccess
+﻿using System;
+
+namespace CE.DataAccess
 {
     public class BaseEntity
     {
-        public long Id { get; set; }
+        public Guid Id { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -29,8 +30,8 @@ namespace CE.WebAPI.Controllers
             return actions.ToList();
         }
 
-        [HttpGet("{id:long}")]
-        public async Task<ActionResult<ActionType>> GetType(long id)
+        [HttpGet("{id:Guid}")]
+        public async Task<ActionResult<ActionType>> GetType(Guid id)
         {
             var action = await _actionTypeService.GetById(id);
             return action != null ? Ok(action) : NotFound();
@@ -45,8 +46,8 @@ namespace CE.WebAPI.Controllers
         }
 
         [Authorize(Roles = RolesConstants.Admin)]
-        [HttpPut("{id:long}")]
-        public async Task<IActionResult> EditType(long id, ActionType action)
+        [HttpPut("{id:Guid}")]
+        public async Task<IActionResult> EditType(Guid id, ActionType action)
         {
             if (id != action.Id)
                 return BadRequest();
@@ -63,8 +64,8 @@ namespace CE.WebAPI.Controllers
         }
 
         [Authorize(Roles = RolesConstants.Admin)]
-        [HttpDelete("{id:long}")]
-        public async Task<IActionResult> Delete(long id)
+        [HttpDelete("{id:Guid}")]
+        public async Task<IActionResult> Delete(Guid id)
         {
             var action = await _actionTypeService.GetById(id);
             if (action == null)

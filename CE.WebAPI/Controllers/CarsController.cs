@@ -40,8 +40,8 @@ namespace CE.WebAPI.Controllers
                 .GetAll(c => c.UserId == userId, null, c => c.Settings, c => c.Actions);
         }
 
-        [HttpGet("{id:long}")]
-        public async Task<ActionResult<Car>> GetCar(long id)
+        [HttpGet("{id:Guid}")]
+        public async Task<ActionResult<Car>> GetCar(Guid id)
         {
             var car = await _carService.GetById(id);
 
@@ -51,15 +51,15 @@ namespace CE.WebAPI.Controllers
             return car != null ? Ok(car) : NotFound();
         }
 
-        [HttpGet("{id:long}/info")]
-        public async Task<ActionResult<Car>> GetCarFullInfo(long id)
+        [HttpGet("{id:Guid}/info")]
+        public async Task<ActionResult<Car>> GetCarFullInfo(Guid id)
         {
             var car = await _carService.GetById(id, c => c.Settings, c => c.Actions);
 
             if (!AuthHelper.IsHasAccess(User, car?.UserId))
                 return Forbid();
 
-            return car != null ? Ok(car) : NotFound("Fuck off");
+            return car != null ? Ok(car) : NotFound();
         }
 
         [HttpPost]
@@ -73,8 +73,8 @@ namespace CE.WebAPI.Controllers
             return CreatedAtAction(nameof(GetCar), new { id = car.Id }, car);
         }
 
-        [HttpPut("{id:long}")]
-        public async Task<IActionResult> EditCar(long id, Car car)
+        [HttpPut("{id:Guid}")]
+        public async Task<IActionResult> EditCar(Guid id, Car car)
         {
 
             if (id != car.Id) 
@@ -100,8 +100,8 @@ namespace CE.WebAPI.Controllers
             }
         }
 
-        [HttpDelete("{id:long}")]
-        public async Task<IActionResult> DeleteCar(long id)
+        [HttpDelete("{id:Guid}")]
+        public async Task<IActionResult> DeleteCar(Guid id)
         {
             var car = await _carService.GetById(id);
 
@@ -116,8 +116,8 @@ namespace CE.WebAPI.Controllers
             return NoContent();
         }
 
-        [HttpPatch("{id:long}")]
-        public async Task<IActionResult> UpdateCar(long id, Car car)
+        [HttpPatch("{id:Guid}")]
+        public async Task<IActionResult> UpdateCar(Guid id, Car car)
         {
             var saved = await _carService.FirstOrDefault(c => c.Id == id);
 

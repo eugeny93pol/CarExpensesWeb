@@ -20,7 +20,7 @@ namespace CE.DataAccess
 
         public string Description { get; set; }
 
-        public long CarId { get; set; }
+        public Guid CarId { get; set; }
         
     }
 }

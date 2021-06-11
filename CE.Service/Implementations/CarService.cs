@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CE.DataAccess;
@@ -13,18 +14,18 @@ namespace CE.Service.Implementations
         {
         }
 
-        public async Task<IEnumerable<Car>> GetCarsByUserId(long userId)
+        public async Task<IEnumerable<Car>> GetCarsByUserId(Guid userId)
         {
             return await Repository.GetAll(c => c.UserId == userId);
         }
 
-        public async Task<long[]> GetCarsIdsByUserId(long userId)
+        public async Task<Guid[]> GetCarsIdsByUserId(Guid userId)
         {
             var cars = await GetCarsByUserId(userId);
             return cars.Select(c => c.Id).ToArray();
         }
 
-        public async Task<bool> IsUserOwnerCar(long userId, long carId)
+        public async Task<bool> IsUserOwnerCar(Guid userId, Guid carId)
         {
             return (await Repository.GetById(carId))?.UserId == userId;
         }

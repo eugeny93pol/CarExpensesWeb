@@ -40,7 +40,7 @@ namespace CE.WebAPI.Controllers
             var userId = AuthHelper.GetUserId(User);
 
             if (settings.DefaultCarId != null &&
-                !await _carService.IsUserOwnerCar(userId, (long) settings.DefaultCarId))
+                !await _carService.IsUserOwnerCar(userId, (Guid) settings.DefaultCarId))
                 return Forbid();
 
             var userSettings = await _userSettingsService.FirstOrDefault(s => s.UserId == userId);

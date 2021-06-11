@@ -1,4 +1,5 @@
-﻿using CE.DataAccess;
+﻿using System;
+using CE.DataAccess;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,8 +30,8 @@ namespace CE.WebAPI.Controllers
             return roles.ToList();
         }
 
-        [HttpGet("{id:long}")]
-        public async Task<ActionResult<Role>> GetRole(long id)
+        [HttpGet("{id:Guid}")]
+        public async Task<ActionResult<Role>> GetRole(Guid id)
         {
             var role = await _roleService.GetById(id);
             return role != null ? Ok(role) : NotFound();
@@ -43,8 +44,8 @@ namespace CE.WebAPI.Controllers
             return CreatedAtAction(nameof(GetRole), new { id = role.Id }, role);
         }
 
-        [HttpPut("{id:long}")]
-        public async Task<IActionResult> EditRole(long id, Role role)
+        [HttpPut("{id:Guid}")]
+        public async Task<IActionResult> EditRole(Guid id, Role role)
         {
             if (id != role.Id)
                 return BadRequest();
@@ -60,8 +61,8 @@ namespace CE.WebAPI.Controllers
             }
         }
 
-        [HttpDelete("{id:long}")]
-        public async Task<IActionResult> Delete(long id)
+        [HttpDelete("{id:Guid}")]
+        public async Task<IActionResult> Delete(Guid id)
         {
             var role = await _roleService.GetById(id);
             if (role == null)

@@ -28,12 +28,12 @@ namespace CE.Repository
         }
 
         
-        public async Task<T> GetById(long id)
+        public async Task<T> GetById(Guid id)
         {
             return await _dbSet.FindAsync(id);
         }
 
-        public async Task<T> GetById(long id, params Expression<Func<T, object>>[] includeProperties)
+        public async Task<T> GetById(Guid id, params Expression<Func<T, object>>[] includeProperties)
         {
             return await Include(includeProperties).FirstOrDefaultAsync(q => q.Id == id);
         }

@@ -25,12 +25,12 @@ namespace CE.Service.Implementations
         }
 
         
-        public async Task<T> GetById(long id)
+        public async Task<T> GetById(Guid id)
         {
             return await Repository.GetById(id);
         }
 
-        public async Task<T> GetById(long id, params Expression<Func<T, object>>[] includeProperties)
+        public async Task<T> GetById(Guid id, params Expression<Func<T, object>>[] includeProperties)
         {
             return await Repository.GetById(id, includeProperties);
         }

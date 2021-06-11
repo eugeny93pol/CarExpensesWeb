@@ -11,8 +11,8 @@ namespace CE.Repository
     {
         Task<T> Create(T item);
 
-        Task<T> GetById(long id);
-        Task<T> GetById(long id, params Expression<Func<T, object>>[] includeProperties);
+        Task<T> GetById(Guid id);
+        Task<T> GetById(Guid id, params Expression<Func<T, object>>[] includeProperties);
 
         Task<T> FirstOrDefault(Expression<Func<T, bool>> filter);
         Task<T> FirstOrDefault(Expression<Func<T, bool>> filter, 
