@@ -18,6 +18,8 @@ namespace CE.Repository
 
         public DbSet<Role> Roles { get; set; }
 
+        public DbSet<ActionType> ActionTypes { get; set; }
+
 
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
         {
@@ -25,11 +27,15 @@ namespace CE.Repository
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            Role admin = new Role { Id = 1, Name = RolesConstants.Admin };
-            Role user = new Role { Id = 2, Name = RolesConstants.User };
+            modelBuilder.Entity<Role>().HasData(
+                new Role { Id = 1, Name = RolesConstants.Admin }, 
+                new Role { Id = 2, Name = RolesConstants.User });
 
-            modelBuilder.Entity<Role>()
-                .HasData(new Role[] { admin, user });
+            modelBuilder.Entity<ActionType>().HasData(
+                new ActionType() { Id = 1, Name = ActionTypesConstants.Mileage },
+                new ActionType() { Id = 2, Name = ActionTypesConstants.Purchases },
+                new ActionType() { Id = 3, Name = ActionTypesConstants.Refill },
+                new ActionType() { Id = 4, Name = ActionTypesConstants.Repair });
 
             modelBuilder.Entity<User>()
                 .HasOne<Role>()
@@ -41,8 +47,13 @@ namespace CE.Repository
                 .HasIndex(u => u.Email)
                 .IsUnique();
 
+            modelBuilder.Entity<CarAction>()
+                .HasOne<ActionType>()
+                .WithMany(a => a.Actions)
+                .HasForeignKey(a => a.Type)
+                .HasPrincipalKey(t => t.Name);
+
             base.OnModelCreating(modelBuilder);
         }
-
     }
 }

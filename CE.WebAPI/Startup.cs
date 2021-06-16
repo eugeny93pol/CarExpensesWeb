@@ -1,16 +1,16 @@
 using CE.Repository;
-using CE.Service;
 using CE.WebAPI.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using CE.Service.Implementations;
+using CE.Service.Interfaces;
 
 namespace CE.WebAPI
 {
@@ -32,7 +32,7 @@ namespace CE.WebAPI
 
             services.AddSpaStaticFiles(configuration =>
             {
-                configuration.RootPath = "../CE.ClientApp/buiid";
+                configuration.RootPath = "../CE.ClientApp/build";
             });
 
             services.Configure<AuthOptions>(Configuration.GetSection("Auth"));
@@ -62,13 +62,13 @@ namespace CE.WebAPI
 
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             
-            services.AddTransient<ICarService, CarService>();
             services.AddTransient<ICarActionService, CarActionService>();
+            services.AddTransient<IActionTypeService, ActionTypeService>();
+            services.AddTransient<ICarService, CarService>();
             services.AddTransient<ICarSettingsService, CarSettingsService>();
+            services.AddTransient<IRoleService, RoleService>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IUserSettingsService, UserSettingsService>();
-            services.AddTransient<IRoleService, RoleService>();
-
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -99,15 +99,15 @@ namespace CE.WebAPI
                 endpoints.MapControllers();
             });
 
-            app.UseSpa(spa =>
-            {
-                spa.Options.SourcePath = "../CE.ClientApp";
+            //app.UseSpa(spa =>
+            //{
+            //    spa.Options.SourcePath = "../CE.ClientApp";
 
-                if (env.IsDevelopment())
-                {
-                    spa.UseReactDevelopmentServer(npmScript: "start");
-                }
-            });
+            //    if (env.IsDevelopment())
+            //    {
+            //        spa.UseReactDevelopmentServer(npmScript: "start");
+            //    }
+            //});
         }
     }
 }

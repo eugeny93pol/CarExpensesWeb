@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CE.DataAccess
 {
@@ -7,14 +9,18 @@ namespace CE.DataAccess
         [Required]
         public string Type { get; set; }
 
-        public int Mileage { get; set; }
+        [Required]
+        public int? Mileage { get; set; }
 
-        public long Date { get; set; }
+        [Required]
+        public DateTime? Date { get; set; }
+
+        [Column(TypeName = "money")]
+        public decimal? Amount { get; set; }
 
         public string Description { get; set; }
 
-        //Navigation
         public long CarId { get; set; }
-        //public Car Car { get; set; }
+        
     }
 }

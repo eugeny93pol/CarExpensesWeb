@@ -1,9 +1,9 @@
-﻿using BC = BCrypt.Net.BCrypt;
+﻿using System.Threading.Tasks;
 using CE.DataAccess;
 using CE.Repository;
-using System.Threading.Tasks;
+using CE.Service.Interfaces;
 
-namespace CE.Service
+namespace CE.Service.Implementations
 {
     public class UserService : BaseService<User>, IUserService
     {
@@ -13,33 +13,44 @@ namespace CE.Service
 
         public async Task<User> CreateUser(User user, Role role)
         {
-            var candidate = await _repository.FirstOrDefault(u => u.Email == user.Email);
+            var candidate = await Repository.FirstOrDefault(u => u.Email == user.Email);
 
             if (candidate != null)
-            {
                 return null;
-            }
 
-            string passwordHash = BC.HashPassword(user.Password);
+            var passwordHash = GeneratePasswordHash(user.Password);
 
             user.Role = role.Name;
             user.Password = passwordHash;
 
-            return await _repository.Create(user);
+            return await Repository.Create(user);
         }
 
         public async Task<User> Authenticate(string email, string password)
         {
-            var user = await _repository.FirstOrDefault(
-                u => u.Email == email);
+            var user = await Repository.FirstOrDefault(u => u.Email == email);
 
-            if (user == null)
-            {
-                return null;
-            }
+            if (user != null && BCrypt.Net.BCrypt.Verify(password, user.Password))
+                return user;
 
-            return BC.Verify(password, user.Password) ? user : null;
+            return null;
         }
 
+        public async Task UpdatePartial(User savedUser, User user)
+        {
+            savedUser.Name = user.Name ?? savedUser.Name;
+            savedUser.Email = user.Email ?? savedUser.Email;
+            if (user.Password != null)
+            {
+                savedUser.Password = GeneratePasswordHash(user.Password);
+            }
+
+            await Repository.Update(savedUser);
+        }
+
+        public string GeneratePasswordHash(string password)
+        {
+            return BCrypt.Net.BCrypt.HashPassword(password);
+        }
     }
 }

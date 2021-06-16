@@ -1,7 +1,7 @@
-﻿using CE.DataAccess;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using CE.DataAccess;
 
-namespace CE.WebAPI.Models
+namespace CE.WebAPI.RequestModels
 {
     public class LoginRequest
     {
@@ -12,7 +12,7 @@ namespace CE.WebAPI.Models
 
         public virtual User GetUser()
         {
-            return new User { Email = this.Email, Password = this.Password };
+            return new() { Email = this.Email, Password = this.Password };
         }
     }
 }

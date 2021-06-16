@@ -12,27 +12,24 @@ namespace CE.WebAPI.Helpers
     public static class AuthHelper
     {
         
-        public static long GetUserID(ClaimsPrincipal user)
+        public static long GetUserId(ClaimsPrincipal user)
         {
-            //return long.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier));
             return long.Parse(user.FindFirstValue("id"));
         }
 
-        public static bool IsHasAccess(ClaimsPrincipal user, long id)
+        public static bool IsHasAccess(ClaimsPrincipal user, long? id)
         {
-            return user.IsInRole(RolesConstants.Admin) || GetUserID(user) == id;
+            return user.IsInRole(RolesConstants.Admin) || GetUserId(user) == id;
         }
 
         public static string GenerateToken(User user, AuthOptions authOptions)
         {
             var claims = new List<Claim>
             {
-                new Claim("id", user.Id.ToString()),
-                new Claim("role", user.Role),
-                new Claim("name", user.Name),
-                new Claim("email", user.Email),
-                //new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                //new Claim(ClaimTypes.Role, user.Role)
+                new ("id", user.Id.ToString()),
+                new ("role", user.Role),
+                new ("name", user.Name),
+                new ("email", user.Email),
             };
 
             var key = authOptions.GetSymmetricSecurityKey();

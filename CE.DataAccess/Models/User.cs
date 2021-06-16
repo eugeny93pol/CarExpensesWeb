@@ -1,7 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using CE.DataAccess.Attributes;
+using CE.DataAccess.Constants;
 
 namespace CE.DataAccess
 {
@@ -24,6 +25,11 @@ namespace CE.DataAccess
         public UserSettings Settings { get; set; }
 
         public ICollection<Car> Cars { get; set; }
+
+        public User()
+        {
+            Cars = new List<Car>();
+        }
 
     }
 }

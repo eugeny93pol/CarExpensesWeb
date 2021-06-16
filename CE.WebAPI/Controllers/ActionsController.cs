@@ -1,14 +1,13 @@
 ﻿using CE.DataAccess;
-using CE.DataAccess.Constants;
-using CE.Service;
 using CE.WebAPI.Helpers;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CE.Service.Interfaces;
+using CE.WebAPI.RequestModels;
 
 namespace CE.WebAPI.Controllers
 {
@@ -19,36 +18,52 @@ namespace CE.WebAPI.Controllers
     {
         private readonly ICarActionService _carActionService;
         private readonly ICarService _carService;
+        private readonly IActionTypeService _actionTypeService;
 
-        public ActionsController(ICarActionService carActionService, ICarService carService)
+        public ActionsController(
+            ICarActionService carActionService, 
+            ICarService carService, 
+            IActionTypeService actionTypeService)
         {
             _carActionService = carActionService;
             _carService = carService;
+            _actionTypeService = actionTypeService;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CarAction>>> GetActions()
+        public async Task<ActionResult<IEnumerable<CarAction>>> FilterByDate(long? carId, DateTime? from, DateTime? to)
         {
-            long userId = AuthHelper.GetUserID(User);
-            long[] userCarsIds = await _carService.GetCarsIdsByUserId(userId);
+            @from ??= new DateTime();
+            @to ??= DateTime.UtcNow;
 
-            var actions = await _carActionService.GetAll(a => userCarsIds.Contains(a.CarId));
+            if (from > to)
+                return BadRequest("The date 'from' is greater than the date 'to'.");
 
-            return actions.ToList();
+            var userId = AuthHelper.GetUserId(User);
+            var userCarsIds = await _carService.GetCarsIdsByUserId(userId);
+
+            if (carId != null && !userCarsIds.Contains((long)carId))
+                return Forbid();
+
+            var actions = await _carActionService.GetAll(
+                a => (carId != null ? a.CarId == carId : userCarsIds.Contains(a.CarId)) 
+                     && a.Date >= from && a.Date <= to,
+                q => q.OrderByDescending(a => a.Date));
+
+            return ActionsWithSummary(actions);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:long}")]
         public async Task<ActionResult<CarAction>> GetAction(long id)
         {
-            var userId = AuthHelper.GetUserID(User);
+            var userId = AuthHelper.GetUserId(User);
             var action = await _carActionService.GetById(id);
 
-            if (action == null) { return NotFound(); }
+            if (action == null) 
+                return NotFound();
 
-            if (!(await _carService.IsUserOwnerCar(userId, action.CarId)))
-            {
+            if (!await _carService.IsUserOwnerCar(userId, action.CarId))
                 return Forbid();
-            }
 
             return action;
         }
@@ -56,64 +71,115 @@ namespace CE.WebAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<CarAction>> CreateAction([FromBody] CarAction action)
         {
-            var userId = AuthHelper.GetUserID(User);
+            if (!await _actionTypeService.IsActionTypeExist(action.Type))
+                return BadRequest($"Type \"{action.Type}\" does not exist.");
 
-            if (!(await _carService.IsUserOwnerCar(userId, action.CarId)))
-            {
-                return BadRequest();
-            }
+            var userId = AuthHelper.GetUserId(User);
 
-            await _carActionService.Create(action);
-
-            return CreatedAtAction(nameof(GetAction), new { id = action.Id }, action);
-        }
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> EditAction(long id, CarAction action)
-        {
-            if (id != action.Id) { return BadRequest(); }
-
-            var saved = await _carActionService.GetAsNoTracking(a => a.Id == id);
-
-            if (saved == null) { return NotFound(); }
-
-            var userId = AuthHelper.GetUserID(User);
-            if (!(await _carService.IsUserOwnerCar(userId, saved.CarId) && 
-                await _carService.IsUserOwnerCar(userId, action.CarId)))
-            {
+            if (!await _carService.IsUserOwnerCar(userId, action.CarId))
                 return Forbid();
-            }
 
             try
             {
-                await _carActionService.Update(action);
+                await _carActionService.Create(action);
+                return CreatedAtAction(nameof(GetAction), new {id = action.Id}, action);
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
-
-            return NoContent();
         }
 
-        [HttpDelete("{id}")]
+        [HttpPut("{id:long}")]
+        public async Task<ActionResult<CarAction>> EditAction(long id, CarAction action)
+        {
+            var saved = await _carActionService.FirstOrDefault(a => a.Id == id);
+
+            if (saved == null)
+                return NotFound();
+
+            if (!await _actionTypeService.IsActionTypeExist(action.Type))
+                return BadRequest($"Type \"{action.Type}\" does not exist.");
+
+            if (id != action.Id) 
+                return BadRequest();
+
+            var userId = AuthHelper.GetUserId(User);
+            if (!(await _carService.IsUserOwnerCar(userId, saved.CarId) && 
+                await _carService.IsUserOwnerCar(userId, action.CarId)))
+                return Forbid();
+
+            try
+            {
+                await _carActionService.Update(action);
+                return Ok(action);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpDelete("{id:long}")]
         public async Task<IActionResult> DeleteAction(long id)
         {
             var action = await _carActionService.GetById(id);
             if (action == null)
-            {
                 return NotFound();
-            }
-
-            var userId = AuthHelper.GetUserID(User);
-            if (!(await _carService.IsUserOwnerCar(userId, action.CarId)))
-            {
+            
+            var userId = AuthHelper.GetUserId(User);
+            if (!await _carService.IsUserOwnerCar(userId, action.CarId))
                 return Forbid();
-            }
 
             await _carActionService.Remove(action);
 
             return NoContent();
+        }
+
+        [HttpPatch("{id:long}")]
+        public async Task<ActionResult<CarAction>> UpdateAction(long id, PatchCarAction action)
+        {
+            var saved = await _carActionService.GetById(id);
+            if (saved == null)
+                return NotFound();
+
+            var userId = AuthHelper.GetUserId(User);
+            if (!await _carService.IsUserOwnerCar(userId, saved.CarId))
+                return Forbid();
+
+            if (action.Type != null && !await _actionTypeService.IsActionTypeExist(action.Type))
+                return BadRequest($"Type \"{action.Type}\" does not exist.");
+
+            try
+            {
+                await _carActionService.UpdatePartial(saved, action.GetAction());
+                return Ok(saved);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        private OkObjectResult ActionsWithSummary(IEnumerable<CarAction> actions)
+        {
+            var actionsList = actions.ToList();
+
+            var firstDate = actionsList.Min(a => a.Date);
+            var lastDate = actionsList.Max(a => a.Date);
+            var totalAmount = actionsList.Sum(a => a.Amount);
+            var averageAmount = actionsList.Average(a => a.Amount);
+
+            var summary = new
+            {
+                firstDate,
+                lastDate,
+                totalAmount,
+                averageAmount,
+                actionsList.Count
+            };
+
+            return Ok(new { actionsList, summary });
         }
     }
 }

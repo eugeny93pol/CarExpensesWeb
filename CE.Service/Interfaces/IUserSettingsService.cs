@@ -1,10 +1,10 @@
-﻿using CE.DataAccess;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using CE.DataAccess;
 
-namespace CE.Service
+namespace CE.Service.Interfaces
 {
     public interface IUserSettingsService : IBaseService<UserSettings>
     {
-        Task UpdatePartial(UserSettings userSettings, UserSettingsDTO settings);
+        Task UpdatePartial(UserSettings userSettings, UserSettings settings);
     }
 }

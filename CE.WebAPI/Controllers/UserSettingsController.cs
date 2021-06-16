@@ -1,13 +1,11 @@
 ﻿using CE.DataAccess;
-using CE.Service;
 using CE.WebAPI.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
+using CE.Service.Interfaces;
+using CE.WebAPI.RequestModels;
 
 
 namespace CE.WebAPI.Controllers
@@ -19,41 +17,46 @@ namespace CE.WebAPI.Controllers
     {
 
         private readonly IUserSettingsService _userSettingsService;
+        private readonly ICarService _carService;
 
-        public UserSettingsController(IUserSettingsService userSettingsService)
+        public UserSettingsController(IUserSettingsService userSettingsService,
+            ICarService carService)
         {
             _userSettingsService = userSettingsService;
+            _carService = carService;
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<UserSettings>> GetUserSettings(long id)
+        [HttpGet]
+        public async Task<ActionResult<UserSettings>> GetUserSettings()
         {
-            if (!AuthHelper.IsHasAccess(User, id)) { return Forbid(); }
+            var userId = AuthHelper.GetUserId(User);
 
-            var userSettings = await _userSettingsService.FirstOrDefault(s => s.UserId == id);
-
-            return userSettings == null ? NotFound() : userSettings;
+            return await _userSettingsService.FirstOrDefault(s => s.UserId == userId);
         }
 
-        [HttpPatch("{id}")]
-        public async Task<IActionResult> UpdatePartial(long id, [FromBody] UserSettingsDTO settings)
+        [HttpPatch]
+        public async Task<IActionResult> UpdateUserSettings([FromBody] PatchUserSettings settings)
         {
-            if (!AuthHelper.IsHasAccess(User, id)) { return Forbid(); }
+            var userId = AuthHelper.GetUserId(User);
 
-            var userSettings = await _userSettingsService.GetAsNoTracking(s => s.UserId == id);
+            if (settings.DefaultCarId != null &&
+                !await _carService.IsUserOwnerCar(userId, (long) settings.DefaultCarId))
+                return Forbid();
 
-            if (userSettings == null) { return NotFound(); }
+            var userSettings = await _userSettingsService.FirstOrDefault(s => s.UserId == userId);
+
+            if (userSettings == null)
+                return NotFound();
 
             try
             {
-                await _userSettingsService.UpdatePartial(userSettings, settings);
+                await _userSettingsService.UpdatePartial(userSettings, settings.GetUserSettings());
+                return Ok(userSettings);
             } 
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
-
-            return NoContent();
         }
     }
 }

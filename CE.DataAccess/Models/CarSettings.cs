@@ -6,12 +6,11 @@ namespace CE.DataAccess
     {
         public string MeasurementSystem { get; set; }
 
-        //Navigation
         public long CarId { get; set; }
 
         public CarSettings(long carId)
         {
-            MeasurementSystem = MeasurementSystemConstants.km;
+            MeasurementSystem = MeasurementSystemsConstants.km;
             CarId = carId;
         }
     }

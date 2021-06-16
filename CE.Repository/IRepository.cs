@@ -12,24 +12,18 @@ namespace CE.Repository
         Task<T> Create(T item);
 
         Task<T> GetById(long id);
-        Task<T> GetById(long id, params string[] includeProperties);
-        Task<T> GetAsNoTracking(Expression<Func<T, bool>> filter);
+        Task<T> GetById(long id, params Expression<Func<T, object>>[] includeProperties);
+
         Task<T> FirstOrDefault(Expression<Func<T, bool>> filter);
+        Task<T> FirstOrDefault(Expression<Func<T, bool>> filter, 
+            params Expression<Func<T, object>>[] includeProperties);
 
         Task<IEnumerable<T>> GetAll();
         Task<IEnumerable<T>> GetAll(params Expression<Func<T, object>>[] includeProperties);
         Task<IEnumerable<T>> GetAll(Expression<Func<T, bool>> filter);
-        Task<IEnumerable<T>> GetAll(
-            Expression<Func<T, bool>> filter = null,
+        Task<IEnumerable<T>> GetAll(Expression<Func<T, bool>> filter = null,
             Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
-            params Expression<Func<T, object>>[] includeProperties
-            );
-
-        Task<IEnumerable<T>> GetAll(
-            Expression<Func<T, bool>> filter = null,
-            Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
-            params string[] includeProperties
-            );
+            params Expression<Func<T, object>>[] includeProperties);
 
         Task Update(T item);
 

@@ -1,10 +1,11 @@
-﻿using CE.DataAccess;
-using CE.Repository;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CE.DataAccess;
+using CE.Repository;
+using CE.Service.Interfaces;
 
-namespace CE.Service
+namespace CE.Service.Implementations
 {
     public class CarService : BaseService<Car>, ICarService
     {
@@ -14,7 +15,7 @@ namespace CE.Service
 
         public async Task<IEnumerable<Car>> GetCarsByUserId(long userId)
         {
-            return await _repository.GetAll(c => c.UserId == userId);
+            return await Repository.GetAll(c => c.UserId == userId);
         }
 
         public async Task<long[]> GetCarsIdsByUserId(long userId)
@@ -25,8 +26,16 @@ namespace CE.Service
 
         public async Task<bool> IsUserOwnerCar(long userId, long carId)
         {
-            return (await _repository.GetById(carId)).UserId == userId;
+            return (await Repository.GetById(carId))?.UserId == userId;
         }
-        
+
+        public async Task UpdatePartial(Car savedCar, Car car)
+        {
+            savedCar.Brand = car.Brand ?? savedCar.Brand;
+            savedCar.Model = car.Model ?? savedCar.Model;
+            savedCar.Vin = car.Vin ?? savedCar.Vin;
+            savedCar.Year = car.Year != 0 ? car.Year : savedCar.Year;
+            await Repository.Update(savedCar);
+        }
     }
 }
