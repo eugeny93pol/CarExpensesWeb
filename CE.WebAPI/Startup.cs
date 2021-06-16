@@ -9,8 +9,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.IO;
+using CE.Repository.Interfaces;
 using CE.Service.Implementations;
 using CE.Service.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace CE.WebAPI
 {
@@ -60,8 +63,9 @@ namespace CE.WebAPI
             services.AddDbContext<ApplicationContext>(opt => 
                 opt.UseSqlServer(Configuration.GetConnectionString("DbConnection")));
 
+            services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-            
+
             services.AddTransient<ICarActionService, CarActionService>();
             services.AddTransient<IActionTypeService, ActionTypeService>();
             services.AddTransient<ICarService, CarService>();
@@ -71,12 +75,12 @@ namespace CE.WebAPI
             services.AddTransient<IUserSettingsService, UserSettingsService>();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
+            loggerFactory.AddFile(Path.Combine(Directory.GetCurrentDirectory(), "log.txt"));
+
             if (env.IsDevelopment())
-            {
                 app.UseDeveloperExceptionPage();
-            }
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

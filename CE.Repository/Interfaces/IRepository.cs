@@ -1,11 +1,11 @@
-﻿using CE.DataAccess;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using CE.DataAccess;
 
-namespace CE.Repository
+namespace CE.Repository.Interfaces
 {
     public interface IRepository<T> where T : BaseEntity
     {

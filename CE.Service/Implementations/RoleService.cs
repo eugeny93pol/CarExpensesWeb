@@ -1,5 +1,5 @@
 ﻿using CE.DataAccess;
-using CE.Repository;
+using CE.Repository.Interfaces;
 using CE.Service.Interfaces;
 
 namespace CE.Service.Implementations

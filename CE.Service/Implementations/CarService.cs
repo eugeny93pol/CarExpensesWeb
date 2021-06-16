@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CE.DataAccess;
-using CE.Repository;
+using CE.Repository.Interfaces;
 using CE.Service.Interfaces;
 
 namespace CE.Service.Implementations

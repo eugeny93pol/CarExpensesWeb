@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using CE.Repository.Interfaces;
 
 namespace CE.Repository
 {
@@ -75,10 +76,11 @@ namespace CE.Repository
             {
                 query = query.Where(filter);
             }
+
             return orderBy != null ? await orderBy(query).ToListAsync() : await query.ToListAsync();
         }
 
-        
+
         public async Task Update(T item)
         {
             _context.Entry(item).State = EntityState.Modified;
