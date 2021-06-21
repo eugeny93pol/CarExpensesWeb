@@ -1,4 +1,7 @@
 using CE.Repository;
+using CE.Repository.Interfaces;
+using CE.Service.Implementations;
+using CE.Service.Interfaces;
 using CE.WebAPI.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -7,13 +10,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IO;
-using CE.Repository.Interfaces;
-using CE.Service.Implementations;
-using CE.Service.Interfaces;
-using Microsoft.Extensions.Logging;
 
 namespace CE.WebAPI
 {

@@ -1,5 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System.Security.Claims;
+using System.Threading.Tasks;
 using CE.DataAccess;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CE.Service.Interfaces
 {
@@ -13,6 +15,6 @@ namespace CE.Service.Interfaces
         /// <returns>The <see cref="User"/> instance if email and password are correct, or null if they are not correct or email is not registered</returns>
         Task<User> Authenticate(string email, string password);
 
-        Task UpdatePartial(User savedUser, User user);
+        Task<ActionResult<User>> UpdatePartial(ClaimsPrincipal claims, User item);
     }
 }

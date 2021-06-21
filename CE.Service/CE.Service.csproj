@@ -14,8 +14,4 @@
     <ProjectReference Include="..\CE.Repository\CE.Repository.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Utils\" />
-  </ItemGroup>
-
 </Project>

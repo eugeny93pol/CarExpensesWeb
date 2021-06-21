@@ -26,7 +26,7 @@ namespace CE.Service.Interfaces
             Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
             params Expression<Func<T, object>>[] includeProperties);
 
-        //Task<ActionResult<T>> Update(T item);
+        Task<ActionResult<T>> Update(ClaimsPrincipal claims, T item);
 
         Task<IActionResult> Delete(ClaimsPrincipal claims, Guid id);
     }

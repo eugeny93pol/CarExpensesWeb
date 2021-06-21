@@ -35,8 +35,8 @@ namespace CE.Service.Implementations
             var user = await CreateUser(item, roleUser);
             if (user == null)
                 return new BadRequestObjectResult("That e-mail already registered.");
-            
-            //await _userSettingsService.Create(new UserSettings(user.Id));
+
+            await _unitOfWork.UserSettingsRepository.Create(new UserSettings(user.Id));
             return new OkObjectResult(user);
         }
 
@@ -47,6 +47,7 @@ namespace CE.Service.Implementations
         {
             if (!IsHasAccess(claims, id))
                 return new ForbidResult();
+
             var user = await _userRepository.GetById(id, includeProperties);
             return user != null ? new OkObjectResult(user) : new NotFoundObjectResult(id);
         }
@@ -61,51 +62,102 @@ namespace CE.Service.Implementations
             return new OkObjectResult(users.ToList());
         }
 
+        public async Task<ActionResult<User>> Update(ClaimsPrincipal claims, User item)
+        {
+            if (!IsHasAccess(claims, item.Id))
+                return new ForbidResult();
+
+            var user = await _userRepository.FirstOrDefault(u => u.Id == item.Id);
+            if (user == null)
+                return new NotFoundObjectResult(item.Id);
+
+            if (!IsHasAccess(claims) && user.Role != item.Role)
+                return new ForbidResult();
+
+            var validationResult = await ValidateUserUpdates(item);
+            if (validationResult != null)
+                return validationResult;
+
+            item.Password = GeneratePasswordHash(item.Password);
+            await _userRepository.Update(item);
+            return new OkObjectResult(item);
+        }
+
+        public async Task<ActionResult<User>> UpdatePartial(ClaimsPrincipal claims, User item)
+        {
+            var user = await _userRepository.FirstOrDefault(u => u.Id == item.Id);
+            if (user == null)
+                return new NotFoundObjectResult(item.Id);
+            
+            user = UpdateUserInstance(user, item);
+            return await Update(claims, user);
+        }
+
         public async Task<IActionResult> Delete(ClaimsPrincipal claims, Guid id)
         {
             if (!IsHasAccess(claims, id))
                 return new ForbidResult();
+
             var user = await _userRepository.GetById(id);
             if (user == null)
                 return new NotFoundObjectResult(id);
+
             await _userRepository.Remove(user);
             return new NoContentResult();
         }
-
 
         public async Task<User> Authenticate(string email, string password)
         {
             var user = await _userRepository.FirstOrDefault(u => u.Email == email);
             if (user != null && BCrypt.Net.BCrypt.Verify(password, user.Password))
                 return user;
+
             return null;
         }
 
-        public async Task UpdatePartial(User savedUser, User user)
+        private static User UpdateUserInstance(User savedUser, User user)
         {
             savedUser.Name = user.Name ?? savedUser.Name;
             savedUser.Email = user.Email ?? savedUser.Email;
-            if (user.Password != null)
-                savedUser.Password = GeneratePasswordHash(user.Password);
-            await _userRepository.Update(savedUser);
+            savedUser.Role = user.Role ?? savedUser.Role;
+            savedUser.Password = user.Password ?? savedUser.Password;
+
+            return savedUser;
+        }
+
+        private async Task<ActionResult> ValidateUserUpdates(User item)
+        {
+            var roles = (await _unitOfWork.RoleRepository.GetAll())
+                .Select(r => r.Name)
+                .ToArray();
+
+            if (!roles.Contains(item.Role))
+                return new BadRequestObjectResult($"The role '{item.Role}' does not exist.");
+
+            var user = await _userRepository.FirstOrDefault(u => u.Id == item.Id);
+            if (user.Email != item.Email)
+            {
+                user = await _userRepository.FirstOrDefault(u => u.Email == item.Email);
+                if (user != null)
+                    return new BadRequestObjectResult($"The email '{item.Email}' is already in use by another user.");
+            }
+
+            return null;
         }
 
         private async Task<User> CreateUser(User user, Role role)
         {
             var candidate = await _userRepository
                 .FirstOrDefault(u => u.Email == user.Email);
+
             if (candidate != null)
                 return null;
+
             var passwordHash = GeneratePasswordHash(user.Password);
             user.Role = role.Name;
             user.Password = passwordHash;
+
             return await _userRepository.Create(user);
-        }
-
-
-        private static string GeneratePasswordHash(string password)
-        {
-            return BCrypt.Net.BCrypt.HashPassword(password);
         }
 
         /// <summary>
@@ -122,14 +174,19 @@ namespace CE.Service.Implementations
         }
 
         /// <summary>
-        /// Checks if the current user has access to user with Id.
+        /// Checks if the current user is an admin or has access to user with Id.
         /// </summary>
         /// <param name="user">The <see cref="ClaimsPrincipal"/> instance of current user's claims.</param>
         /// <param name="id">The user Id for check.</param>
-        /// <returns>The user Id.</returns>
-        public static bool IsHasAccess(ClaimsPrincipal user, Guid? id)
+        /// <returns>"true" - if the User is in role Admin, or if the id matches current User id, otherwise "false".</returns>
+        public static bool IsHasAccess(ClaimsPrincipal user, Guid? id = null)
         {
             return user.IsInRole(RolesConstants.Admin) || GetUserId(user) == id;
+        }
+
+        private static string GeneratePasswordHash(string password)
+        {
+            return BCrypt.Net.BCrypt.HashPassword(password);
         }
     }
 }
