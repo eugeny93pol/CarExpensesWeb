@@ -14,6 +14,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IO;
+using Microsoft.OpenApi.Models;
 
 namespace CE.WebAPI
 {
@@ -32,6 +33,11 @@ namespace CE.WebAPI
             var authOptions = Configuration.GetSection("Auth").Get<AuthOptions>();
 
             services.AddControllers();
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "CarExpensesWebApi", Version = "v1"});
+            });
 
             services.AddSpaStaticFiles(configuration =>
             {
@@ -85,6 +91,12 @@ namespace CE.WebAPI
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "CarExpensesWeb API");
+            });
 
             app.UseRouting();
 
