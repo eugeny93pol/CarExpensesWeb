@@ -25,7 +25,9 @@ namespace CE.Service.Implementations
             _userRepository = _unitOfWork?.UserRepository;
         }
 
+        #region CRUD
 
+        #region CREATE
         public async Task<ActionResult<User>> Create(ClaimsPrincipal claims, User item)
         {
             var roleUser = await _unitOfWork
@@ -39,7 +41,9 @@ namespace CE.Service.Implementations
             await _unitOfWork.UserSettingsRepository.Create(new UserSettings(user.Id));
             return new OkObjectResult(user);
         }
+        #endregion CREATE
 
+        #region GET
         public async Task<ActionResult<User>> GetOne(
             ClaimsPrincipal claims,
             Guid id,
@@ -61,7 +65,9 @@ namespace CE.Service.Implementations
             var users = await _userRepository.GetAll(filter, orderBy, includeProperties);
             return new OkObjectResult(users.ToList());
         }
+        #endregion GET
 
+        #region UPDATE
         public async Task<ActionResult<User>> Update(ClaimsPrincipal claims, User item)
         {
             if (!IsHasAccess(claims, item.Id))
@@ -83,6 +89,7 @@ namespace CE.Service.Implementations
             return new OkObjectResult(item);
         }
 
+
         public async Task<ActionResult<User>> UpdatePartial(ClaimsPrincipal claims, User item)
         {
             var user = await _userRepository.FirstOrDefault(u => u.Id == item.Id);
@@ -92,7 +99,9 @@ namespace CE.Service.Implementations
             user = UpdateUserInstance(user, item);
             return await Update(claims, user);
         }
+        #endregion UPDATE
 
+        #region DELETE
         public async Task<IActionResult> Delete(ClaimsPrincipal claims, Guid id)
         {
             if (!IsHasAccess(claims, id))
@@ -105,7 +114,11 @@ namespace CE.Service.Implementations
             await _userRepository.Remove(user);
             return new NoContentResult();
         }
+        #endregion DELETE
 
+        #endregion CRUD
+
+        #region AUTHENTICATE
         public async Task<User> Authenticate(string email, string password)
         {
             var user = await _userRepository.FirstOrDefault(u => u.Email == email);
@@ -114,17 +127,9 @@ namespace CE.Service.Implementations
 
             return null;
         }
+        #endregion AUTHENTICATE
 
-        private static User UpdateUserInstance(User savedUser, User user)
-        {
-            savedUser.Name = user.Name ?? savedUser.Name;
-            savedUser.Email = user.Email ?? savedUser.Email;
-            savedUser.Role = user.Role ?? savedUser.Role;
-            savedUser.Password = user.Password ?? savedUser.Password;
-
-            return savedUser;
-        }
-
+        #region PRIVATE_TASKS
         private async Task<ActionResult> ValidateUserUpdates(User item)
         {
             var roles = (await _unitOfWork.RoleRepository.GetAll())
@@ -159,7 +164,9 @@ namespace CE.Service.Implementations
 
             return await _userRepository.Create(user);
         }
+        #endregion PRIVATE_TASKS
 
+        #region PUBLIC_STATIC
         /// <summary>
         /// Returns the user Id from a ClaimsPrincipal object.
         /// </summary>
@@ -183,10 +190,23 @@ namespace CE.Service.Implementations
         {
             return user.IsInRole(RolesConstants.Admin) || GetUserId(user) == id;
         }
+        #endregion PUBLIC_STATIC
 
+        #region PRIVATE_STATIC
         private static string GeneratePasswordHash(string password)
         {
             return BCrypt.Net.BCrypt.HashPassword(password);
         }
+
+        private static User UpdateUserInstance(User savedUser, User user)
+        {
+            savedUser.Name = user.Name ?? savedUser.Name;
+            savedUser.Email = user.Email ?? savedUser.Email;
+            savedUser.Role = user.Role ?? savedUser.Role;
+            savedUser.Password = user.Password ?? savedUser.Password;
+
+            return savedUser;
+        }
+        #endregion PRIVATE_STATIC
     }
 }
