@@ -1,13 +1,13 @@
 ﻿using System;
-using CE.DataAccess;
-using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using CE.DataAccess;
 using CE.DataAccess.Constants;
 using CE.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace CE.WebAPI.Controllers
 {
@@ -17,61 +17,103 @@ namespace CE.WebAPI.Controllers
     public class RolesController : ControllerBase
     {
         private readonly IRoleService _roleService;
+        private readonly ILogger<UsersController> _logger;
 
-        public RolesController(IRoleService roleService)
+        public RolesController(IRoleService roleService, ILogger<UsersController> logger)
         {
             _roleService = roleService;
+            _logger = logger;
         }
 
+        #region GET
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Role>>> GetRoles()
+        public async Task<ActionResult<IEnumerable<Role>>> GetRoles(bool? fullInfo)
         {
-            var roles = await _roleService.GetAll();
-            return roles.ToList();
+            try
+            {
+                fullInfo ??= Request.Query.Keys.Contains(nameof(fullInfo));
+                if ((bool)fullInfo)
+                {
+                    return await _roleService.GetAll(User, null, null, r => r.Users);
+                }
+                return await _roleService.GetAll();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
 
         [HttpGet("{id:Guid}")]
-        public async Task<ActionResult<Role>> GetRole(Guid id)
+        public async Task<ActionResult<Role>> GetRole(Guid id, bool? fullInfo)
         {
-            var role = await _roleService.GetById(id);
-            return role != null ? Ok(role) : NotFound();
+            try
+            {
+                fullInfo ??= Request.Query.Keys.Contains(nameof(fullInfo));
+                if ((bool)fullInfo)
+                {
+                    return await _roleService.GetOne(User, id, r => r.Users);
+                }
+                return await _roleService.GetOne(User, id);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
+        #endregion GET
 
+        #region POST
         [HttpPost]
         public async Task<ActionResult<Role>> CreateRole([FromBody] Role role)
         {
-            await _roleService.Create(role);
-            return CreatedAtAction(nameof(GetRole), new { id = role.Id }, role);
-        }
-
-        [HttpPut("{id:Guid}")]
-        public async Task<IActionResult> EditRole(Guid id, Role role)
-        {
-            if (id != role.Id)
-                return BadRequest();
-
             try
             {
-                await _roleService.Update(role);
-                return Ok(role);
+                return await _roleService.Create(User, role);
             }
-            catch
+            catch (Exception e)
             {
-                return NotFound();
+                _logger.LogError(e, e.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
+        #endregion
 
+        #region PUT
+        [HttpPut("{id:Guid}")]
+        public async Task<ActionResult<Role>> EditRole(Guid id, Role role)
+        {
+            if (id != role.Id)
+                return BadRequest("The route parameter 'id' does not match the 'id' parameter from body.");
+            try
+            {
+                return await _roleService.Update(User, role);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+        #endregion PUT
+
+        #region DELETE
         [HttpDelete("{id:Guid}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var role = await _roleService.GetById(id);
-            if (role == null)
-                return NotFound();
-
-            await _roleService.Remove(role);
-
-            return NoContent();
+            try
+            {
+                return await _roleService.Delete(User, id);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
-    
+        #endregion DELETE
+
     }
 }

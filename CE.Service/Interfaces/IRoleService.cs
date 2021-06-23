@@ -2,7 +2,7 @@
 
 namespace CE.Service.Interfaces
 {
-    public interface IRoleService : IBaseService<Role>
+    public interface IRoleService : IService<Role>
     {
     }
 }

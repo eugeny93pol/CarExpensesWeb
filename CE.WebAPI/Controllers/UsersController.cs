@@ -7,8 +7,8 @@ using CE.Service.Interfaces;
 using CE.WebAPI.RequestModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace CE.WebAPI.Controllers
 {
