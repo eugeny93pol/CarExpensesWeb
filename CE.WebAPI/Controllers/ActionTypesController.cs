@@ -1,12 +1,13 @@
 ﻿using System;
-using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using CE.DataAccess;
 using CE.DataAccess.Constants;
 using CE.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 
 namespace CE.WebAPI.Controllers
@@ -17,63 +18,106 @@ namespace CE.WebAPI.Controllers
     public class ActionTypesController : ControllerBase
     {
         private readonly IActionTypeService _actionTypeService;
+        private readonly ILogger<UsersController> _logger;
 
-        public ActionTypesController(IActionTypeService actionTypeService)
+        public ActionTypesController(IActionTypeService actionTypeService, ILogger<UsersController> logger)
         {
             _actionTypeService = actionTypeService;
+            _logger = logger;
         }
 
+        #region GET
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ActionType>>> GetTypes()
+        public async Task<ActionResult<IEnumerable<ActionType>>> GetTypes(bool? fullInfo)
         {
-            var actions = await _actionTypeService.GetAll();
-            return actions.ToList();
+            try
+            {
+                fullInfo ??= Request.Query.Keys.Contains(nameof(fullInfo));
+                if ((bool)fullInfo)
+                {
+                    return await _actionTypeService.GetAll(User, null, null, a => a.Actions);
+                }
+                return await _actionTypeService.GetAll();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
 
         [HttpGet("{id:Guid}")]
-        public async Task<ActionResult<ActionType>> GetType(Guid id)
+        public async Task<ActionResult<ActionType>> GetType(Guid id, bool? fullInfo)
         {
-            var action = await _actionTypeService.GetById(id);
-            return action != null ? Ok(action) : NotFound();
-        }
 
+            try
+            {
+                fullInfo ??= Request.Query.Keys.Contains(nameof(fullInfo));
+                if ((bool)fullInfo)
+                {
+                    return await _actionTypeService.GetOne(User, id, a => a.Actions);
+                }
+                return await _actionTypeService.GetOne(User, id);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+        #endregion GET
+
+        #region POST
         [Authorize(Roles = RolesConstants.Admin)]
         [HttpPost]
         public async Task<ActionResult<ActionType>> CreateType([FromBody] ActionType action)
         {
-            await _actionTypeService.Create(action);
-            return CreatedAtAction(nameof(GetType), new { id = action.Id }, action);
-        }
-
-        [Authorize(Roles = RolesConstants.Admin)]
-        [HttpPut("{id:Guid}")]
-        public async Task<IActionResult> EditType(Guid id, ActionType action)
-        {
-            if (id != action.Id)
-                return BadRequest();
-
             try
             {
-                await _actionTypeService.Update(action);
-                return Ok(action);
+                return await _actionTypeService.Create(User, action);
             }
-            catch
+            catch (Exception e)
             {
-                return NotFound();
+                _logger.LogError(e, e.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
+        #endregion POST
 
+        #region PUT
+        [Authorize(Roles = RolesConstants.Admin)]
+        [HttpPut("{id:Guid}")]
+        public async Task<ActionResult<ActionType>> EditType(Guid id, ActionType action)
+        {
+            if (id != action.Id)
+                return BadRequest("The route parameter 'id' does not match the 'id' parameter from body.");
+            try
+            {
+                return await _actionTypeService.Update(User, action);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+        #endregion PUT
+
+        #region DELETE
         [Authorize(Roles = RolesConstants.Admin)]
         [HttpDelete("{id:Guid}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var action = await _actionTypeService.GetById(id);
-            if (action == null)
-                return NotFound();
-
-            await _actionTypeService.Remove(action);
-
-            return NoContent();
+            try
+            {
+                return await _actionTypeService.Delete(User, id);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
+        #endregion DELETE
     }
 }

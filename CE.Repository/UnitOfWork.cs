@@ -1,4 +1,5 @@
 ﻿using System;
+using CE.DataAccess;
 using CE.Repository.Interfaces;
 
 namespace CE.Repository
@@ -12,6 +13,8 @@ namespace CE.Repository
         public readonly RoleRepository RoleRepository;
         public readonly CarRepository CarRepository;
         public readonly CarSettingsRepository CarSettingsRepository;
+        public readonly ActionTypeRepository ActionTypeRepository;
+        public readonly CarActionRepository CarActionRepository; 
 
         public UnitOfWork(ApplicationContext context)
         {
@@ -21,6 +24,8 @@ namespace CE.Repository
             RoleRepository = new RoleRepository(_context);
             CarRepository = new CarRepository(_context);
             CarSettingsRepository = new CarSettingsRepository(_context);
+            ActionTypeRepository = new ActionTypeRepository(_context);
+            CarActionRepository = new CarActionRepository(_context);
         }
 
         public void Dispose()

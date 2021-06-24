@@ -33,10 +33,10 @@ namespace CE.Repository
                 new Role { Id = Guid.NewGuid(), Name = RolesConstants.User });
 
             modelBuilder.Entity<ActionType>().HasData(
-                new ActionType() { Id = Guid.NewGuid(), Name = ActionTypesConstants.Mileage },
-                new ActionType() { Id = Guid.NewGuid(), Name = ActionTypesConstants.Purchases },
-                new ActionType() { Id = Guid.NewGuid(), Name = ActionTypesConstants.Refill },
-                new ActionType() { Id = Guid.NewGuid(), Name = ActionTypesConstants.Repair });
+                new ActionType { Id = Guid.NewGuid(), Name = ActionTypesConstants.Mileage },
+                new ActionType { Id = Guid.NewGuid(), Name = ActionTypesConstants.Purchases },
+                new ActionType { Id = Guid.NewGuid(), Name = ActionTypesConstants.Refill },
+                new ActionType { Id = Guid.NewGuid(), Name = ActionTypesConstants.Repair });
 
             modelBuilder.Entity<User>()
                 .HasOne<Role>()
