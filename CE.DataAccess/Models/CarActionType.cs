@@ -3,14 +3,14 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CE.DataAccess
 {
-    public class ActionType : BaseEntity
+    public class CarActionType : BaseEntity
     {
         [Required]
         public string Name { get; set; }
 
         public ICollection<CarAction> Actions { get; set; }
 
-        public ActionType()
+        public CarActionType()
         {
             Actions = new List<CarAction>();
         }

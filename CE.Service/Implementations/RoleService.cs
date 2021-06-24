@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using CE.DataAccess;
 using CE.Repository;
 using CE.Repository.Interfaces;
+using CE.Repository.Repositories;
 using CE.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 

@@ -1,6 +1,6 @@
 ﻿namespace CE.Repository.Interfaces
 {
-    public interface IActionTypeRepository
+    public interface ICarActionTypeRepository
     {
     }
 }

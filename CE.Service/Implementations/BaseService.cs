@@ -12,56 +12,56 @@ namespace CE.Service.Implementations
 {
     public class BaseService<T> : IBaseService<T> where T : BaseEntity
     {
-        protected readonly Repository<T> Repository;
+        protected readonly GenericRepository<T> GenericRepository;
 
-        protected BaseService(IRepository<T> repository)
+        protected BaseService(IGenericRepository<T> genericRepository)
         {
-            Repository = repository as Repository<T>;
+            GenericRepository = genericRepository as GenericRepository<T>;
         }
 
         
         public virtual async Task<T> Create(T item)
         {
-            return await Repository.Create(item);
+            return await GenericRepository.Create(item);
         }
 
         
         public async Task<T> GetById(Guid id)
         {
-            return await Repository.GetById(id);
+            return await GenericRepository.GetById(id);
         }
 
         public async Task<T> GetById(Guid id, params Expression<Func<T, object>>[] includeProperties)
         {
-            return await Repository.GetById(id, includeProperties);
+            return await GenericRepository.GetById(id, includeProperties);
         }
         
 
         public async Task<T> FirstOrDefault(Expression<Func<T, bool>> predicate)
         {
-            return await Repository.FirstOrDefault(predicate);
+            return await GenericRepository.FirstOrDefault(predicate);
         }
         
         public async Task<T> FirstOrDefault(Expression<Func<T, bool>> predicate,
             params Expression<Func<T, object>>[] includeProperties)
         {
-            return await Repository.FirstOrDefault(predicate, includeProperties);
+            return await GenericRepository.FirstOrDefault(predicate, includeProperties);
         }
 
         
         public virtual async Task<IEnumerable<T>> GetAll()
         {
-            return await Repository.GetAll();
+            return await GenericRepository.GetAll();
         }
 
         public virtual async Task<IEnumerable<T>> GetAll(params Expression<Func<T, object>>[] includeProperties)
         {
-            return await Repository.GetAll(includeProperties);
+            return await GenericRepository.GetAll(includeProperties);
         }
 
         public virtual async Task<IEnumerable<T>> GetAll(Expression<Func<T, bool>> filter)
         {
-            return await Repository.GetAll(filter);
+            return await GenericRepository.GetAll(filter);
         }
 
         public async Task<IEnumerable<T>> GetAll(
@@ -70,19 +70,19 @@ namespace CE.Service.Implementations
             params Expression<Func<T, object>>[] includeProperties
             )
         {
-            return await Repository.GetAll(filter, orderBy, includeProperties);
+            return await GenericRepository.GetAll(filter, orderBy, includeProperties);
         }
 
 
         public virtual async Task Update(T item)
         {
-            await Repository.Update(item);
+            await GenericRepository.Update(item);
         }
 
         
         public async Task Remove(T item)
         {
-            await Repository.Remove(item);
+            await GenericRepository.Remove(item);
         }
     }
 }

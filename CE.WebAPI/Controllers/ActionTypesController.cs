@@ -17,27 +17,27 @@ namespace CE.WebAPI.Controllers
     [Authorize]
     public class ActionTypesController : ControllerBase
     {
-        private readonly IActionTypeService _actionTypeService;
+        private readonly ICarActionTypeService _carActionTypeService;
         private readonly ILogger<UsersController> _logger;
 
-        public ActionTypesController(IActionTypeService actionTypeService, ILogger<UsersController> logger)
+        public ActionTypesController(ICarActionTypeService carActionTypeService, ILogger<UsersController> logger)
         {
-            _actionTypeService = actionTypeService;
+            _carActionTypeService = carActionTypeService;
             _logger = logger;
         }
 
         #region GET
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ActionType>>> GetTypes(bool? fullInfo)
+        public async Task<ActionResult<IEnumerable<CarActionType>>> GetTypes(bool? fullInfo)
         {
             try
             {
                 fullInfo ??= Request.Query.Keys.Contains(nameof(fullInfo));
                 if ((bool)fullInfo)
                 {
-                    return await _actionTypeService.GetAll(User, null, null, a => a.Actions);
+                    return await _carActionTypeService.GetAll(User, null, null, a => a.Actions);
                 }
-                return await _actionTypeService.GetAll();
+                return await _carActionTypeService.GetAll();
             }
             catch (Exception e)
             {
@@ -47,7 +47,7 @@ namespace CE.WebAPI.Controllers
         }
 
         [HttpGet("{id:Guid}")]
-        public async Task<ActionResult<ActionType>> GetType(Guid id, bool? fullInfo)
+        public async Task<ActionResult<CarActionType>> GetType(Guid id, bool? fullInfo)
         {
 
             try
@@ -55,9 +55,9 @@ namespace CE.WebAPI.Controllers
                 fullInfo ??= Request.Query.Keys.Contains(nameof(fullInfo));
                 if ((bool)fullInfo)
                 {
-                    return await _actionTypeService.GetOne(User, id, a => a.Actions);
+                    return await _carActionTypeService.GetOne(User, id, a => a.Actions);
                 }
-                return await _actionTypeService.GetOne(User, id);
+                return await _carActionTypeService.GetOne(User, id);
             }
             catch (Exception e)
             {
@@ -70,11 +70,11 @@ namespace CE.WebAPI.Controllers
         #region POST
         [Authorize(Roles = RolesConstants.Admin)]
         [HttpPost]
-        public async Task<ActionResult<ActionType>> CreateType([FromBody] ActionType action)
+        public async Task<ActionResult<CarActionType>> CreateType([FromBody] CarActionType carActionType)
         {
             try
             {
-                return await _actionTypeService.Create(User, action);
+                return await _carActionTypeService.Create(User, carActionType);
             }
             catch (Exception e)
             {
@@ -87,13 +87,13 @@ namespace CE.WebAPI.Controllers
         #region PUT
         [Authorize(Roles = RolesConstants.Admin)]
         [HttpPut("{id:Guid}")]
-        public async Task<ActionResult<ActionType>> EditType(Guid id, ActionType action)
+        public async Task<ActionResult<CarActionType>> EditType(Guid id, CarActionType carActionType)
         {
-            if (id != action.Id)
+            if (id != carActionType.Id)
                 return BadRequest("The route parameter 'id' does not match the 'id' parameter from body.");
             try
             {
-                return await _actionTypeService.Update(User, action);
+                return await _carActionTypeService.Update(User, carActionType);
             }
             catch (Exception e)
             {
@@ -110,7 +110,7 @@ namespace CE.WebAPI.Controllers
         {
             try
             {
-                return await _actionTypeService.Delete(User, id);
+                return await _carActionTypeService.Delete(User, id);
             }
             catch (Exception e)
             {

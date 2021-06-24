@@ -7,7 +7,7 @@ using CE.DataAccess;
 
 namespace CE.Repository.Interfaces
 {
-    public interface IRepository<T> where T : BaseEntity
+    public interface IGenericRepository<T> where T : BaseEntity
     {
         Task<T> Create(T item);
 

@@ -3,7 +3,7 @@ using CE.DataAccess;
 
 namespace CE.Service.Interfaces
 {
-    public interface IActionTypeService : IService<ActionType>
+    public interface ICarActionTypeService : IService<CarActionType>
     {
         Task<bool> IsActionTypeExist(string name);
     }

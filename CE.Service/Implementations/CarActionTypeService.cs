@@ -7,50 +7,51 @@ using System.Threading.Tasks;
 using CE.DataAccess;
 using CE.Repository;
 using CE.Repository.Interfaces;
+using CE.Repository.Repositories;
 using CE.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CE.Service.Implementations
 {
-    public class ActionTypeService : IActionTypeService
+    public class CarActionTypeService : ICarActionTypeService
     {
         private readonly UnitOfWork _unitOfWork;
-        private readonly ActionTypeRepository _actionTypeRepository;
+        private readonly CarActionTypeRepository _carActionTypeRepository;
         private readonly ICarService _carService;
 
-        public ActionTypeService(IUnitOfWork unitOfWork)
+        public CarActionTypeService(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork as UnitOfWork;
-            _actionTypeRepository = _unitOfWork?.ActionTypeRepository;
+            _carActionTypeRepository = _unitOfWork?.CarActionTypeRepository;
             _carService = new CarService(_unitOfWork);
         }
 
         #region CRUD
 
         #region CREATE
-        public async Task<ActionResult<ActionType>> Create(ClaimsPrincipal claims, ActionType item)
+        public async Task<ActionResult<CarActionType>> Create(ClaimsPrincipal claims, CarActionType item)
         {
             if (!UserService.IsHasAccess(claims))
                 return new ForbidResult();
 
-            var actionType = await _actionTypeRepository.FirstOrDefault(a => a.Name == item.Name);
+            var actionType = await _carActionTypeRepository.FirstOrDefault(a => a.Name == item.Name);
             if (actionType != null)
                 return new BadRequestObjectResult($"The action type named '{item.Name}' already exists.");
                     
-            await _actionTypeRepository.Create(item);
+            await _carActionTypeRepository.Create(item);
             return new OkObjectResult(item);
         }
         #endregion CREATE
 
         #region GET
-        public async Task<ActionResult<ActionType>> GetOne(
+        public async Task<ActionResult<CarActionType>> GetOne(
             ClaimsPrincipal claims, Guid id, 
-            params Expression<Func<ActionType, object>>[] includeProperties)
+            params Expression<Func<CarActionType, object>>[] includeProperties)
         {
-            var actionType = await _actionTypeRepository.GetById(id, includeProperties);
+            var actionType = await _carActionTypeRepository.GetById(id, includeProperties);
 
             if (actionType == null)
-                return new NotFoundObjectResult(new ActionType {Id = id});
+                return new NotFoundObjectResult(new CarActionType {Id = id});
 
             if (includeProperties.Length == 0 || UserService.IsHasAccess(claims))
                 return new OkObjectResult(actionType);
@@ -63,13 +64,13 @@ namespace CE.Service.Implementations
             return new OkObjectResult(actionType);
         }
 
-        public async Task<ActionResult<IEnumerable<ActionType>>> GetAll(
+        public async Task<ActionResult<IEnumerable<CarActionType>>> GetAll(
             ClaimsPrincipal claims = null,
-            Expression<Func<ActionType, bool>> filter = null,
-            Func<IQueryable<ActionType>, IOrderedQueryable<ActionType>> orderBy = null,
-            params Expression<Func<ActionType, object>>[] includeProperties)
+            Expression<Func<CarActionType, bool>> filter = null,
+            Func<IQueryable<CarActionType>, IOrderedQueryable<CarActionType>> orderBy = null,
+            params Expression<Func<CarActionType, object>>[] includeProperties)
         {
-            var actionTypes = await _actionTypeRepository.GetAll(filter, orderBy, includeProperties);
+            var actionTypes = await _carActionTypeRepository.GetAll(filter, orderBy, includeProperties);
 
             if (includeProperties.Length == 0 || UserService.IsHasAccess(claims))
                 return new OkObjectResult(actionTypes.ToList());
@@ -88,23 +89,23 @@ namespace CE.Service.Implementations
         #endregion GET
 
         #region UPDATE
-        public async Task<ActionResult<ActionType>> Update(ClaimsPrincipal claims, ActionType item)
+        public async Task<ActionResult<CarActionType>> Update(ClaimsPrincipal claims, CarActionType item)
         {
             if (!UserService.IsHasAccess(claims))
                 return new ForbidResult();
 
-            var actionType = await _actionTypeRepository.FirstOrDefault(a => a.Name == item.Name);
+            var actionType = await _carActionTypeRepository.FirstOrDefault(a => a.Name == item.Name);
             if (actionType != null)
                 return new BadRequestObjectResult($"The action type named '{item.Name}' already exists.");
 
-            actionType = await _actionTypeRepository.FirstOrDefault(a => a.Id == item.Id);
+            actionType = await _carActionTypeRepository.FirstOrDefault(a => a.Id == item.Id);
             if (actionType == null)
-                return new NotFoundObjectResult(new ActionType {Id = item.Id});
+                return new NotFoundObjectResult(new CarActionType {Id = item.Id});
 
-            var actions = (await _actionTypeRepository.GetById(item.Id, a => a.Actions)).Actions;
-            var actionTypeToCreate = new ActionType {Name = item.Name};
+            var actions = (await _carActionTypeRepository.GetById(item.Id, a => a.Actions)).Actions;
+            var actionTypeToCreate = new CarActionType {Name = item.Name};
 
-            await _actionTypeRepository.Create(actionTypeToCreate);
+            await _carActionTypeRepository.Create(actionTypeToCreate);
 
             foreach (var carAction in actions)
             {
@@ -112,7 +113,7 @@ namespace CE.Service.Implementations
                 await _unitOfWork.CarActionRepository.Update(carAction);
             }
 
-            await _actionTypeRepository.Remove(actionType);
+            await _carActionTypeRepository.Remove(actionType);
 
             return new OkObjectResult(actionTypeToCreate);
         }
@@ -124,15 +125,15 @@ namespace CE.Service.Implementations
             if (!UserService.IsHasAccess(claims))
                 return new ForbidResult();
 
-            var actionType = await _actionTypeRepository.GetById(id, a => a.Actions);
+            var actionType = await _carActionTypeRepository.GetById(id, a => a.Actions);
             if (actionType == null)
-                return new NotFoundObjectResult(new ActionType { Id = id });
+                return new NotFoundObjectResult(new CarActionType { Id = id });
 
             if (actionType.Actions.Count > 0)
                 return new BadRequestObjectResult(
                     $"The '{actionType.Name}' type with id={{{id}}} cannot be deleted, because there are Actions with this type.");
 
-            await _actionTypeRepository.Remove(actionType);
+            await _carActionTypeRepository.Remove(actionType);
 
             return new NoContentResult();
         }
@@ -143,7 +144,7 @@ namespace CE.Service.Implementations
 
         public async Task<bool> IsActionTypeExist(string name)
         {
-            var actionType = await _actionTypeRepository.FirstOrDefault(a => a.Name == name);
+            var actionType = await _carActionTypeRepository.FirstOrDefault(a => a.Name == name);
             return actionType != null;
         }
     }

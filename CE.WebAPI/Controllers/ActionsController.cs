@@ -18,16 +18,16 @@ namespace CE.WebAPI.Controllers
     {
         private readonly ICarActionService _carActionService;
         private readonly ICarService _carService;
-        private readonly IActionTypeService _actionTypeService;
+        private readonly ICarActionTypeService _carActionTypeService;
 
         public ActionsController(
             ICarActionService carActionService, 
             ICarService carService, 
-            IActionTypeService actionTypeService)
+            ICarActionTypeService carActionTypeService)
         {
             _carActionService = carActionService;
             _carService = carService;
-            _actionTypeService = actionTypeService;
+            _carActionTypeService = carActionTypeService;
         }
 
         [HttpGet]
@@ -71,7 +71,7 @@ namespace CE.WebAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<CarAction>> CreateAction([FromBody] CarAction action)
         {
-            if (!await _actionTypeService.IsActionTypeExist(action.Type))
+            if (!await _carActionTypeService.IsActionTypeExist(action.Type))
                 return BadRequest($"Type \"{action.Type}\" does not exist.");
 
             var userId = AuthHelper.GetUserId(User);
@@ -98,7 +98,7 @@ namespace CE.WebAPI.Controllers
             if (saved == null)
                 return NotFound();
 
-            if (!await _actionTypeService.IsActionTypeExist(action.Type))
+            if (!await _carActionTypeService.IsActionTypeExist(action.Type))
                 return BadRequest($"Type \"{action.Type}\" does not exist.");
 
             if (id != action.Id) 
@@ -147,7 +147,7 @@ namespace CE.WebAPI.Controllers
             if (!await _carService.IsUserOwnerCar(userId, saved.CarId))
                 return Forbid();
 
-            if (action.Type != null && !await _actionTypeService.IsActionTypeExist(action.Type))
+            if (action.Type != null && !await _carActionTypeService.IsActionTypeExist(action.Type))
                 return BadRequest($"Type \"{action.Type}\" does not exist.");
 
             try

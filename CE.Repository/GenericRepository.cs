@@ -9,12 +9,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CE.Repository
 {
-    public class Repository<T> : IRepository<T> where T : BaseEntity
+    public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
     {
         private readonly ApplicationContext _context;
         private readonly DbSet<T> _dbSet;
 
-        public Repository(ApplicationContext context)
+        public GenericRepository(ApplicationContext context)
         {
             _context = context;
             _dbSet = context.Set<T>();

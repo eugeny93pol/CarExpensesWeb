@@ -19,7 +19,7 @@ namespace CE.Repository
 
         public DbSet<Role> Roles { get; set; }
 
-        public DbSet<ActionType> ActionTypes { get; set; }
+        public DbSet<CarActionType> CarActionTypes { get; set; }
 
 
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
@@ -32,11 +32,11 @@ namespace CE.Repository
                 new Role { Id = Guid.NewGuid(), Name = RolesConstants.Admin }, 
                 new Role { Id = Guid.NewGuid(), Name = RolesConstants.User });
 
-            modelBuilder.Entity<ActionType>().HasData(
-                new ActionType { Id = Guid.NewGuid(), Name = ActionTypesConstants.Mileage },
-                new ActionType { Id = Guid.NewGuid(), Name = ActionTypesConstants.Purchases },
-                new ActionType { Id = Guid.NewGuid(), Name = ActionTypesConstants.Refill },
-                new ActionType { Id = Guid.NewGuid(), Name = ActionTypesConstants.Repair });
+            modelBuilder.Entity<CarActionType>().HasData(
+                new CarActionType { Id = Guid.NewGuid(), Name = ActionTypesConstants.Mileage },
+                new CarActionType { Id = Guid.NewGuid(), Name = ActionTypesConstants.Purchases },
+                new CarActionType { Id = Guid.NewGuid(), Name = ActionTypesConstants.Refill },
+                new CarActionType { Id = Guid.NewGuid(), Name = ActionTypesConstants.Repair });
 
             modelBuilder.Entity<User>()
                 .HasOne<Role>()
@@ -49,7 +49,7 @@ namespace CE.Repository
                 .IsUnique();
 
             modelBuilder.Entity<CarAction>()
-                .HasOne<ActionType>()
+                .HasOne<CarActionType>()
                 .WithMany(a => a.Actions)
                 .HasForeignKey(a => a.Type)
                 .HasPrincipalKey(t => t.Name);

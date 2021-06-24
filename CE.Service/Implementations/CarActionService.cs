@@ -9,7 +9,7 @@ namespace CE.Service.Implementations
 {
     public class CarActionService : BaseService<CarAction>, ICarActionService
     {
-        public CarActionService(IRepository<CarAction> repository) : base(repository)
+        public CarActionService(IGenericRepository<CarAction> genericRepository) : base(genericRepository)
         {
         }
 
@@ -35,13 +35,13 @@ namespace CE.Service.Implementations
 
             await CheckDateAndMileage(savedAction);
 
-            await Repository.Update(savedAction);
+            await GenericRepository.Update(savedAction);
         }
 
 
         private async Task CheckDateAndMileage(CarAction action)
         {
-            var actions = await Repository.GetAll(a => a.CarId == action.CarId);
+            var actions = await GenericRepository.GetAll(a => a.CarId == action.CarId);
             var actionsList = actions.ToList();
 
             var beforeActions = actionsList
