@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using CE.DataAccess.Attributes;
-using CE.DataAccess.Constants;
 
 namespace CE.DataAccess
 {

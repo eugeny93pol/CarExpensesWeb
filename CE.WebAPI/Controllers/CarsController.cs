@@ -1,12 +1,13 @@
 ﻿using CE.DataAccess;
-using CE.WebAPI.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using CE.DataAccess.Constants;
 using CE.Service.Interfaces;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
 
 namespace CE.WebAPI.Controllers
@@ -17,126 +18,147 @@ namespace CE.WebAPI.Controllers
     public class CarsController : ControllerBase
     {
         private readonly ICarService _carService;
-        private readonly ICarSettingsService _carSettingsService;
+        private readonly ILogger<UsersController> _logger;
 
-        public CarsController(ICarService carService, ICarSettingsService carSettingsService)
+        public CarsController(ICarService carService, ILogger<UsersController> logger)
         {
             _carService = carService;
-            _carSettingsService = carSettingsService;
+            _logger = logger;
         }
 
+        #region GET
         [HttpGet]
-        public async Task<IEnumerable<Car>> GetCars()
+        public async Task<ActionResult<IEnumerable<Car>>> GetCars(bool? fullInfo)
         {
-            var userId = AuthHelper.GetUserId(User);
-            return await _carService.GetCarsByUserId(userId);
+            try
+            {
+                fullInfo ??= Request.Query.Keys.Contains(nameof(fullInfo));
+                if ((bool) fullInfo)
+                {
+                    return await _carService.GetCarsOfCurrentUser(
+                        User, null, 
+                        c => c.Settings, c => c.Actions);
+                }
+                return await _carService.GetCarsOfCurrentUser(User);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
 
-        [HttpGet("info")]
-        public async Task<IEnumerable<Car>> GetCarsFullInfo()
+        [Authorize(Roles = RolesConstants.Admin)]
+        [HttpGet("all")]
+        public async Task<ActionResult<IEnumerable<Car>>> GetAllCars(bool? fullInfo)
         {
-            var userId = AuthHelper.GetUserId(User);
-            return await _carService
-                .GetAll(c => c.UserId == userId, null, c => c.Settings, c => c.Actions);
+            try
+            {
+                fullInfo ??= Request.Query.Keys.Contains(nameof(fullInfo));
+                if ((bool)fullInfo)
+                {
+                    return await _carService.GetAll(
+                        User, null, null,
+                        c => c.Settings, c => c.Actions);
+                }
+                return await _carService.GetAll(User);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
 
-        [HttpGet("{id:long}")]
-        public async Task<ActionResult<Car>> GetCar(long id)
+        [HttpGet("{id:Guid}")]
+        public async Task<ActionResult<Car>> GetCar(Guid id, bool? fullInfo)
         {
-            var car = await _carService.GetById(id);
-
-            if (!AuthHelper.IsHasAccess(User, car?.UserId))
-                return Forbid();
-            
-            return car != null ? Ok(car) : NotFound();
+            try
+            {
+                fullInfo ??= Request.Query.Keys.Contains(nameof(fullInfo));
+                if ((bool)fullInfo)
+                {
+                    return await _carService.GetOne(
+                        User, id,
+                        c => c.Settings, c => c.Actions);
+                }
+                return await _carService.GetOne(User, id);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
+        #endregion GET
 
-        [HttpGet("{id:long}/info")]
-        public async Task<ActionResult<Car>> GetCarFullInfo(long id)
-        {
-            var car = await _carService.GetById(id, c => c.Settings, c => c.Actions);
-
-            if (!AuthHelper.IsHasAccess(User, car?.UserId))
-                return Forbid();
-
-            return car != null ? Ok(car) : NotFound("Fuck off");
-        }
-
+        #region POST
         [HttpPost]
         public async Task<ActionResult<Car>> CreateCar(Car car)
         {
-            car.UserId = AuthHelper.GetUserId(User);
-            
-            await _carService.Create(car);
-            await _carSettingsService.Create(new CarSettings(car.Id));
-
-            return CreatedAtAction(nameof(GetCar), new { id = car.Id }, car);
-        }
-
-        [HttpPut("{id:long}")]
-        public async Task<IActionResult> EditCar(long id, Car car)
-        {
-
-            if (id != car.Id) 
-                return BadRequest();
-
-            var saved = await _carService.FirstOrDefault(c => c.Id == id);
-
-            if (!(AuthHelper.IsHasAccess(User, car.UserId) && 
-                  AuthHelper.IsHasAccess(User, saved?.UserId))) 
-                return Forbid();
-
-            if (saved == null) 
-                return NotFound();
-
             try
             {
-                await _carService.Update(car);
-                return Ok(car);
+                return await _carService.Create(User, car);
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                return BadRequest(ex.Message);
+                _logger.LogError(e, e.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
+        #endregion POST
 
-        [HttpDelete("{id:long}")]
-        public async Task<IActionResult> DeleteCar(long id)
+        #region PUT
+        [HttpPut("{id:Guid}")]
+        public async Task<ActionResult<Car>> UpdateCar(Guid id, Car car)
         {
-            var car = await _carService.GetById(id);
-
-            if (!AuthHelper.IsHasAccess(User, car?.UserId)) 
-                return Forbid();
-
-            if (car == null) 
-                return NotFound();
-
-            await _carService.Remove(car);
-
-            return NoContent();
-        }
-
-        [HttpPatch("{id:long}")]
-        public async Task<IActionResult> UpdateCar(long id, Car car)
-        {
-            var saved = await _carService.FirstOrDefault(c => c.Id == id);
-
-            if (!(AuthHelper.IsHasAccess(User, car.UserId) && 
-                  AuthHelper.IsHasAccess(User, saved?.UserId)))
-                return Forbid();
-
-            if (saved == null) 
-                return NotFound();
-            
+            if (id != car.Id)
+                return BadRequest("The route parameter 'id' does not match the 'id' parameter from body.");
             try
             {
-                await _carService.UpdatePartial(saved, car);
-                return Ok(saved);
+                return await _carService.Update(User, car);
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                return BadRequest(ex.Message);
+                _logger.LogError(e, e.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
+        #endregion PUT
+
+        #region PATCH
+        [HttpPatch("{id:Guid}")]
+        public async Task<ActionResult<Car>> UpdatePartialCar(Guid id, Car car)
+        {
+            if (car.Id != Guid.Empty && id != car.Id)
+                return BadRequest("The route parameter 'id' does not match the 'id' parameter from body.");
+            try
+            {
+                car.Id = id;
+                return await _carService.UpdatePartial(User, car);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+        #endregion PATCH
+
+        #region DELETE
+        [HttpDelete("{id:Guid}")]
+        public async Task<IActionResult> DeleteCar(Guid id)
+        {
+            try
+            {
+                return await _carService.Delete(User, id);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+        #endregion DELETE
     }
 }

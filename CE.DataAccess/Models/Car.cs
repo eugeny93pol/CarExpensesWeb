@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace CE.DataAccess
@@ -17,7 +18,7 @@ namespace CE.DataAccess
 
         public CarSettings Settings { get; set; }
 
-        public long UserId { get; set; }
+        public Guid UserId { get; set; }
 
         public ICollection<CarAction> Actions { get; set; }
 

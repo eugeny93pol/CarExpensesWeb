@@ -12,12 +12,12 @@ namespace CE.WebAPI.Helpers
     public static class AuthHelper
     {
         
-        public static long GetUserId(ClaimsPrincipal user)
+        public static Guid GetUserId(ClaimsPrincipal user)
         {
-            return long.Parse(user.FindFirstValue("id"));
+            return Guid.Parse(user.FindFirstValue("id"));
         }
 
-        public static bool IsHasAccess(ClaimsPrincipal user, long? id)
+        public static bool IsHasAccess(ClaimsPrincipal user, Guid? id)
         {
             return user.IsInRole(RolesConstants.Admin) || GetUserId(user) == id;
         }

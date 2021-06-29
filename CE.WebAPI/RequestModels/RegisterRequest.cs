@@ -10,7 +10,7 @@ namespace CE.WebAPI.RequestModels
 
         public override User GetUser()
         {
-            return new() { Name = this.Name, Email = this.Email, Password = this.Password };
+            return new() { Name = Name, Email = Email, Password = Password };
         }
     }
 }

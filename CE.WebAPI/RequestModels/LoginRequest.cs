@@ -7,12 +7,12 @@ namespace CE.WebAPI.RequestModels
     {
         [Required, EmailAddress]
         public string Email { get; set; }
-        [Required]
+        [Required, MinLength(8)]
         public string Password { get; set; }
 
         public virtual User GetUser()
         {
-            return new() { Email = this.Email, Password = this.Password };
+            return new() { Email = Email, Password = Password };
         }
     }
 }

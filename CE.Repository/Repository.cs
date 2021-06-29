@@ -1,10 +1,11 @@
-﻿using CE.DataAccess;
-using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using CE.DataAccess;
+using CE.Repository.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace CE.Repository
 {
@@ -28,12 +29,12 @@ namespace CE.Repository
         }
 
         
-        public async Task<T> GetById(long id)
+        public async Task<T> GetById(Guid id)
         {
             return await _dbSet.FindAsync(id);
         }
 
-        public async Task<T> GetById(long id, params Expression<Func<T, object>>[] includeProperties)
+        public async Task<T> GetById(Guid id, params Expression<Func<T, object>>[] includeProperties)
         {
             return await Include(includeProperties).FirstOrDefaultAsync(q => q.Id == id);
         }
@@ -75,10 +76,11 @@ namespace CE.Repository
             {
                 query = query.Where(filter);
             }
+
             return orderBy != null ? await orderBy(query).ToListAsync() : await query.ToListAsync();
         }
 
-        
+
         public async Task Update(T item)
         {
             _context.Entry(item).State = EntityState.Modified;

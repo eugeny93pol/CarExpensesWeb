@@ -31,7 +31,7 @@ namespace CE.WebAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CarAction>>> FilterByDate(long? carId, DateTime? from, DateTime? to)
+        public async Task<ActionResult<IEnumerable<CarAction>>> FilterByDate(Guid? carId, DateTime? from, DateTime? to)
         {
             @from ??= new DateTime();
             @to ??= DateTime.UtcNow;
@@ -42,7 +42,7 @@ namespace CE.WebAPI.Controllers
             var userId = AuthHelper.GetUserId(User);
             var userCarsIds = await _carService.GetCarsIdsByUserId(userId);
 
-            if (carId != null && !userCarsIds.Contains((long)carId))
+            if (carId != null && !userCarsIds.Contains((Guid)carId))
                 return Forbid();
 
             var actions = await _carActionService.GetAll(
@@ -53,8 +53,8 @@ namespace CE.WebAPI.Controllers
             return ActionsWithSummary(actions);
         }
 
-        [HttpGet("{id:long}")]
-        public async Task<ActionResult<CarAction>> GetAction(long id)
+        [HttpGet("{id:Guid}")]
+        public async Task<ActionResult<CarAction>> GetAction(Guid id)
         {
             var userId = AuthHelper.GetUserId(User);
             var action = await _carActionService.GetById(id);
@@ -90,8 +90,8 @@ namespace CE.WebAPI.Controllers
             }
         }
 
-        [HttpPut("{id:long}")]
-        public async Task<ActionResult<CarAction>> EditAction(long id, CarAction action)
+        [HttpPut("{id:Guid}")]
+        public async Task<ActionResult<CarAction>> EditAction(Guid id, CarAction action)
         {
             var saved = await _carActionService.FirstOrDefault(a => a.Id == id);
 
@@ -120,8 +120,8 @@ namespace CE.WebAPI.Controllers
             }
         }
 
-        [HttpDelete("{id:long}")]
-        public async Task<IActionResult> DeleteAction(long id)
+        [HttpDelete("{id:Guid}")]
+        public async Task<IActionResult> DeleteAction(Guid id)
         {
             var action = await _carActionService.GetById(id);
             if (action == null)
@@ -136,8 +136,8 @@ namespace CE.WebAPI.Controllers
             return NoContent();
         }
 
-        [HttpPatch("{id:long}")]
-        public async Task<ActionResult<CarAction>> UpdateAction(long id, PatchCarAction action)
+        [HttpPatch("{id:Guid}")]
+        public async Task<ActionResult<CarAction>> UpdateAction(Guid id, PatchCarAction action)
         {
             var saved = await _carActionService.GetById(id);
             if (saved == null)

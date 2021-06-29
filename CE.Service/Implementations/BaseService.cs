@@ -5,17 +5,18 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using CE.DataAccess;
 using CE.Repository;
+using CE.Repository.Interfaces;
 using CE.Service.Interfaces;
 
 namespace CE.Service.Implementations
 {
-    public abstract class BaseService<T> : IBaseService<T> where T : BaseEntity
+    public class BaseService<T> : IBaseService<T> where T : BaseEntity
     {
-        protected readonly IRepository<T> Repository;
+        protected readonly Repository<T> Repository;
 
         protected BaseService(IRepository<T> repository)
         {
-            Repository = repository;
+            Repository = repository as Repository<T>;
         }
 
         
@@ -25,12 +26,12 @@ namespace CE.Service.Implementations
         }
 
         
-        public async Task<T> GetById(long id)
+        public async Task<T> GetById(Guid id)
         {
             return await Repository.GetById(id);
         }
 
-        public async Task<T> GetById(long id, params Expression<Func<T, object>>[] includeProperties)
+        public async Task<T> GetById(Guid id, params Expression<Func<T, object>>[] includeProperties)
         {
             return await Repository.GetById(id, includeProperties);
         }
