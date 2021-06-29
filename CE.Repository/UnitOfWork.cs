@@ -1,4 +1,5 @@
 ﻿using System;
+using CE.DataAccess.Models;
 using CE.Repository.Interfaces;
 using CE.Repository.Repositories;
 
@@ -8,7 +9,7 @@ namespace CE.Repository
     {
         private readonly ApplicationContext _context;
 
-        public readonly CarActionRepository CarActionRepository; 
+        public readonly IGenericRepository<CarAction> CarActionRepository;
         public readonly CarActionTypeRepository CarActionTypeRepository;
         public readonly CarRepository CarRepository;
         public readonly CarSettingsRepository CarSettingsRepository;
@@ -19,7 +20,7 @@ namespace CE.Repository
         public UnitOfWork(ApplicationContext context)
         {
             _context = context;
-            CarActionRepository = new CarActionRepository(_context);
+            CarActionRepository = new GenericRepository<CarAction>(_context);
             CarActionTypeRepository = new CarActionTypeRepository(_context);
             CarRepository = new CarRepository(_context);
             CarSettingsRepository = new CarSettingsRepository(_context);

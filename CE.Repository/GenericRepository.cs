@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using CE.DataAccess;
+using CE.DataAccess.Models;
 using CE.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 

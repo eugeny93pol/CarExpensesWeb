@@ -4,7 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using CE.DataAccess;
+using CE.DataAccess.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CE.Service.Interfaces
@@ -18,8 +18,8 @@ namespace CE.Service.Interfaces
 
         Task<ActionResult<Car>> UpdatePartial(ClaimsPrincipal claims, Car item);
 
-        Task<Guid[]> GetCarsIdsByUserId(Guid id);
+        Task<Guid[]> GetCarsIdsOfCurrentUser(ClaimsPrincipal claims);
 
-        Task<bool> IsUserOwnerCar(Guid userId, Guid carId);
+        Task<bool> IsUserHasAccessToCar(ClaimsPrincipal claims, Guid carId, Car car = null);
     }
 }

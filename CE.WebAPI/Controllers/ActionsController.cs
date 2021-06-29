@@ -1,13 +1,13 @@
-﻿using CE.DataAccess;
-using CE.WebAPI.Helpers;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CE.DataAccess.Models;
 using CE.Service.Interfaces;
-using CE.WebAPI.RequestModels;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
 namespace CE.WebAPI.Controllers
 {
@@ -17,79 +17,76 @@ namespace CE.WebAPI.Controllers
     public class ActionsController : ControllerBase
     {
         private readonly ICarActionService _carActionService;
-        private readonly ICarService _carService;
-        private readonly ICarActionTypeService _carActionTypeService;
+        private readonly ILogger<UsersController> _logger;
 
-        public ActionsController(
-            ICarActionService carActionService, 
-            ICarService carService, 
-            ICarActionTypeService carActionTypeService)
+        public ActionsController(ICarActionService carActionService, ILogger<UsersController> logger)
         {
             _carActionService = carActionService;
-            _carService = carService;
-            _carActionTypeService = carActionTypeService;
+            _logger = logger;
         }
 
+        #region GET
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CarAction>>> FilterByDate(Guid? carId, DateTime? from, DateTime? to)
+        public async Task<ActionResult<IEnumerable<CarAction>>> GetActions(Guid? carId, DateTime? from, DateTime? to)
         {
-            @from ??= new DateTime();
-            @to ??= DateTime.UtcNow;
+            try
+            {
+                @from ??= new DateTime();
+                @to ??= DateTime.UtcNow;
 
-            if (from > to)
-                return BadRequest("The date 'from' is greater than the date 'to'.");
+                if (from > to)
+                    return BadRequest("The date 'from' is greater than the date 'to'.");
 
-            var userId = AuthHelper.GetUserId(User);
-            var userCarsIds = await _carService.GetCarsIdsByUserId(userId);
-
-            if (carId != null && !userCarsIds.Contains((Guid)carId))
-                return Forbid();
-
-            var actions = await _carActionService.GetAll(
-                a => (carId != null ? a.CarId == carId : userCarsIds.Contains(a.CarId)) 
-                     && a.Date >= from && a.Date <= to,
-                q => q.OrderByDescending(a => a.Date));
-
-            return ActionsWithSummary(actions);
+                if (carId != null)
+                {
+                    return await _carActionService.GetActionsByCarId(
+                        User, (Guid) carId,
+                        a => a.Date >= from && a.Date <= to,
+                        q => q.OrderByDescending(a => a.Date));
+                }
+                return await _carActionService.GetAll(
+                    User,
+                    a => a.Date >= from && a.Date <= to,
+                    q => q.OrderByDescending(a => a.Date));
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
 
         [HttpGet("{id:Guid}")]
         public async Task<ActionResult<CarAction>> GetAction(Guid id)
         {
-            var userId = AuthHelper.GetUserId(User);
-            var action = await _carActionService.GetById(id);
-
-            if (action == null) 
-                return NotFound();
-
-            if (!await _carService.IsUserOwnerCar(userId, action.CarId))
-                return Forbid();
-
-            return action;
+            try
+            {
+                return await _carActionService.GetOne(User, id);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
+        #endregion GET
 
+        #region POST
         [HttpPost]
         public async Task<ActionResult<CarAction>> CreateAction([FromBody] CarAction action)
         {
-            if (!await _carActionTypeService.IsActionTypeExist(action.Type))
-                return BadRequest($"Type \"{action.Type}\" does not exist.");
-
-            var userId = AuthHelper.GetUserId(User);
-
-            if (!await _carService.IsUserOwnerCar(userId, action.CarId))
-                return Forbid();
-
             try
             {
-                await _carActionService.Create(action);
-                return CreatedAtAction(nameof(GetAction), new {id = action.Id}, action);
+                return await _carActionService.Create(User, action);
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                return BadRequest(ex.Message);
+                _logger.LogError(e, e.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
-
+        #endregion POST
+/*
         [HttpPut("{id:Guid}")]
         public async Task<ActionResult<CarAction>> EditAction(Guid id, CarAction action)
         {
@@ -105,8 +102,8 @@ namespace CE.WebAPI.Controllers
                 return BadRequest();
 
             var userId = AuthHelper.GetUserId(User);
-            if (!(await _carService.IsUserOwnerCar(userId, saved.CarId) && 
-                await _carService.IsUserOwnerCar(userId, action.CarId)))
+            if (!(await _carService.IsUserHasAccessToCar(userId, saved.CarId) && 
+                await _carService.IsUserHasAccessToCar(userId, action.CarId)))
                 return Forbid();
 
             try
@@ -128,7 +125,7 @@ namespace CE.WebAPI.Controllers
                 return NotFound();
             
             var userId = AuthHelper.GetUserId(User);
-            if (!await _carService.IsUserOwnerCar(userId, action.CarId))
+            if (!await _carService.IsUserHasAccessToCar(userId, action.CarId))
                 return Forbid();
 
             await _carActionService.Remove(action);
@@ -144,7 +141,7 @@ namespace CE.WebAPI.Controllers
                 return NotFound();
 
             var userId = AuthHelper.GetUserId(User);
-            if (!await _carService.IsUserOwnerCar(userId, saved.CarId))
+            if (!await _carService.IsUserHasAccessToCar(userId, saved.CarId))
                 return Forbid();
 
             if (action.Type != null && !await _carActionTypeService.IsActionTypeExist(action.Type))
@@ -159,27 +156,6 @@ namespace CE.WebAPI.Controllers
             {
                 return BadRequest(ex.Message);
             }
-        }
-
-        private OkObjectResult ActionsWithSummary(IEnumerable<CarAction> actions)
-        {
-            var actionsList = actions.ToList();
-
-            var firstDate = actionsList.Min(a => a.Date);
-            var lastDate = actionsList.Max(a => a.Date);
-            var totalAmount = actionsList.Sum(a => a.Amount);
-            var averageAmount = actionsList.Average(a => a.Amount);
-
-            var summary = new
-            {
-                firstDate,
-                lastDate,
-                totalAmount,
-                averageAmount,
-                actionsList.Count
-            };
-
-            return Ok(new { actionsList, summary });
-        }
+        }*/
     }
 }

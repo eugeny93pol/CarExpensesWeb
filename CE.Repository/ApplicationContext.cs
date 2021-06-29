@@ -1,6 +1,6 @@
 ﻿using System;
-using CE.DataAccess;
 using CE.DataAccess.Constants;
+using CE.DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace CE.Repository

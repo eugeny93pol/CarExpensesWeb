@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CE.DataAccess
+namespace CE.DataAccess.Models
 {
     public class BaseEntity
     {

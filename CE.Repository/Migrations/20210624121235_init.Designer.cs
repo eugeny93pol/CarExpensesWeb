@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CE.Repository.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20210611120929_init")]
+    [Migration("20210624121235_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -20,43 +20,6 @@ namespace CE.Repository.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.5")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-            modelBuilder.Entity("CE.DataAccess.ActionType", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ActionTypes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("16ab5101-3894-4d31-82b9-1974410fab4f"),
-                            Name = "mileage"
-                        },
-                        new
-                        {
-                            Id = new Guid("22ac6a73-86ac-4a19-a70f-680b71c8b0e6"),
-                            Name = "purchases"
-                        },
-                        new
-                        {
-                            Id = new Guid("bf9216fd-dd03-4c4e-8719-0841b68f5f6f"),
-                            Name = "refill"
-                        },
-                        new
-                        {
-                            Id = new Guid("db8a37e2-57db-486b-8a67-0867dfab1a67"),
-                            Name = "repair"
-                        });
-                });
 
             modelBuilder.Entity("CE.DataAccess.Car", b =>
                 {
@@ -124,6 +87,43 @@ namespace CE.Repository.Migrations
                     b.ToTable("Actions");
                 });
 
+            modelBuilder.Entity("CE.DataAccess.CarActionType", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CarActionTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("0421be8b-3dd5-4f6d-8154-910fa34285d5"),
+                            Name = "mileage"
+                        },
+                        new
+                        {
+                            Id = new Guid("b4a50dd3-e3a4-456e-a163-683d70a2459d"),
+                            Name = "purchases"
+                        },
+                        new
+                        {
+                            Id = new Guid("1b4438ce-061b-4d0b-8779-655f65308e2c"),
+                            Name = "refill"
+                        },
+                        new
+                        {
+                            Id = new Guid("3fcec108-114d-4c32-b996-ccf85524eada"),
+                            Name = "repair"
+                        });
+                });
+
             modelBuilder.Entity("CE.DataAccess.CarSettings", b =>
                 {
                     b.Property<Guid>("Id")
@@ -161,12 +161,12 @@ namespace CE.Repository.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("3044c5e7-e87c-4c25-a2a4-5c3c254250c0"),
+                            Id = new Guid("abee4627-6030-4fa5-a379-a49e3e69758c"),
                             Name = "admin"
                         },
                         new
                         {
-                            Id = new Guid("ccc8575e-0af1-4c27-82c8-5caa1f50d8b4"),
+                            Id = new Guid("637a8db5-b155-4e89-9284-444bb3baf0fc"),
                             Name = "user"
                         });
                 });
@@ -249,7 +249,7 @@ namespace CE.Repository.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CE.DataAccess.ActionType", null)
+                    b.HasOne("CE.DataAccess.CarActionType", null)
                         .WithMany("Actions")
                         .HasForeignKey("Type")
                         .HasPrincipalKey("Name")
@@ -285,16 +285,16 @@ namespace CE.Repository.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("CE.DataAccess.ActionType", b =>
-                {
-                    b.Navigation("Actions");
-                });
-
             modelBuilder.Entity("CE.DataAccess.Car", b =>
                 {
                     b.Navigation("Actions");
 
                     b.Navigation("Settings");
+                });
+
+            modelBuilder.Entity("CE.DataAccess.CarActionType", b =>
+                {
+                    b.Navigation("Actions");
                 });
 
             modelBuilder.Entity("CE.DataAccess.Role", b =>

@@ -2,7 +2,7 @@
 using CE.DataAccess.Attributes;
 using CE.DataAccess.Constants;
 
-namespace CE.DataAccess
+namespace CE.DataAccess.Models
 {
     public class UserSettings : BaseEntity
     {

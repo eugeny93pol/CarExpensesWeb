@@ -1,9 +1,9 @@
-﻿using CE.DataAccess;
-using CE.WebAPI.Helpers;
+﻿using CE.WebAPI.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
+using CE.DataAccess.Models;
 using CE.Service.Interfaces;
 using CE.WebAPI.RequestModels;
 
@@ -40,7 +40,7 @@ namespace CE.WebAPI.Controllers
             var userId = AuthHelper.GetUserId(User);
 
             if (settings.DefaultCarId != null &&
-                !await _carService.IsUserOwnerCar(userId, (Guid) settings.DefaultCarId))
+                !await _carService.IsUserHasAccessToCar(User, (Guid) settings.DefaultCarId))
                 return Forbid();
 
             var userSettings = await _userSettingsService.FirstOrDefault(s => s.UserId == userId);

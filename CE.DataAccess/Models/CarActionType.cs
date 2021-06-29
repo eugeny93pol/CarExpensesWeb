@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace CE.DataAccess
+namespace CE.DataAccess.Models
 {
     public class CarActionType : BaseEntity
     {

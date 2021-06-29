@@ -4,7 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using CE.DataAccess;
+using CE.DataAccess.Models;
 using CE.Repository;
 using CE.Repository.Interfaces;
 using CE.Repository.Repositories;
@@ -56,7 +56,7 @@ namespace CE.Service.Implementations
             if (includeProperties.Length == 0 || UserService.IsHasAccess(claims))
                 return new OkObjectResult(actionType);
 
-            var carIds = await _carService.GetCarsIdsByUserId(UserService.GetUserId(claims));
+            var carIds = await _carService.GetCarsIdsOfCurrentUser(claims);
             var userActions = actionType.Actions.Where(a => carIds.Contains(a.CarId)).ToList();
 
             actionType.Actions = userActions;
@@ -75,7 +75,7 @@ namespace CE.Service.Implementations
             if (includeProperties.Length == 0 || UserService.IsHasAccess(claims))
                 return new OkObjectResult(actionTypes.ToList());
 
-            var carIds = await _carService.GetCarsIdsByUserId(UserService.GetUserId(claims));
+            var carIds = await _carService.GetCarsIdsOfCurrentUser(claims);
             var actionTypesList = actionTypes.ToList();
 
             foreach (var actionType in actionTypesList)

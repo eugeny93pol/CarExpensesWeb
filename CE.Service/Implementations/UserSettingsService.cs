@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using CE.DataAccess;
+using CE.DataAccess.Models;
 using CE.Repository.Interfaces;
 using CE.Service.Interfaces;
 

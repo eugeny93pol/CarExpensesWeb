@@ -1,7 +1,7 @@
 ﻿using System;
 using CE.DataAccess.Constants;
 
-namespace CE.DataAccess
+namespace CE.DataAccess.Models
 {
     public class CarSettings : BaseEntity
     {

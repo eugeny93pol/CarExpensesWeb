@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 using System.Threading.Tasks;
-using CE.DataAccess;
+using CE.DataAccess.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CE.Service.Interfaces
