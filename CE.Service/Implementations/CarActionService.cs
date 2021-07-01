@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using CE.DataAccess.Models;
 using CE.Repository;
 using CE.Repository.Interfaces;
+using CE.Repository.Repositories;
 using CE.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,7 +16,7 @@ namespace CE.Service.Implementations
     public class CarActionService : ICarActionService
     {
         private readonly UnitOfWork _unitOfWork;
-        private readonly IGenericRepository<CarAction> _carActionRepository;
+        private readonly CarActionRepository<CarAction> _carActionRepository;
         private readonly ICarActionTypeService _carActionTypeService;
         private readonly ICarService _carService;
 
@@ -31,6 +32,22 @@ namespace CE.Service.Implementations
 
         #region CREATE
         public async Task<ActionResult<CarAction>> Create(ClaimsPrincipal claims, CarAction item)
+        {
+            if (!await _carService.IsUserHasAccessToCar(claims, item.CarId))
+                return new ForbidResult();
+
+            if (!await _carActionTypeService.IsActionTypeExist(item.Type))
+                return new BadRequestObjectResult($"Type '{item.Type}' does not exist.");
+
+            if (!await CheckDateAndMileage(item))
+                return new BadRequestObjectResult($"Invalid mileage {item.Mileage} for date {item.Date}.");
+
+            await _carActionRepository.Create(item);
+
+            return new OkObjectResult(item);
+        }
+
+        public async Task<ActionResult<CarActionRepair>> Create(ClaimsPrincipal claims, CarActionRepair item)
         {
             if (!await _carService.IsUserHasAccessToCar(claims, item.CarId))
                 return new ForbidResult();
@@ -139,11 +156,11 @@ namespace CE.Service.Implementations
 
         public async Task UpdatePartial(CarAction savedAction, CarAction action)
         {
-            savedAction.Type = action.Type ?? savedAction.Type;
+            //savedAction.Type = action.Type ?? savedAction.Type;
             savedAction.Mileage = action.Mileage ?? savedAction.Mileage;
             savedAction.Date = action.Date ?? savedAction.Date;
             savedAction.Description = action.Description ?? savedAction.Description;
-            savedAction.Amount = action.Amount ?? savedAction.Amount;
+            //savedAction.Amount = action.Amount ?? savedAction.Amount;
 
             await CheckDateAndMileage(savedAction);
 
@@ -176,15 +193,15 @@ namespace CE.Service.Implementations
 
             var firstActionDate = actionsList.Min(a => a.Date);
             var lastActionDate = actionsList.Max(a => a.Date);
-            var totalAmount = actionsList.Sum(a => a.Amount);
-            var averageAmount = actionsList.Average(a => a.Amount);
+            //var totalAmount = actionsList.Sum(a => a.Amount);
+            //var averageAmount = actionsList.Average(a => a.Amount);
 
             var summary = new
             {
                 firstActionDate,
                 lastActionDate,
-                totalAmount,
-                averageAmount,
+                //totalAmount,
+                //averageAmount,
                 actionsList.Count
             };
 

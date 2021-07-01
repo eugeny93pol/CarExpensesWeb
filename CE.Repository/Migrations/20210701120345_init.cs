@@ -151,10 +151,10 @@ namespace CE.Repository.Migrations
                 columns: new[] { "Id", "Name" },
                 values: new object[,]
                 {
-                    { new Guid("0421be8b-3dd5-4f6d-8154-910fa34285d5"), "mileage" },
-                    { new Guid("b4a50dd3-e3a4-456e-a163-683d70a2459d"), "purchases" },
-                    { new Guid("1b4438ce-061b-4d0b-8779-655f65308e2c"), "refill" },
-                    { new Guid("3fcec108-114d-4c32-b996-ccf85524eada"), "repair" }
+                    { new Guid("4795cc2c-eaea-4c14-a8ac-c420f5c52059"), "mileage" },
+                    { new Guid("9065f0b4-4324-456e-9e80-321e1b069940"), "purchases" },
+                    { new Guid("1d277e04-415b-4f34-83b8-0de33fd8a836"), "refill" },
+                    { new Guid("3157e000-3673-4da5-97c4-a2f1b838991e"), "repair" }
                 });
 
             migrationBuilder.InsertData(
@@ -162,8 +162,8 @@ namespace CE.Repository.Migrations
                 columns: new[] { "Id", "Name" },
                 values: new object[,]
                 {
-                    { new Guid("abee4627-6030-4fa5-a379-a49e3e69758c"), "admin" },
-                    { new Guid("637a8db5-b155-4e89-9284-444bb3baf0fc"), "user" }
+                    { new Guid("a2eb62cd-259f-46e0-94a9-8e419c550f55"), "admin" },
+                    { new Guid("836188c0-4a07-42d8-b724-96924477680a"), "user" }
                 });
 
             migrationBuilder.CreateIndex(

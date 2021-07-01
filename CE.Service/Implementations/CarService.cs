@@ -16,7 +16,7 @@ namespace CE.Service.Implementations
     public class CarService : ICarService
     {
         private readonly UnitOfWork _unitOfWork;
-        private readonly CarRepository _carRepository;
+        private readonly IGenericRepository<Car> _carRepository;
 
         public CarService(IUnitOfWork unitOfWork)
         {

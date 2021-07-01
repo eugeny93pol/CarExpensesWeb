@@ -18,7 +18,7 @@ namespace CE.Service.Implementations
     public class UserService : IUserService
     {
         private readonly UnitOfWork _unitOfWork;
-        private readonly UserRepository _userRepository;
+        private readonly IGenericRepository<User> _userRepository;
 
         public UserService(IUnitOfWork unitOfWork)
         {

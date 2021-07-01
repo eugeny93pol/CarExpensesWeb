@@ -8,7 +8,7 @@ namespace CE.DataAccess.Attributes
     {
         public override bool IsValid(object value)
         {
-            return ActionTypesConstants.Actions.Contains(value?.ToString());
+            return CarActionTypesConstants.Actions.Contains(value?.ToString());
         }
     }
 }

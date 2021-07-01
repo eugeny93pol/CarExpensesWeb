@@ -72,8 +72,8 @@ namespace CE.WebAPI.Controllers
         #endregion GET
 
         #region POST
-        [HttpPost]
-        public async Task<ActionResult<CarAction>> CreateAction([FromBody] CarAction action)
+        [HttpPost("repair")]
+        public async Task<ActionResult<CarActionRepair>> CreateAction([FromBody] CarActionRepair action)
         {
             try
             {

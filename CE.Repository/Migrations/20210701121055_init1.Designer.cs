@@ -4,14 +4,16 @@ using CE.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CE.Repository.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20210701121055_init1")]
+    partial class init1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -54,6 +56,9 @@ namespace CE.Repository.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal?>("Amount")
+                        .HasColumnType("money");
 
                     b.Property<Guid>("CarId")
                         .HasColumnType("uniqueidentifier");
@@ -105,23 +110,23 @@ namespace CE.Repository.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("6b762860-55a7-4ac2-8c9b-b0bf87dc49a6"),
-                            Name = "Mileage"
+                            Id = new Guid("18066d70-ba42-4ff9-867e-276e1733caeb"),
+                            Name = "mileage"
                         },
                         new
                         {
-                            Id = new Guid("4d8fc6e5-25d6-45ff-b150-eb12ecbf1b2b"),
+                            Id = new Guid("6315e3b4-1523-4067-af44-be660ec22e8b"),
                             Name = "purchases"
                         },
                         new
                         {
-                            Id = new Guid("3f210540-457a-4b84-8e0f-ea741dbba8f6"),
-                            Name = "Refill"
+                            Id = new Guid("27ee86c1-be47-42e8-a4bf-3eb7f7b23706"),
+                            Name = "refill"
                         },
                         new
                         {
-                            Id = new Guid("1da55e32-e39e-4f9d-ae1c-8632bed2ac83"),
-                            Name = "Repair"
+                            Id = new Guid("525f0f19-6bc8-4ec7-ba74-5d02064e391f"),
+                            Name = "repair"
                         });
                 });
 
@@ -162,12 +167,12 @@ namespace CE.Repository.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("2dc15676-469f-4ed0-aa35-b6f8251225f5"),
+                            Id = new Guid("52cd1068-30b5-42fc-b4e9-15ae79748935"),
                             Name = "admin"
                         },
                         new
                         {
-                            Id = new Guid("7a402ca5-4a05-45ec-8085-283eb675607a"),
+                            Id = new Guid("81d58e71-ad12-48af-87fc-7130801ff1ff"),
                             Name = "user"
                         });
                 });
@@ -276,11 +281,7 @@ namespace CE.Repository.Migrations
                     b.HasBaseType("CE.DataAccess.Models.CarAction");
 
                     b.Property<string>("FuelType")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsCheckPoint")
-                        .HasColumnType("bit");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
@@ -295,7 +296,7 @@ namespace CE.Repository.Migrations
                 {
                     b.HasBaseType("CE.DataAccess.Models.CarAction");
 
-                    b.Property<decimal>("CostOfWork")
+                    b.Property<decimal?>("CostOfWork")
                         .HasColumnType("money");
 
                     b.Property<decimal>("Total")

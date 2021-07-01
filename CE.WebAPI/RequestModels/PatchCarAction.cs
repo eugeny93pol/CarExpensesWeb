@@ -19,11 +19,11 @@ namespace CE.WebAPI.RequestModels
         {
             return new()
             {
-                Type = this.Type,
+                //Type = this.Type,
                 Mileage = this.Mileage,
                 Date = this.Date,
                 Description = this.Description,
-                Amount = this.Amount
+                //Amount = this.Amount
             };
         }
     }

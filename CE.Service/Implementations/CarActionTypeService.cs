@@ -16,7 +16,7 @@ namespace CE.Service.Implementations
     public class CarActionTypeService : ICarActionTypeService
     {
         private readonly UnitOfWork _unitOfWork;
-        private readonly CarActionTypeRepository _carActionTypeRepository;
+        private readonly IGenericRepository<CarActionType> _carActionTypeRepository;
         private readonly ICarService _carService;
 
         public CarActionTypeService(IUnitOfWork unitOfWork)
@@ -107,11 +107,11 @@ namespace CE.Service.Implementations
 
             await _carActionTypeRepository.Create(actionTypeToCreate);
 
-            foreach (var carAction in actions)
-            {
-                carAction.Type = actionTypeToCreate.Name;
-                await _unitOfWork.CarActionRepository.Update(carAction);
-            }
+            //foreach (var carAction in actions)
+            //{
+            //    carAction.Type = actionTypeToCreate.Name;
+            //    await _unitOfWork.CarActionRepository.Update(carAction);
+            //}
 
             await _carActionTypeRepository.Remove(actionType);
 

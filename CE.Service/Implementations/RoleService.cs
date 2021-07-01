@@ -16,7 +16,7 @@ namespace CE.Service.Implementations
     public class RoleService : IRoleService
     {
         private readonly UnitOfWork _unitOfWork;
-        private readonly RoleRepository _roleRepository;
+        private readonly IGenericRepository<Role> _roleRepository;
 
         public RoleService(IUnitOfWork unitOfWork)
         {

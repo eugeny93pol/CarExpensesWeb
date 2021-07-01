@@ -8,6 +8,8 @@ namespace CE.Repository
     public class ApplicationContext : DbContext
     {
         public DbSet<CarAction> Actions { get; set; }
+        public DbSet<CarActionRefill> Refills { get; set; }
+        public DbSet<CarActionRepair> Repairs { get; set; }
 
         public DbSet<Car> Cars { get; set; }
 
@@ -33,10 +35,10 @@ namespace CE.Repository
                 new Role { Id = Guid.NewGuid(), Name = RolesConstants.User });
 
             modelBuilder.Entity<CarActionType>().HasData(
-                new CarActionType { Id = Guid.NewGuid(), Name = ActionTypesConstants.Mileage },
-                new CarActionType { Id = Guid.NewGuid(), Name = ActionTypesConstants.Purchases },
-                new CarActionType { Id = Guid.NewGuid(), Name = ActionTypesConstants.Refill },
-                new CarActionType { Id = Guid.NewGuid(), Name = ActionTypesConstants.Repair });
+                new CarActionType { Id = Guid.NewGuid(), Name = CarActionTypesConstants.Mileage },
+                new CarActionType { Id = Guid.NewGuid(), Name = CarActionTypesConstants.Purchases },
+                new CarActionType { Id = Guid.NewGuid(), Name = CarActionTypesConstants.Refill },
+                new CarActionType { Id = Guid.NewGuid(), Name = CarActionTypesConstants.Repair });
 
             modelBuilder.Entity<User>()
                 .HasOne<Role>()

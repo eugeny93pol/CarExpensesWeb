@@ -18,6 +18,8 @@ namespace CE.Service.Interfaces
             Func<IQueryable<CarAction>, IOrderedQueryable<CarAction>> orderBy = null,
             params Expression<Func<CarAction, object>>[] includeProperties);
 
+        Task<ActionResult<CarActionRepair>> Create(ClaimsPrincipal claims, CarActionRepair item);
+
         Task UpdatePartial(CarAction savedAction, CarAction action);
     }
 }
