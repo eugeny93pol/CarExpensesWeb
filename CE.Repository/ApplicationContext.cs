@@ -8,21 +8,15 @@ namespace CE.Repository
     public class ApplicationContext : DbContext
     {
         public DbSet<CarAction> Actions { get; set; }
+        public DbSet<Car> Cars { get; set; }
+        public DbSet<CarSettings> CarsSettings { get; set; }
+        public DbSet<CarActionMileage> Mileages { get; set; }
         public DbSet<CarActionRefill> Refills { get; set; }
         public DbSet<CarActionRepair> Repairs { get; set; }
-
-        public DbSet<Car> Cars { get; set; }
-
-        public DbSet<CarSettings> CarsSettings { get; set; }
-
-        public DbSet<User> Users { get; set; }
-
-        public DbSet<UserSettings> UsersSettings { get; set; }
-
         public DbSet<Role> Roles { get; set; }
-
-        public DbSet<CarActionType> CarActionTypes { get; set; }
-
+        public DbSet<SparePart> SpareParts { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<UserSettings> UsersSettings { get; set; }
 
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
         {
@@ -34,12 +28,6 @@ namespace CE.Repository
                 new Role { Id = Guid.NewGuid(), Name = RolesConstants.Admin }, 
                 new Role { Id = Guid.NewGuid(), Name = RolesConstants.User });
 
-            modelBuilder.Entity<CarActionType>().HasData(
-                new CarActionType { Id = Guid.NewGuid(), Name = CarActionTypesConstants.Mileage },
-                new CarActionType { Id = Guid.NewGuid(), Name = CarActionTypesConstants.Purchases },
-                new CarActionType { Id = Guid.NewGuid(), Name = CarActionTypesConstants.Refill },
-                new CarActionType { Id = Guid.NewGuid(), Name = CarActionTypesConstants.Repair });
-
             modelBuilder.Entity<User>()
                 .HasOne<Role>()
                 .WithMany(r => r.Users)
@@ -49,12 +37,6 @@ namespace CE.Repository
             modelBuilder.Entity<User>()
                 .HasIndex(u => u.Email)
                 .IsUnique();
-
-            modelBuilder.Entity<CarAction>()
-                .HasOne<CarActionType>()
-                .WithMany(a => a.Actions)
-                .HasForeignKey(a => a.Type)
-                .HasPrincipalKey(t => t.Name);
 
             base.OnModelCreating(modelBuilder);
         }

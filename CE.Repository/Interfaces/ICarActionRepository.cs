@@ -1,10 +1,12 @@
-﻿using System.Threading.Tasks;
-using CE.DataAccess.Models;
+﻿using CE.DataAccess.Models;
 
 namespace CE.Repository.Interfaces
 {
     public interface ICarActionRepository
     {
-        Task<CarActionRepair> Create(CarActionRepair item);
+        IGenericRepository<CarAction> Actions { get; }
+        IGenericRepository<CarActionMileage> Mileages { get; }
+        IGenericRepository<CarActionRefill> Refills { get; }
+        IGenericRepository<CarActionRepair> Repairs { get; }
     }
 }

@@ -1,34 +1,22 @@
-﻿using System.Threading.Tasks;
-using CE.DataAccess.Models;
+﻿using CE.DataAccess.Models;
 using CE.Repository.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace CE.Repository.Repositories
 {
-    public class CarActionRepository<T> : GenericRepository<T>, ICarActionRepository where T : CarAction
+    public class CarActionRepository : ICarActionRepository
     {
-        public readonly DbSet<CarActionRefill> Refills;
-        public readonly DbSet<CarActionRepair> Repairs;
-        
+        public IGenericRepository<CarAction> Actions { get; }
+        public IGenericRepository<CarActionMileage> Mileages { get; }
+        public IGenericRepository<CarActionRefill> Refills { get; }
+        public IGenericRepository<CarActionRepair> Repairs { get; }
 
-        public CarActionRepository(ApplicationContext context) : base(context)
-        {
-            Refills = context.Set<CarActionRefill>();
-            Repairs = context.Set<CarActionRepair>();
-        }
 
-        public async Task<CarActionRefill> Create(CarActionRefill item)
+        public CarActionRepository(ApplicationContext context)
         {
-            await Refills.AddAsync(item);
-            await Context.SaveChangesAsync();
-            return item;
-        }
-
-        public async Task<CarActionRepair> Create(CarActionRepair item)
-        {
-            await Repairs.AddAsync(item);
-            await Context.SaveChangesAsync();
-            return item;
+            Actions = new GenericRepository<CarAction>(context);
+            Mileages = new GenericRepository<CarActionMileage>(context);
+            Refills = new GenericRepository<CarActionRefill>(context);
+            Repairs = new GenericRepository<CarActionRepair>(context);
         }
     }
 }

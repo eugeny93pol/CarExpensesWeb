@@ -7,61 +7,164 @@ using System.Threading.Tasks;
 using CE.DataAccess.Models;
 using CE.Repository;
 using CE.Repository.Interfaces;
-using CE.Repository.Repositories;
 using CE.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace CE.Service.Implementations
 {
     public class CarActionService : ICarActionService
     {
-        private readonly UnitOfWork _unitOfWork;
-        private readonly CarActionRepository<CarAction> _carActionRepository;
-        private readonly ICarActionTypeService _carActionTypeService;
-        private readonly ICarService _carService;
+        protected readonly UnitOfWork UnitOfWork;
+        protected readonly ICarActionRepository CarActionRepository;
+        protected readonly ICarService CarService;
+
+        public IService<CarActionRepair> Repair { get; }
 
         public CarActionService(IUnitOfWork unitOfWork)
         {
-            _unitOfWork = unitOfWork as UnitOfWork;
-            _carActionRepository = _unitOfWork?.CarActionRepository;
-            _carActionTypeService = new CarActionTypeService(_unitOfWork);
-            _carService = new CarService(_unitOfWork);
+            UnitOfWork = unitOfWork as UnitOfWork;
+            CarActionRepository = UnitOfWork?.CarActionRepository;
+            CarService = new CarService(UnitOfWork);
+            Repair = new RepairService(this);
         }
+
+        #region REPAIR_SERVICE
+        public class RepairService : IService<CarActionRepair>
+        {
+            private readonly CarActionService _actionService;
+
+            public RepairService(CarActionService actionService)
+            {
+                _actionService = actionService;
+            }
+
+            public async Task<ActionResult<CarActionRepair>> Create(ClaimsPrincipal claims, CarActionRepair item)
+            {
+                var checkResult = await _actionService.CheckBeforeCreating(claims, item);
+
+                if (checkResult != null)
+                    return checkResult;
+
+                CalculateTotalSparePartsCost(item);
+
+                await _actionService.CarActionRepository.Repairs.Create(item);
+
+                return new OkObjectResult(item);
+            }
+
+            public async Task<ActionResult<CarActionRepair>> GetOne(
+                ClaimsPrincipal claims, Guid id,
+                params Expression<Func<CarActionRepair, object>>[] includeProperties)
+            {
+                var carAction = await _actionService.CarActionRepository.Repairs.GetById(id, includeProperties);
+
+                var checkResult = await _actionService.CheckAccessToAction(claims, carAction);
+
+                return checkResult ?? new OkObjectResult(carAction);
+            }
+
+            public async Task<ActionResult<IEnumerable<CarActionRepair>>> GetAll(
+                ClaimsPrincipal claims = null, 
+                Expression<Func<CarActionRepair, bool>> filter = null, 
+                Func<IQueryable<CarActionRepair>, IOrderedQueryable<CarActionRepair>> orderBy = null,
+                params Expression<Func<CarActionRepair, object>>[] includeProperties)
+            {
+                var repairs = await _actionService
+                    .CarActionRepository
+                    .Repairs
+                    .GetAll(filter, orderBy, includeProperties);
+
+                if (UserService.IsHasAccess(claims))
+                    return new OkObjectResult(repairs.ToList());
+
+                var guids = await _actionService.CarService.GetCarsIdsOfCurrentUser(claims);
+                repairs = repairs.Where(action => guids.Contains(action.CarId));
+
+                return ActionsWithSummary(repairs);
+            }
+
+            public async Task<ActionResult<CarActionRepair>> Update(ClaimsPrincipal claims, CarActionRepair item)
+            {
+                throw new NotImplementedException();
+            }
+
+            public async Task<IActionResult> Delete(ClaimsPrincipal claims, Guid id)
+            {
+                return await _actionService.Delete(claims, id);
+            }
+
+            private static void CalculateTotalSparePartsCost(CarActionRepair item)
+            {
+                if (item.Total.HasValue) return;
+
+                item.Total = 0;
+                foreach (var sparePart in item.SpareParts)
+                {
+                    if (sparePart.Price.HasValue)
+                        item.Total += sparePart.Price * sparePart.Quantity;
+                }
+            }
+        }
+        #endregion REPAIR_SERVICE
 
         #region CRUD
 
         #region CREATE
-        public async Task<ActionResult<CarAction>> Create(ClaimsPrincipal claims, CarAction item)
+        public async Task<ActionResult<T>> Create<T>(ClaimsPrincipal claims, T item) where T : CarAction
         {
-            if (!await _carService.IsUserHasAccessToCar(claims, item.CarId))
-                return new ForbidResult();
+            var checkResult = await CheckBeforeCreating(claims, item);
 
-            if (!await _carActionTypeService.IsActionTypeExist(item.Type))
-                return new BadRequestObjectResult($"Type '{item.Type}' does not exist.");
+            if (checkResult != null)
+                return checkResult;
 
-            if (!await CheckDateAndMileage(item))
-                return new BadRequestObjectResult($"Invalid mileage {item.Mileage} for date {item.Date}.");
+            switch (item)
+            {
+                case CarActionMileage mileage:
+                    await CarActionRepository.Mileages.Create(mileage);
+                    break;
 
-            await _carActionRepository.Create(item);
+                case CarActionRefill refill:
+                    await CarActionRepository.Refills.Create(refill);
+                    break;
+
+                case CarActionRepair repair:
+                    CalculateTotalSparePartsCost(repair);
+                    await CarActionRepository.Repairs.Create(repair);
+                    break;
+
+                default:
+                    throw new UnsupportedContentTypeException($"Unsupported type '{typeof(T)}'");
+            }
 
             return new OkObjectResult(item);
         }
 
-        public async Task<ActionResult<CarActionRepair>> Create(ClaimsPrincipal claims, CarActionRepair item)
+        //
+        private static void CalculateTotalSparePartsCost(CarActionRepair item)
         {
-            if (!await _carService.IsUserHasAccessToCar(claims, item.CarId))
-                return new ForbidResult();
+            if (item.Total.HasValue) return;
 
-            if (!await _carActionTypeService.IsActionTypeExist(item.Type))
-                return new BadRequestObjectResult($"Type '{item.Type}' does not exist.");
+            item.Total = 0;
+            foreach (var sparePart in item.SpareParts)
+            {
+                if (sparePart.Price.HasValue)
+                    item.Total += sparePart.Price * sparePart.Quantity;
+            }
+        }
+        //
 
-            if (!await CheckDateAndMileage(item))
-                return new BadRequestObjectResult($"Invalid mileage {item.Mileage} for date {item.Date}.");
+        public async Task<ActionResult<CarActionRefill>> Create(ClaimsPrincipal claims, CarActionRefill item)
+        {
+            var checkResult = await CheckBeforeCreating(claims, item);
 
-            await _carActionRepository.Create(item);
+            if (checkResult != null) 
+                return checkResult;
 
+            await CarActionRepository.Refills.Create(item);
             return new OkObjectResult(item);
         }
+
         #endregion CREATE
 
         #region GET
@@ -70,11 +173,11 @@ namespace CE.Service.Implementations
             Guid id, 
             params Expression<Func<CarAction, object>>[] includeProperties)
         {
-            var carAction = await _carActionRepository.GetById(id, includeProperties);
+            var carAction = await CarActionRepository.Actions.GetById(id, includeProperties);
             if (carAction == null)
                 return new NotFoundObjectResult(new CarAction { Id = id });
 
-            if (!await _carService.IsUserHasAccessToCar(claims, carAction.CarId))
+            if (!await CarService.IsUserHasAccessToCar(claims, carAction.CarId))
                 return new ForbidResult();
 
             return new OkObjectResult(carAction);
@@ -86,12 +189,12 @@ namespace CE.Service.Implementations
             Func<IQueryable<CarAction>, IOrderedQueryable<CarAction>> orderBy = null,
             params Expression<Func<CarAction, object>>[] includeProperties)
         {
-            var carActions = await _carActionRepository.GetAll(filter, orderBy, includeProperties);
+            var carActions = await CarActionRepository.Actions.GetAll(filter, orderBy, includeProperties);
 
             if (UserService.IsHasAccess(claims)) 
                 return new OkObjectResult(carActions.ToList());
 
-            var carIdArray = await _carService.GetCarsIdsOfCurrentUser(claims);
+            var carIdArray = await CarService.GetCarsIdsOfCurrentUser(claims);
             carActions = carActions.Where(action => carIdArray.Contains(action.CarId));
 
             return ActionsWithSummary(carActions);
@@ -104,15 +207,15 @@ namespace CE.Service.Implementations
             Func<IQueryable<CarAction>, IOrderedQueryable<CarAction>> orderBy = null,
             params Expression<Func<CarAction, object>>[] includeProperties)
         {
-            var car = await _unitOfWork.CarRepository.GetById(carId);
+            var car = await UnitOfWork.CarRepository.GetById(carId);
 
             if (car == null)
                 return new NotFoundObjectResult(new CarAction { CarId = carId });
 
-            if (!await _carService.IsUserHasAccessToCar(claims, carId, car))
+            if (!await CarService.IsUserHasAccessToCar(claims, carId, car))
                 return new ForbidResult();
 
-            var carActions = (await _carActionRepository.GetAll(filter, orderBy, includeProperties))
+            var carActions = (await CarActionRepository.Actions.GetAll(filter, orderBy, includeProperties))
                 .Where(action => action.CarId == carId);
 
             return ActionsWithSummary(carActions);
@@ -122,12 +225,12 @@ namespace CE.Service.Implementations
         #region UPDATE
         public async Task<ActionResult<CarAction>> Update(ClaimsPrincipal claims, CarAction item)
         {
-            var carAction = await _carActionRepository.FirstOrDefault(a => a.Id == item.Id);
+            var carAction = await CarActionRepository.Actions.FirstOrDefault(a => a.Id == item.Id);
 
             if (carAction == null)
                 return new NotFoundObjectResult(new CarAction { Id = item.Id });
 
-            if (!await _carService.IsUserHasAccessToCar(claims, carAction.CarId))
+            if (!await CarService.IsUserHasAccessToCar(claims, carAction.CarId))
                 return new ForbidResult();
 
             throw new NotImplementedException();
@@ -138,15 +241,14 @@ namespace CE.Service.Implementations
         #region DELETE
         public async Task<IActionResult> Delete(ClaimsPrincipal claims, Guid id)
         {
-            var carAction = await _carActionRepository.GetById(id);
+            var carAction = await CarActionRepository.Actions.GetById(id);
 
-            if (carAction == null)
-                return new NotFoundObjectResult(new CarAction { Id = id });
+            var checkAccessResult = await CheckAccessToAction(claims, carAction);
 
-            if (!await _carService.IsUserHasAccessToCar(claims, carAction.CarId))
-                return new ForbidResult();
+            if (checkAccessResult != null)
+                return checkAccessResult;
 
-            await _carActionRepository.Remove(carAction);
+            await CarActionRepository.Actions.Remove(carAction);
 
             return new NoContentResult();
         }
@@ -164,26 +266,46 @@ namespace CE.Service.Implementations
 
             await CheckDateAndMileage(savedAction);
 
-            await _carActionRepository.Update(savedAction);
+            await CarActionRepository.Actions.Update(savedAction);
         }
 
         #region PRIVATE
+        private async Task<ActionResult> CheckBeforeCreating(ClaimsPrincipal claims, CarAction item)
+        {
+            if (!await CarService.IsUserHasAccessToCar(claims, item.CarId))
+                return new ForbidResult();
+
+            if (!await CheckDateAndMileage(item))
+                return new BadRequestObjectResult($"Invalid mileage {item.Mileage} for date {item.Date}.");
+
+            return null;
+        }
+
         private async Task<bool> CheckDateAndMileage(CarAction action)
         {
-            var beforeActions = (await _carActionRepository.GetAll(a => a.CarId == action.CarId))
+            var beforeActions = (await CarActionRepository.Actions.GetAll(a => a.CarId == action.CarId))
                 .Where(a => a.Date < action.Date && a.Id != action.Id)
                 .OrderBy(a => a.Date).ToList();
 
-            var afterActions = (await _carActionRepository.GetAll(a => a.CarId == action.CarId))
+            var afterActions = (await CarActionRepository.Actions.GetAll(a => a.CarId == action.CarId))
                 .Where(a => a.Date >= action.Date && a.Id != action.Id)
                 .OrderBy(a => a.Date).ToList();
 
-            if (beforeActions.Any() && beforeActions.Last().Mileage > action.Mileage ||
-                afterActions.Any() && afterActions.First().Mileage < action.Mileage)
-                return false;
-
-            return true;
+            return !(beforeActions.Any() && beforeActions.Last()?.Mileage > action.Mileage) && 
+                   !(afterActions.Any() && afterActions.First()?.Mileage < action.Mileage);
         }
+
+        private async Task<ActionResult> CheckAccessToAction(ClaimsPrincipal claims, CarAction item)
+        {
+            if (item == null)
+                return new NotFoundObjectResult("Action with the following ID not found.");
+
+            if (!await CarService.IsUserHasAccessToCar(claims, item.CarId))
+                return new ForbidResult();
+
+            return null;
+        }
+
         #endregion PRIVATE
 
         #region PRIVATE_STATIC

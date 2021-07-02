@@ -17,7 +17,7 @@ namespace CE.DataAccess.Models
         public bool IsCheckPoint { get; set; }
 
         [Column(TypeName = "money")]
-        public decimal Total { get; set; }
+        public decimal? Total { get; set; }
 
         public CarActionRefill()
         {

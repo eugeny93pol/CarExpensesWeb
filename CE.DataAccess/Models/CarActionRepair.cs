@@ -7,10 +7,10 @@ namespace CE.DataAccess.Models
     public class CarActionRepair : CarAction
     {
         [Column(TypeName = "money")]
-        public decimal CostOfWork { get; set; }
+        public decimal? CostOfWork { get; set; }
 
         [Column(TypeName = "money")]
-        public decimal Total { get; set; }
+        public decimal? Total { get; set; }
 
         public ICollection<SparePart> SpareParts { get; set; }
 

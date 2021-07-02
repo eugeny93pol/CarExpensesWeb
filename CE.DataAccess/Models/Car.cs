@@ -13,6 +13,9 @@ namespace CE.DataAccess.Models
 
         public ushort? Year { get; set; }
 
+        [Required]
+        public uint? Mileage { get; set; }
+
         [MinLength(17), MaxLength(17)]
         public string Vin { get; set; }
 

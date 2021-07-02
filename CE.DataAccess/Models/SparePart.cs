@@ -12,6 +12,7 @@ namespace CE.DataAccess.Models
         [Column(TypeName = "money")]
         public decimal? Price { get; set; }
 
+        [Range(1, byte.MaxValue)]
         public byte Quantity { get; set; }
 
         public uint? LimitByMileage { get; set; }
@@ -21,6 +22,6 @@ namespace CE.DataAccess.Models
 
         public string Description { get; set; }
 
-        public Guid CarActionId { get; set; }
+        public Guid CarActionRepairId { get; set; }
     }
 }

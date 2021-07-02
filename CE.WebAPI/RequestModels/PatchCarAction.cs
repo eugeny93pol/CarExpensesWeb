@@ -7,7 +7,7 @@ namespace CE.WebAPI.RequestModels
     {
         public string Type { get; set; }
 
-        public int? Mileage { get; set; }
+        public uint? Mileage { get; set; }
 
         public DateTime? Date { get; set; }
 
