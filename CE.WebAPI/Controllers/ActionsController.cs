@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using CE.DataAccess.Constants;
 using CE.DataAccess.Models;
@@ -27,120 +28,115 @@ namespace CE.WebAPI.Controllers
         }
 
         #region GET
-        /*
+        #region GET_MANY
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CarAction>>> GetActions(Guid? carId, DateTime? from, DateTime? to)
         {
-            try
-            {
-                @from ??= new DateTime();
-                @to ??= DateTime.UtcNow;
-
-                if (from > to)
-                    return BadRequest("The date 'from' is greater than the date 'to'.");
-
-                if (carId != null)
-                {
-                    return await _carActionService.GetActionsByCarId(
-                        User, (Guid) carId,
-                        a => a.Date >= from && a.Date <= to,
-                        q => q.OrderByDescending(a => a.Date));
-                }
-                return await _carActionService.GetAll(
-                    User,
-                    a => a.Date >= from && a.Date <= to,
-                    q => q.OrderByDescending(a => a.Date));
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, e.Message);
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            return await GetAllActionsOfType<CarAction>(carId, from, to);
         }
 
+        [HttpGet(CarActionTypesConstants.Mileage)]
+        public async Task<ActionResult<IEnumerable<CarActionMileage>>> GetMileageActions(Guid? carId, DateTime? from, DateTime? to)
+        {
+            return await GetAllActionsOfType<CarActionMileage>(carId, from, to);
+        }
+
+        [HttpGet(CarActionTypesConstants.Refill)]
+        public async Task<ActionResult<IEnumerable<CarActionRefill>>> GetRefillActions(Guid? carId, DateTime? from, DateTime? to)
+        {
+            return await GetAllActionsOfType<CarActionRefill>(carId, from, to);
+        }
+
+        [HttpGet(CarActionTypesConstants.Repair)]
+        public async Task<ActionResult<IEnumerable<CarActionRepair>>> GetRepairActions(Guid? carId, DateTime? from, DateTime? to)
+        {
+            return await GetAllActionsOfType<CarActionRepair>(carId, from, to, r => r.SpareParts);
+        }
+        #endregion GET_MANY
+
+        #region GET_ONE
         [HttpGet("{id:Guid}")]
         public async Task<ActionResult<CarAction>> GetAction(Guid id)
         {
-            try
-            {
-                return await _carActionService.GetOne(User, id);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, e.Message);
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            return await GetActionOfType<CarAction>(id);
         }
-        */
-        [HttpGet("{CarActionTypesConstants.Repair}/{id:Guid}")]
-        public async Task<ActionResult<CarActionRepair>> GetAction(Guid id)
+
+        [HttpGet(CarActionTypesConstants.Mileage+"/{id:Guid}")]
+        public async Task<ActionResult<CarActionMileage>> GetMileageAction(Guid id)
         {
-            try
-            {
-                return await _carActionService.Repair.GetOne(User, id, r => r.SpareParts);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, e.Message);
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            return await GetActionOfType<CarActionMileage>(id);
         }
+
+        [HttpGet(CarActionTypesConstants.Refill+"/{id:Guid}")]
+        public async Task<ActionResult<CarActionRefill>> GetRefillAction(Guid id)
+        {
+            return await GetActionOfType<CarActionRefill>(id);
+        }
+
+        [HttpGet(CarActionTypesConstants.Repair+"/{id:Guid}")]
+        public async Task<ActionResult<CarActionRepair>> GetRepairAction(Guid id)
+        {
+            return await GetActionOfType<CarActionRepair>(id, r => r.SpareParts);
+        }
+        #endregion GET_ONE
         #endregion GET
-        
+
         #region POST
-        [HttpPost(CarActionTypesConstants.Mileage)]
-        public async Task<ActionResult<CarActionMileage>> Create([FromBody] CarActionMileage action)
+        [HttpPost]
+        public async Task<ActionResult<CarAction>> Create(CarAction action)
         {
-            return await CreateAction(action);
+            return await CreateActionOfType(action);
+        }
+
+        [HttpPost(CarActionTypesConstants.Mileage)]
+        public async Task<ActionResult<CarActionMileage>> Create(CarActionMileage action)
+        {
+            return await CreateActionOfType(action);
         }
 
         [HttpPost(CarActionTypesConstants.Refill)]
-        public async Task<ActionResult<CarActionRefill>> Create([FromBody] CarActionRefill action)
+        public async Task<ActionResult<CarActionRefill>> Create(CarActionRefill action)
         {
-            return await CreateAction(action);
+            return await CreateActionOfType(action);
         }
 
         [HttpPost(CarActionTypesConstants.Repair)]
-        public async Task<ActionResult<CarActionRepair>> Create([FromBody] CarActionRepair action)
+        public async Task<ActionResult<CarActionRepair>> Create(CarActionRepair action)
         {
-            return await CreateAction(action);
+            return await CreateActionOfType(action);
         }
         #endregion POST
-/*
+
+        #region PUT
         [HttpPut("{id:Guid}")]
-        public async Task<ActionResult<CarAction>> EditAction(Guid id, CarAction action)
+        public async Task<ActionResult<CarAction>> Update(Guid id, CarAction action)
         {
-            var saved = await _carActionService.FirstOrDefault(a => a.Id == id);
-
-            if (saved == null)
-                return NotFound();
-
-            if (!await _carActionTypeService.IsActionTypeExist(action.Type))
-                return BadRequest($"Type \"{action.Type}\" does not exist.");
-
-            if (id != action.Id) 
-                return BadRequest();
-
-            var userId = AuthHelper.GetUserId(User);
-            if (!(await _carService.IsUserHasAccessToCar(userId, saved.CarId) && 
-                await _carService.IsUserHasAccessToCar(userId, action.CarId)))
-                return Forbid();
-
-            try
-            {
-                await _carActionService.Update(action);
-                return Ok(action);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return await UpdateAction(id, action);
         }
-*/
+
+        [HttpPut(CarActionTypesConstants.Mileage + "/{id:Guid}")]
+        public async Task<ActionResult<CarActionMileage>> Update(Guid id, CarActionMileage action)
+        {
+            return await UpdateAction(id, action);
+        }
+
+        [HttpPut(CarActionTypesConstants.Refill + "/{id:Guid}")]
+        public async Task<ActionResult<CarActionRefill>> Update(Guid id, CarActionRefill action)
+        {
+            return await UpdateAction(id, action);
+        }
+
+        [HttpPut(CarActionTypesConstants.Repair + "/{id:Guid}")]
+        public async Task<ActionResult<CarActionRepair>> Update(Guid id, CarActionRepair action)
+        {
+            return await UpdateAction(id, action);
+        }
+        #endregion PUT
+
+        #region DELETE
         [HttpDelete("{id:Guid}")]
         public async Task<IActionResult> DeleteAction(Guid id)
         {
-
             try
             {
                 return await _carActionService.Delete(User, id);
@@ -151,35 +147,11 @@ namespace CE.WebAPI.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
-        /*
-                [HttpPatch("{id:Guid}")]
-                public async Task<ActionResult<CarAction>> UpdateAction(Guid id, PatchCarAction action)
-                {
-                    var saved = await _carActionService.GetById(id);
-                    if (saved == null)
-                        return NotFound();
-
-                    var userId = AuthHelper.GetUserId(User);
-                    if (!await _carService.IsUserHasAccessToCar(userId, saved.CarId))
-                        return Forbid();
-
-                    if (action.Type != null && !await _carActionTypeService.IsActionTypeExist(action.Type))
-                        return BadRequest($"Type \"{action.Type}\" does not exist.");
-
-                    try
-                    {
-                        await _carActionService.UpdatePartial(saved, action.GetAction());
-                        return Ok(saved);
-                    }
-                    catch (Exception ex)
-                    {
-                        return BadRequest(ex.Message);
-                    }
-                }*/
+        #endregion DELETE
 
 
-
-        private async Task<ActionResult<T>> CreateAction<T>(T action) where T : CarAction
+        #region GENERIC_FUNCTIUONS
+        private async Task<ActionResult<T>> CreateActionOfType<T>(T action) where T : CarAction
         {
             try
             {
@@ -191,5 +163,69 @@ namespace CE.WebAPI.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
+
+        private async Task<ActionResult<T>> GetActionOfType<T>(
+            Guid id, params Expression<Func<T, object>>[] includeProperties) where T : CarAction
+        {
+            try
+            {
+                return await _carActionService.GetOne<T>(User, id, includeProperties);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        private async Task<ActionResult<IEnumerable<T>>> GetAllActionsOfType<T>(
+            Guid? carId, DateTime? from, DateTime? to,
+            params Expression<Func<T, object>>[] includeProperties) where T : CarAction
+        {
+            try
+            {
+                @from ??= new DateTime();
+                @to ??= DateTime.UtcNow;
+
+                if (from > to)
+                    return BadRequest("The date 'from' is greater than the date 'to'.");
+
+                if (carId != null)
+                {
+                    return await _carActionService.GetActionsByCarId<T>(
+                        User, (Guid)carId,
+                        a => a.Date >= from && a.Date <= to,
+                        q => q.OrderByDescending(a => a.Date),
+                        includeProperties);
+                }
+                return await _carActionService.GetAll<T>(
+                    User,
+                    a => a.Date >= from && a.Date <= to,
+                    q => q.OrderByDescending(a => a.Date),
+                    includeProperties);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        private async Task<ActionResult<T>> UpdateAction<T>(Guid id, T action) where T : CarAction
+        {
+            try
+            {
+                if (id != action.Id)
+                    return BadRequest("The route parameter 'id' does not match the 'id' parameter from body.");
+
+                return await _carActionService.Update(User, action);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+        #endregion GENERICS_FUNCTIONS
     }
 }
