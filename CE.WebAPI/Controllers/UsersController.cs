@@ -110,12 +110,11 @@ namespace CE.WebAPI.Controllers
         [HttpPatch("{id:Guid}")]
         public async Task<ActionResult<User>> UpdatePartialUser(Guid id, PatchUser patchUser)
         {
-            if (patchUser.Id != Guid.Empty && id != patchUser.Id)
+            if (id != patchUser.Id)
                 return BadRequest("The route parameter 'id' does not match the 'id' parameter from body.");
             try
             {
                 var user = patchUser.ConvertToUser();
-                user.Id = id;
                 return await _userService.UpdatePartial(User, user);
             }
             catch (Exception e)

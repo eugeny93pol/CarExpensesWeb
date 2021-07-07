@@ -130,11 +130,10 @@ namespace CE.WebAPI.Controllers
         [HttpPatch("{id:Guid}")]
         public async Task<ActionResult<Car>> UpdatePartialCar(Guid id, Car car)
         {
-            if (car.Id != Guid.Empty && id != car.Id)
+            if (id != car.Id)
                 return BadRequest("The route parameter 'id' does not match the 'id' parameter from body.");
             try
             {
-                car.Id = id;
                 return await _carService.UpdatePartial(User, car);
             }
             catch (Exception e)
