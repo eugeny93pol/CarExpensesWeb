@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace CE.DataAccess
+namespace CE.DataAccess.Models
 {
     public class Car : BaseEntity
     {
@@ -12,6 +12,9 @@ namespace CE.DataAccess
         public string Model { get; set; }
 
         public ushort? Year { get; set; }
+
+        [Required]
+        public uint? Mileage { get; set; }
 
         [MinLength(17), MaxLength(17)]
         public string Vin { get; set; }

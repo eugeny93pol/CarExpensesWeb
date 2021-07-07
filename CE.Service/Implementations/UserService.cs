@@ -4,10 +4,11 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using CE.DataAccess;
 using CE.DataAccess.Constants;
+using CE.DataAccess.Models;
 using CE.Repository;
 using CE.Repository.Interfaces;
+using CE.Repository.Repositories;
 using CE.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -17,7 +18,7 @@ namespace CE.Service.Implementations
     public class UserService : IUserService
     {
         private readonly UnitOfWork _unitOfWork;
-        private readonly UserRepository _userRepository;
+        private readonly IGenericRepository<User> _userRepository;
 
         public UserService(IUnitOfWork unitOfWork)
         {

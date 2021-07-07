@@ -4,14 +4,16 @@ using CE.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CE.Repository.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20210701144709_init5")]
+    partial class init5
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -125,12 +127,12 @@ namespace CE.Repository.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("15921c3b-1321-4836-9728-9c9a73e2224f"),
+                            Id = new Guid("92e25f10-d42f-4119-8941-4ea6a8f6f559"),
                             Name = "admin"
                         },
                         new
                         {
-                            Id = new Guid("ce540ef4-34b9-44b0-a76f-dec77c806784"),
+                            Id = new Guid("25d03aa4-7d30-45e5-aa5a-39b923130fc4"),
                             Name = "user"
                         });
                 });
@@ -141,7 +143,10 @@ namespace CE.Repository.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("CarActionRepairId")
+                    b.Property<Guid>("CarActionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("CarActionRepairId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Description")
@@ -303,9 +308,7 @@ namespace CE.Repository.Migrations
                 {
                     b.HasOne("CE.DataAccess.Models.CarActionRepair", null)
                         .WithMany("SpareParts")
-                        .HasForeignKey("CarActionRepairId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CarActionRepairId");
                 });
 
             modelBuilder.Entity("CE.DataAccess.Models.User", b =>

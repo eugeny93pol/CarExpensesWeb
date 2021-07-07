@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace CE.DataAccess
+namespace CE.DataAccess.Models
 {
     public class Role : BaseEntity
     {

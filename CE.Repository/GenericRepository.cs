@@ -3,20 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using CE.DataAccess;
+using CE.DataAccess.Models;
 using CE.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace CE.Repository
 {
-    public class Repository<T> : IRepository<T> where T : BaseEntity
+    public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
     {
-        private readonly ApplicationContext _context;
+        protected readonly ApplicationContext Context;
         private readonly DbSet<T> _dbSet;
 
-        public Repository(ApplicationContext context)
+        public GenericRepository(ApplicationContext context)
         {
-            _context = context;
+            Context = context;
             _dbSet = context.Set<T>();
         }
 
@@ -24,7 +24,7 @@ namespace CE.Repository
         public async Task<T> Create(T item)
         {
             await _dbSet.AddAsync(item);
-            await _context.SaveChangesAsync();
+            await Context.SaveChangesAsync();
             return item;
         }
 
@@ -83,15 +83,15 @@ namespace CE.Repository
 
         public async Task Update(T item)
         {
-            _context.Entry(item).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            Context.Entry(item).State = EntityState.Modified;
+            await Context.SaveChangesAsync();
         }
 
         
         public async Task Remove(T item)
         {
             _dbSet.Remove(item);
-            await _context.SaveChangesAsync();
+            await Context.SaveChangesAsync();
         }
 
         private IQueryable<T> Include(params Expression<Func<T, object>>[] includeProperties)

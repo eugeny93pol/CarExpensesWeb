@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CE.Repository.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20210611120929_init")]
-    partial class init
+    [Migration("20210701131752_init4")]
+    partial class init4
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -21,44 +21,7 @@ namespace CE.Repository.Migrations
                 .HasAnnotation("ProductVersion", "5.0.5")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("CE.DataAccess.ActionType", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ActionTypes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("16ab5101-3894-4d31-82b9-1974410fab4f"),
-                            Name = "mileage"
-                        },
-                        new
-                        {
-                            Id = new Guid("22ac6a73-86ac-4a19-a70f-680b71c8b0e6"),
-                            Name = "purchases"
-                        },
-                        new
-                        {
-                            Id = new Guid("bf9216fd-dd03-4c4e-8719-0841b68f5f6f"),
-                            Name = "refill"
-                        },
-                        new
-                        {
-                            Id = new Guid("db8a37e2-57db-486b-8a67-0867dfab1a67"),
-                            Name = "repair"
-                        });
-                });
-
-            modelBuilder.Entity("CE.DataAccess.Car", b =>
+            modelBuilder.Entity("CE.DataAccess.Models.Car", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -88,14 +51,11 @@ namespace CE.Repository.Migrations
                     b.ToTable("Cars");
                 });
 
-            modelBuilder.Entity("CE.DataAccess.CarAction", b =>
+            modelBuilder.Entity("CE.DataAccess.Models.CarAction", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal?>("Amount")
-                        .HasColumnType("money");
 
                     b.Property<Guid>("CarId")
                         .HasColumnType("uniqueidentifier");
@@ -105,6 +65,10 @@ namespace CE.Repository.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("Mileage")
@@ -122,9 +86,48 @@ namespace CE.Repository.Migrations
                     b.HasIndex("Type");
 
                     b.ToTable("Actions");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("CarAction");
                 });
 
-            modelBuilder.Entity("CE.DataAccess.CarSettings", b =>
+            modelBuilder.Entity("CE.DataAccess.Models.CarActionType", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CarActionTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("6b762860-55a7-4ac2-8c9b-b0bf87dc49a6"),
+                            Name = "Mileage"
+                        },
+                        new
+                        {
+                            Id = new Guid("4d8fc6e5-25d6-45ff-b150-eb12ecbf1b2b"),
+                            Name = "purchases"
+                        },
+                        new
+                        {
+                            Id = new Guid("3f210540-457a-4b84-8e0f-ea741dbba8f6"),
+                            Name = "Refill"
+                        },
+                        new
+                        {
+                            Id = new Guid("1da55e32-e39e-4f9d-ae1c-8632bed2ac83"),
+                            Name = "Repair"
+                        });
+                });
+
+            modelBuilder.Entity("CE.DataAccess.Models.CarSettings", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -144,7 +147,7 @@ namespace CE.Repository.Migrations
                     b.ToTable("CarsSettings");
                 });
 
-            modelBuilder.Entity("CE.DataAccess.Role", b =>
+            modelBuilder.Entity("CE.DataAccess.Models.Role", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -161,17 +164,55 @@ namespace CE.Repository.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("3044c5e7-e87c-4c25-a2a4-5c3c254250c0"),
+                            Id = new Guid("2dc15676-469f-4ed0-aa35-b6f8251225f5"),
                             Name = "admin"
                         },
                         new
                         {
-                            Id = new Guid("ccc8575e-0af1-4c27-82c8-5caa1f50d8b4"),
+                            Id = new Guid("7a402ca5-4a05-45ec-8085-283eb675607a"),
                             Name = "user"
                         });
                 });
 
-            modelBuilder.Entity("CE.DataAccess.User", b =>
+            modelBuilder.Entity("CE.DataAccess.Models.SparePart", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CarActionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("CarActionRepairId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long?>("LimitByMileage")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("LimitByTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("Price")
+                        .HasColumnType("money");
+
+                    b.Property<byte>("Quantity")
+                        .HasColumnType("tinyint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CarActionRepairId");
+
+                    b.ToTable("SparePart");
+                });
+
+            modelBuilder.Entity("CE.DataAccess.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -203,7 +244,7 @@ namespace CE.Repository.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("CE.DataAccess.UserSettings", b =>
+            modelBuilder.Entity("CE.DataAccess.Models.UserSettings", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -232,24 +273,58 @@ namespace CE.Repository.Migrations
                     b.ToTable("UsersSettings");
                 });
 
-            modelBuilder.Entity("CE.DataAccess.Car", b =>
+            modelBuilder.Entity("CE.DataAccess.Models.CarActionRefill", b =>
                 {
-                    b.HasOne("CE.DataAccess.User", null)
+                    b.HasBaseType("CE.DataAccess.Models.CarAction");
+
+                    b.Property<string>("FuelType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsCheckPoint")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Total")
+                        .HasColumnType("money");
+
+                    b.HasDiscriminator().HasValue("CarActionRefill");
+                });
+
+            modelBuilder.Entity("CE.DataAccess.Models.CarActionRepair", b =>
+                {
+                    b.HasBaseType("CE.DataAccess.Models.CarAction");
+
+                    b.Property<decimal>("CostOfWork")
+                        .HasColumnType("money");
+
+                    b.Property<decimal>("Total")
+                        .HasColumnType("money")
+                        .HasColumnName("CarActionRepair_Total");
+
+                    b.HasDiscriminator().HasValue("CarActionRepair");
+                });
+
+            modelBuilder.Entity("CE.DataAccess.Models.Car", b =>
+                {
+                    b.HasOne("CE.DataAccess.Models.User", null)
                         .WithMany("Cars")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("CE.DataAccess.CarAction", b =>
+            modelBuilder.Entity("CE.DataAccess.Models.CarAction", b =>
                 {
-                    b.HasOne("CE.DataAccess.Car", null)
+                    b.HasOne("CE.DataAccess.Models.Car", null)
                         .WithMany("Actions")
                         .HasForeignKey("CarId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CE.DataAccess.ActionType", null)
+                    b.HasOne("CE.DataAccess.Models.CarActionType", null)
                         .WithMany("Actions")
                         .HasForeignKey("Type")
                         .HasPrincipalKey("Name")
@@ -257,18 +332,25 @@ namespace CE.Repository.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("CE.DataAccess.CarSettings", b =>
+            modelBuilder.Entity("CE.DataAccess.Models.CarSettings", b =>
                 {
-                    b.HasOne("CE.DataAccess.Car", null)
+                    b.HasOne("CE.DataAccess.Models.Car", null)
                         .WithOne("Settings")
-                        .HasForeignKey("CE.DataAccess.CarSettings", "CarId")
+                        .HasForeignKey("CE.DataAccess.Models.CarSettings", "CarId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("CE.DataAccess.User", b =>
+            modelBuilder.Entity("CE.DataAccess.Models.SparePart", b =>
                 {
-                    b.HasOne("CE.DataAccess.Role", null)
+                    b.HasOne("CE.DataAccess.Models.CarActionRepair", null)
+                        .WithMany("SpareParts")
+                        .HasForeignKey("CarActionRepairId");
+                });
+
+            modelBuilder.Entity("CE.DataAccess.Models.User", b =>
+                {
+                    b.HasOne("CE.DataAccess.Models.Role", null)
                         .WithMany("Users")
                         .HasForeignKey("Role")
                         .HasPrincipalKey("Name")
@@ -276,37 +358,42 @@ namespace CE.Repository.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("CE.DataAccess.UserSettings", b =>
+            modelBuilder.Entity("CE.DataAccess.Models.UserSettings", b =>
                 {
-                    b.HasOne("CE.DataAccess.User", null)
+                    b.HasOne("CE.DataAccess.Models.User", null)
                         .WithOne("Settings")
-                        .HasForeignKey("CE.DataAccess.UserSettings", "UserId")
+                        .HasForeignKey("CE.DataAccess.Models.UserSettings", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("CE.DataAccess.ActionType", b =>
-                {
-                    b.Navigation("Actions");
-                });
-
-            modelBuilder.Entity("CE.DataAccess.Car", b =>
+            modelBuilder.Entity("CE.DataAccess.Models.Car", b =>
                 {
                     b.Navigation("Actions");
 
                     b.Navigation("Settings");
                 });
 
-            modelBuilder.Entity("CE.DataAccess.Role", b =>
+            modelBuilder.Entity("CE.DataAccess.Models.CarActionType", b =>
+                {
+                    b.Navigation("Actions");
+                });
+
+            modelBuilder.Entity("CE.DataAccess.Models.Role", b =>
                 {
                     b.Navigation("Users");
                 });
 
-            modelBuilder.Entity("CE.DataAccess.User", b =>
+            modelBuilder.Entity("CE.DataAccess.Models.User", b =>
                 {
                     b.Navigation("Cars");
 
                     b.Navigation("Settings");
+                });
+
+            modelBuilder.Entity("CE.DataAccess.Models.CarActionRepair", b =>
+                {
+                    b.Navigation("SpareParts");
                 });
 #pragma warning restore 612, 618
         }

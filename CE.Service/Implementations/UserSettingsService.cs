@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using CE.DataAccess;
+using CE.DataAccess.Models;
 using CE.Repository.Interfaces;
 using CE.Service.Interfaces;
 
@@ -7,7 +7,7 @@ namespace CE.Service.Implementations
 {
     public class UserSettingsService : BaseService<UserSettings>, IUserSettingsService
     {
-        public UserSettingsService(IRepository<UserSettings> repository) : base(repository)
+        public UserSettingsService(IGenericRepository<UserSettings> genericRepository) : base(genericRepository)
         {
         }
 
@@ -18,7 +18,7 @@ namespace CE.Service.Implementations
             userSettings.MeasurementSystem = settings.MeasurementSystem ?? userSettings.MeasurementSystem;
             userSettings.DefaultCarId = settings.DefaultCarId ?? userSettings.DefaultCarId;
 
-            await Repository.Update(userSettings);
+            await GenericRepository.Update(userSettings);
         }
     }
 }

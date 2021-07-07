@@ -8,7 +8,7 @@ namespace CE.Repository.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "ActionTypes",
+                name: "CarActionTypes",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -16,8 +16,8 @@ namespace CE.Repository.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ActionTypes", x => x.Id);
-                    table.UniqueConstraint("AK_ActionTypes_Name", x => x.Name);
+                    table.PrimaryKey("PK_CarActionTypes", x => x.Id);
+                    table.UniqueConstraint("AK_CarActionTypes_Name", x => x.Name);
                 });
 
             migrationBuilder.CreateTable(
@@ -114,9 +114,9 @@ namespace CE.Repository.Migrations
                 {
                     table.PrimaryKey("PK_Actions", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Actions_ActionTypes_Type",
+                        name: "FK_Actions_CarActionTypes_Type",
                         column: x => x.Type,
-                        principalTable: "ActionTypes",
+                        principalTable: "CarActionTypes",
                         principalColumn: "Name",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -147,14 +147,14 @@ namespace CE.Repository.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "ActionTypes",
+                table: "CarActionTypes",
                 columns: new[] { "Id", "Name" },
                 values: new object[,]
                 {
-                    { new Guid("16ab5101-3894-4d31-82b9-1974410fab4f"), "mileage" },
-                    { new Guid("22ac6a73-86ac-4a19-a70f-680b71c8b0e6"), "purchases" },
-                    { new Guid("bf9216fd-dd03-4c4e-8719-0841b68f5f6f"), "refill" },
-                    { new Guid("db8a37e2-57db-486b-8a67-0867dfab1a67"), "repair" }
+                    { new Guid("4795cc2c-eaea-4c14-a8ac-c420f5c52059"), "mileage" },
+                    { new Guid("9065f0b4-4324-456e-9e80-321e1b069940"), "purchases" },
+                    { new Guid("1d277e04-415b-4f34-83b8-0de33fd8a836"), "refill" },
+                    { new Guid("3157e000-3673-4da5-97c4-a2f1b838991e"), "repair" }
                 });
 
             migrationBuilder.InsertData(
@@ -162,8 +162,8 @@ namespace CE.Repository.Migrations
                 columns: new[] { "Id", "Name" },
                 values: new object[,]
                 {
-                    { new Guid("3044c5e7-e87c-4c25-a2a4-5c3c254250c0"), "admin" },
-                    { new Guid("ccc8575e-0af1-4c27-82c8-5caa1f50d8b4"), "user" }
+                    { new Guid("a2eb62cd-259f-46e0-94a9-8e419c550f55"), "admin" },
+                    { new Guid("836188c0-4a07-42d8-b724-96924477680a"), "user" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -217,7 +217,7 @@ namespace CE.Repository.Migrations
                 name: "UsersSettings");
 
             migrationBuilder.DropTable(
-                name: "ActionTypes");
+                name: "CarActionTypes");
 
             migrationBuilder.DropTable(
                 name: "Cars");

@@ -4,9 +4,10 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using CE.DataAccess;
+using CE.DataAccess.Models;
 using CE.Repository;
 using CE.Repository.Interfaces;
+using CE.Repository.Repositories;
 using CE.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,7 +16,7 @@ namespace CE.Service.Implementations
     public class RoleService : IRoleService
     {
         private readonly UnitOfWork _unitOfWork;
-        private readonly RoleRepository _roleRepository;
+        private readonly IGenericRepository<Role> _roleRepository;
 
         public RoleService(IUnitOfWork unitOfWork)
         {

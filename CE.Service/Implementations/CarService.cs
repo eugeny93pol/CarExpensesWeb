@@ -4,9 +4,10 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using CE.DataAccess;
+using CE.DataAccess.Models;
 using CE.Repository;
 using CE.Repository.Interfaces;
+using CE.Repository.Repositories;
 using CE.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,7 +16,7 @@ namespace CE.Service.Implementations
     public class CarService : ICarService
     {
         private readonly UnitOfWork _unitOfWork;
-        private readonly CarRepository _carRepository;
+        private readonly IGenericRepository<Car> _carRepository;
 
         public CarService(IUnitOfWork unitOfWork)
         {
@@ -24,15 +25,17 @@ namespace CE.Service.Implementations
         }
 
         #region HELPERS
-        public async Task<Guid[]> GetCarsIdsByUserId(Guid userId)
+        public async Task<Guid[]> GetCarsIdsOfCurrentUser(ClaimsPrincipal claims)
         {
+            var userId = UserService.GetUserId(claims);
             var cars = await _carRepository.GetAll(c => c.UserId == userId);
             return cars.Select(c => c.Id).ToArray();
         }
 
-        public async Task<bool> IsUserOwnerCar(Guid userId, Guid carId)
+        public async Task<bool> IsUserHasAccessToCar(ClaimsPrincipal claims, Guid carId, Car car = null)
         {
-            return (await _carRepository.GetById(carId))?.UserId == userId;
+            car ??= await _carRepository.GetById(carId);
+            return UserService.IsHasAccess(claims, car?.UserId);
         }
         #endregion HELPERS
 
@@ -55,7 +58,7 @@ namespace CE.Service.Implementations
             params Expression<Func<Car, object>>[] includeProperties)
         {
             var car = await _carRepository.GetById(id, includeProperties);
-            if (!UserService.IsHasAccess(claims, car?.UserId))
+            if (!UserService.IsHasAccess(claims, id))
                 return new ForbidResult();
             return car != null ? new OkObjectResult(car) : new NotFoundObjectResult(id);
         }

@@ -1,5 +1,5 @@
 ﻿using System;
-using CE.DataAccess;
+using CE.DataAccess.Models;
 
 namespace CE.WebAPI.RequestModels
 {
@@ -7,7 +7,7 @@ namespace CE.WebAPI.RequestModels
     {
         public string Type { get; set; }
 
-        public int? Mileage { get; set; }
+        public uint? Mileage { get; set; }
 
         public DateTime? Date { get; set; }
 
@@ -19,11 +19,11 @@ namespace CE.WebAPI.RequestModels
         {
             return new()
             {
-                Type = this.Type,
+                //Type = this.Type,
                 Mileage = this.Mileage,
                 Date = this.Date,
                 Description = this.Description,
-                Amount = this.Amount
+                //Amount = this.Amount
             };
         }
     }

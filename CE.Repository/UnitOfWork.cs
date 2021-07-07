@@ -1,6 +1,7 @@
 ﻿using System;
-using CE.DataAccess;
+using CE.DataAccess.Models;
 using CE.Repository.Interfaces;
+using CE.Repository.Repositories;
 
 namespace CE.Repository
 {
@@ -8,24 +9,24 @@ namespace CE.Repository
     {
         private readonly ApplicationContext _context;
 
-        public readonly UserRepository UserRepository;
-        public readonly UserSettingsRepository UserSettingsRepository;
-        public readonly RoleRepository RoleRepository;
-        public readonly CarRepository CarRepository;
-        public readonly CarSettingsRepository CarSettingsRepository;
-        public readonly ActionTypeRepository ActionTypeRepository;
-        public readonly CarActionRepository CarActionRepository; 
+        public readonly CarActionRepository CarActionRepository;
+        public readonly IGenericRepository<Car> CarRepository;
+        public readonly IGenericRepository<CarSettings> CarSettingsRepository;
+        public readonly IGenericRepository<Role> RoleRepository;
+        public readonly IGenericRepository<SparePart> SparePartRepository;
+        public readonly IGenericRepository<User> UserRepository;
+        public readonly IGenericRepository<UserSettings> UserSettingsRepository;
 
         public UnitOfWork(ApplicationContext context)
         {
             _context = context;
-            UserRepository = new UserRepository(_context);
-            UserSettingsRepository = new UserSettingsRepository(_context);
-            RoleRepository = new RoleRepository(_context);
-            CarRepository = new CarRepository(_context);
-            CarSettingsRepository = new CarSettingsRepository(_context);
-            ActionTypeRepository = new ActionTypeRepository(_context);
             CarActionRepository = new CarActionRepository(_context);
+            CarRepository = new GenericRepository<Car>(_context);
+            CarSettingsRepository = new GenericRepository<CarSettings>(_context);
+            RoleRepository = new GenericRepository<Role>(_context);
+            SparePartRepository = new GenericRepository<SparePart>(_context);
+            UserRepository = new GenericRepository<User>(_context);
+            UserSettingsRepository = new GenericRepository<UserSettings>(_context);
         }
 
         public void Dispose()

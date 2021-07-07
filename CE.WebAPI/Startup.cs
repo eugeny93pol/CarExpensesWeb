@@ -70,13 +70,13 @@ namespace CE.WebAPI
                 opt.UseSqlServer(Configuration.GetConnectionString("DbConnection")));
 
             services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
-            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
             services.AddTransient<ICarActionService, CarActionService>();
-            services.AddTransient<IActionTypeService, ActionTypeService>();
             services.AddTransient<ICarService, CarService>();
             services.AddTransient<ICarSettingsService, CarSettingsService>();
             services.AddTransient<IRoleService, RoleService>();
+            services.AddTransient<ISparePartService, SparePartService>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IUserSettingsService, UserSettingsService>();
         }

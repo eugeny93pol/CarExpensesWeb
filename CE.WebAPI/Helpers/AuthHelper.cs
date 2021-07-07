@@ -1,11 +1,11 @@
-﻿using CE.DataAccess;
-using CE.DataAccess.Constants;
+﻿using CE.DataAccess.Constants;
 using CE.WebAPI.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using CE.DataAccess.Models;
 
 namespace CE.WebAPI.Helpers
 {

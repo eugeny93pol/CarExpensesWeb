@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using CE.DataAccess;
 using CE.DataAccess.Constants;
+using CE.DataAccess.Models;
 using CE.Service.Interfaces;
 using CE.WebAPI.RequestModels;
 using Microsoft.AspNetCore.Authorization;

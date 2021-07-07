@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using CE.DataAccess;
+using CE.DataAccess.Models;
 
 namespace CE.WebAPI.RequestModels
 {

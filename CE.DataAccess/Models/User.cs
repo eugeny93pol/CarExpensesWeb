@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace CE.DataAccess
+namespace CE.DataAccess.Models
 {
 
     public class User : BaseEntity

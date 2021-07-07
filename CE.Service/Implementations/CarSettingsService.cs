@@ -1,4 +1,4 @@
-﻿using CE.DataAccess;
+﻿using CE.DataAccess.Models;
 using CE.Repository.Interfaces;
 using CE.Service.Interfaces;
 
@@ -6,7 +6,7 @@ namespace CE.Service.Implementations
 {
     public class CarSettingsService : BaseService<CarSettings>, ICarSettingsService
     {
-        public CarSettingsService(IRepository<CarSettings> repository) : base(repository)
+        public CarSettingsService(IGenericRepository<CarSettings> genericRepository) : base(genericRepository)
         {
         }
     }

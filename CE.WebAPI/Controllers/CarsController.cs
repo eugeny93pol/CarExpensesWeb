@@ -1,10 +1,10 @@
-﻿using CE.DataAccess;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CE.DataAccess.Constants;
+using CE.DataAccess.Models;
 using CE.Service.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
