@@ -6,9 +6,7 @@ using CE.DataAccess.Models;
 using CE.Service.Interfaces;
 using CE.WebAPI.RequestModels;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace CE.WebAPI.Controllers
 {
@@ -18,12 +16,10 @@ namespace CE.WebAPI.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
-        private readonly ILogger<UsersController> _logger;
 
-        public UsersController(IUserService userService, ILogger<UsersController> logger)
+        public UsersController(IUserService userService)
         {
             _userService = userService;
-            _logger = logger;
         }
 
         #region GET
@@ -31,43 +27,27 @@ namespace CE.WebAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers(bool? fullInfo)
         {
-            try
+            fullInfo ??= Request.Query.Keys.Contains(nameof(fullInfo));
+            if ((bool)fullInfo)
             {
-                fullInfo ??= Request.Query.Keys.Contains(nameof(fullInfo));
-                if ((bool)fullInfo)
-                {
-                    return await _userService.GetAll(
-                        null, null, null, 
-                        u => u.Cars, u => u.Settings);
-                }
-                return await _userService.GetAll();
+                return await _userService.GetAll(
+                    null, null, null, 
+                    u => u.Cars, u => u.Settings);
             }
-            catch (Exception e)
-            {
-                _logger.LogError(e, e.Message);
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            return await _userService.GetAll();
         }
 
         [HttpGet("{id:Guid}")]
         public async Task<ActionResult<User>> GetUser(Guid id, bool? fullInfo)
         {
-            try
+            fullInfo ??= Request.Query.Keys.Contains(nameof(fullInfo));
+            if ((bool)fullInfo)
             {
-                fullInfo ??= Request.Query.Keys.Contains(nameof(fullInfo));
-                if ((bool)fullInfo)
-                {
-                    return await _userService.GetOne(
-                        User, id,
-                        u => u.Cars, u => u.Settings);
-                }
-                return await _userService.GetOne(User, id);
+                return await _userService.GetOne(
+                    User, id,
+                    u => u.Cars, u => u.Settings);
             }
-            catch (Exception e)
-            {
-                _logger.LogError(e, e.Message);
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            return await _userService.GetOne(User, id);
         }
         #endregion GET
 
@@ -76,15 +56,7 @@ namespace CE.WebAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<User>> CreateUser(RegisterRequest request)
         {
-            try
-            {
-                return await _userService.Create(User, request.GetUser());
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, e.Message);
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            return await _userService.Create(User, request.GetUser());
         }
         #endregion POST
 
@@ -94,15 +66,8 @@ namespace CE.WebAPI.Controllers
         {
             if (id != request.Id)
                 return BadRequest("The route parameter 'id' does not match the 'id' parameter from body.");
-            try
-            {
-                return await _userService.Update(User, request.ConvertToUser());
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, e.Message);
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+           
+            return await _userService.Update(User, request.ConvertToUser());
         }
         #endregion PUT
 
@@ -112,16 +77,9 @@ namespace CE.WebAPI.Controllers
         {
             if (id != patchUser.Id)
                 return BadRequest("The route parameter 'id' does not match the 'id' parameter from body.");
-            try
-            {
-                var user = patchUser.ConvertToUser();
-                return await _userService.UpdatePartial(User, user);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, e.Message);
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            
+            var user = patchUser.ConvertToUser();
+            return await _userService.UpdatePartial(User, user);
         }
         #endregion PATH
 
@@ -129,15 +87,7 @@ namespace CE.WebAPI.Controllers
         [HttpDelete("{id:Guid}")]
         public async Task<IActionResult> DeleteUser(Guid id)
         {
-            try
-            {
-                return await _userService.Delete(User, id);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, e.Message);
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            return await _userService.Delete(User, id);
         }
         #endregion DELETE
     }

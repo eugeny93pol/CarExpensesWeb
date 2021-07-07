@@ -83,7 +83,8 @@ namespace CE.WebAPI
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
-            loggerFactory.AddFile(Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).FullName, "logs", "log.txt"));
+            loggerFactory.AddFile(Path.Combine(Directory.GetParent(
+                Directory.GetCurrentDirectory()).FullName, "logs", "log.txt"));
 
             if (env.IsDevelopment())
             {
@@ -93,7 +94,6 @@ namespace CE.WebAPI
             {
                 app.UseExceptionHandler("/error");
             }
-
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
