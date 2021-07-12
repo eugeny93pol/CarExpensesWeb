@@ -1,11 +1,10 @@
-﻿using CE.WebAPI.Helpers;
+﻿using System;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Threading.Tasks;
+using CE.DataAccess.Dtos;
 using CE.DataAccess.Models;
 using CE.Service.Interfaces;
-using CE.WebAPI.RequestModels;
 
 
 namespace CE.WebAPI.Controllers
@@ -15,48 +14,45 @@ namespace CE.WebAPI.Controllers
     [Authorize]
     public class UserSettingsController : ControllerBase
     {
-
         private readonly IUserSettingsService _userSettingsService;
-        private readonly ICarService _carService;
 
-        public UserSettingsController(IUserSettingsService userSettingsService,
-            ICarService carService)
+        public UserSettingsController(IUserSettingsService userSettingsService)
         {
             _userSettingsService = userSettingsService;
-            _carService = carService;
         }
 
         [HttpGet]
         public async Task<ActionResult<UserSettings>> GetUserSettings()
         {
-            var userId = AuthHelper.GetUserId(User);
-
-            return await _userSettingsService.FirstOrDefault(s => s.UserId == userId);
+            return await _userSettingsService.GetUserSettings(User);
         }
 
-        [HttpPatch]
-        public async Task<IActionResult> UpdateUserSettings([FromBody] PatchUserSettings settings)
+        [HttpGet("{id:guid}")]
+        public async Task<ActionResult<UserSettings>> GetUserSettings(Guid id)
         {
-            var userId = AuthHelper.GetUserId(User);
+            return await _userSettingsService.GetUserSettings(User, id);
+        }
 
-            if (settings.DefaultCarId != null &&
-                !await _carService.IsUserHasAccessToCar(User, (Guid) settings.DefaultCarId))
-                return Forbid();
+        [HttpPost]
+        public async Task<ActionResult<UserSettings>> CreateUserSettings(UserSettingsDto settingsDto)
+        {
+            return await _userSettingsService.CreateUserSettings(User, settingsDto.AsDbModel());
+        }
 
-            var userSettings = await _userSettingsService.FirstOrDefault(s => s.UserId == userId);
+        [HttpPut("{id:guid}")]
+        public async Task<ActionResult<UserSettings>> UpdateUserSettings(Guid id, UserSettingsDto settingsDto)
+        {
+            if (id != settingsDto.Id)
+                return new BadRequestObjectResult(
+                    "The route parameter 'id' does not match the 'id' parameter from body.");
 
-            if (userSettings == null)
-                return NotFound();
+            return await _userSettingsService.Update(User, settingsDto.AsDbModel());
+        }
 
-            try
-            {
-                await _userSettingsService.UpdatePartial(userSettings, settings.GetUserSettings());
-                return Ok(userSettings);
-            } 
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+        [HttpDelete("{id:guid}")]
+        public async Task<ActionResult> DeleteUserSettings(Guid id)
+        {
+            return await _userSettingsService.Delete(User, id);
         }
     }
 }

@@ -13,12 +13,9 @@ namespace CE.Service.Interfaces
     {
         Task<ActionResult<T>> Create(ClaimsPrincipal claims, T item);
 
-        Task<ActionResult<T>> GetOne(
-            ClaimsPrincipal claims, 
-            Guid id, 
+        Task<ActionResult<T>> GetOne(ClaimsPrincipal claims,
+            Guid id,
             params Expression<Func<T, object>>[] includeProperties);
-
-        //Task<ActionResult<T>> GetOneWhere(Expression<Func<T, bool>> filter);
 
         Task<ActionResult<IEnumerable<T>>> GetAll(
             ClaimsPrincipal claims = null,

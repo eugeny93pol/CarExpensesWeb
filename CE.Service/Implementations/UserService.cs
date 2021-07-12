@@ -18,11 +18,13 @@ namespace CE.Service.Implementations
     {
         private readonly UnitOfWork _unitOfWork;
         private readonly IGenericRepository<User> _userRepository;
+        private readonly IUserSettingsService _userSettingsService;
 
-        public UserService(IUnitOfWork unitOfWork)
+        public UserService(IUnitOfWork unitOfWork, IUserSettingsService userSettingsService)
         {
             _unitOfWork = unitOfWork as UnitOfWork;
             _userRepository = _unitOfWork?.UserRepository;
+            _userSettingsService = userSettingsService;
         }
 
         #region CRUD
@@ -38,7 +40,7 @@ namespace CE.Service.Implementations
             if (user == null)
                 return new BadRequestObjectResult("That e-mail already registered.");
 
-            await _unitOfWork.UserSettingsRepository.Create(new UserSettings(user.Id));
+            await _userSettingsService.CreateUserSettings(user.Id);
             return new OkObjectResult(user);
         }
         #endregion CREATE
