@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CE.DataAccess.Constants;
-using CE.DataAccess.Models;
+using CE.DataAccess.Dtos;
 using CE.Service.Interfaces;
-using CE.WebAPI.RequestModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,7 +24,7 @@ namespace CE.WebAPI.Controllers
         #region GET
         [Authorize(Roles = RolesConstants.Admin)]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers(bool? fullInfo)
+        public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers(bool? fullInfo)
         {
             fullInfo ??= Request.Query.Keys.Contains(nameof(fullInfo));
             if ((bool)fullInfo)
@@ -34,11 +33,11 @@ namespace CE.WebAPI.Controllers
                     null, null, null, 
                     u => u.Cars, u => u.Settings);
             }
-            return await _userService.GetAll();
+            return await _userService.GetAll(User);
         }
 
         [HttpGet("{id:Guid}")]
-        public async Task<ActionResult<User>> GetUser(Guid id, bool? fullInfo)
+        public async Task<ActionResult<UserDto>> GetUser(Guid id, bool? fullInfo)
         {
             fullInfo ??= Request.Query.Keys.Contains(nameof(fullInfo));
             if ((bool)fullInfo)
@@ -54,34 +53,22 @@ namespace CE.WebAPI.Controllers
         #region POST
         [AllowAnonymous]
         [HttpPost]
-        public async Task<ActionResult<User>> CreateUser(RegisterRequest request)
+        public async Task<ActionResult<UserDto>> CreateUser(CreateUserDto userDto)
         {
-            return await _userService.Create(User, request.GetUser());
+            return await _userService.Create(User, userDto);
         }
         #endregion POST
 
         #region PUT
         [HttpPut("{id:Guid}")]
-        public async Task<ActionResult<User>> UpdateUser(Guid id, PutUser request)
+        public async Task<ActionResult> UpdateUser(Guid id, UpdateUserDto userDto)
         {
-            if (id != request.Id)
+            if (id != userDto.Id)
                 return BadRequest("The route parameter 'id' does not match the 'id' parameter from body.");
            
-            return await _userService.Update(User, request.ConvertToUser());
+            return await _userService.Update(User, userDto);
         }
         #endregion PUT
-
-        #region PATH
-        [HttpPatch("{id:Guid}")]
-        public async Task<ActionResult<User>> UpdatePartialUser(Guid id, PatchUser patchUser)
-        {
-            if (id != patchUser.Id)
-                return BadRequest("The route parameter 'id' does not match the 'id' parameter from body.");
-            
-            var user = patchUser.ConvertToUser();
-            return await _userService.UpdatePartial(User, user);
-        }
-        #endregion PATH
 
         #region DELETE
         [HttpDelete("{id:Guid}")]

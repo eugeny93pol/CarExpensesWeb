@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using CE.DataAccess.Constants;
+using CE.DataAccess.Dtos;
 using CE.DataAccess.Models;
 using CE.Repository;
 using CE.Repository.Interfaces;
@@ -30,76 +31,73 @@ namespace CE.Service.Implementations
         #region CRUD
 
         #region CREATE
-        public async Task<ActionResult<User>> Create(ClaimsPrincipal claims, User item)
+        public async Task<ActionResult<UserDto>> Create(ClaimsPrincipal claims, CreateUserDto userDto)
         {
             var roleUser = await _unitOfWork
                 .RoleRepository
                 .FirstOrDefault(r => r.Name == RolesConstants.User);
 
-            var user = await CreateUser(item, roleUser);
+            var user = await CreateUser(userDto.AsDbModel(), roleUser);
             if (user == null)
                 return new BadRequestObjectResult("That e-mail already registered.");
 
             await _userSettingsService.CreateUserSettings(user.Id);
-            return new OkObjectResult(user);
+            return new OkObjectResult(user.AsDto());
         }
         #endregion CREATE
 
         #region GET
-        public async Task<ActionResult<User>> GetOne(
-            ClaimsPrincipal claims,
-            Guid id,
+        public async Task<ActionResult<UserDto>> GetOne(ClaimsPrincipal claims, Guid id,
             params Expression<Func<User, object>>[] includeProperties)
         {
             if (!IsHasAccess(claims, id))
                 return new ForbidResult();
 
             var user = await _userRepository.GetById(id, includeProperties);
-            return user != null ? new OkObjectResult(user) : new NotFoundObjectResult(id);
+            return user != null ? new OkObjectResult(user.AsDto()) : new NotFoundObjectResult(id);
         }
 
-        public async Task<ActionResult<IEnumerable<User>>> GetAll(
-            ClaimsPrincipal claims = null, 
+        public async Task<ActionResult<IEnumerable<UserDto>>> GetAll(ClaimsPrincipal claims, 
             Expression<Func<User, bool>> filter = null, 
             Func<IQueryable<User>, IOrderedQueryable<User>> orderBy = null, 
             params Expression<Func<User, object>>[] includeProperties)
         {
+            if (!IsHasAccess(claims))
+                return new ForbidResult();
+
             var users = await _userRepository.GetAll(filter, orderBy, includeProperties);
-            return new OkObjectResult(users.ToList());
+            var usersDto = users.ToList().Select(user => user.AsDto());
+            return new OkObjectResult(usersDto);
         }
         #endregion GET
 
         #region UPDATE
-        public async Task<ActionResult<User>> Update(ClaimsPrincipal claims, User item)
+        public async Task<ActionResult> Update(ClaimsPrincipal claims, UpdateUserDto userDto)
         {
-            if (!IsHasAccess(claims, item.Id))
+            if (!IsHasAccess(claims, userDto.Id))
                 return new ForbidResult();
 
-            var user = await _userRepository.FirstOrDefault(u => u.Id == item.Id);
+            var user = await _userRepository.FirstOrDefault(u => u.Id == userDto.Id);
             if (user == null)
-                return new NotFoundObjectResult(item.Id);
+                return new NotFoundObjectResult(userDto.Id);
 
-            if (!IsHasAccess(claims) && user.Role != item.Role)
+            if (!IsHasAccess(claims) && user.Role != userDto.Role)
                 return new ForbidResult();
 
-            var validationResult = await ValidateUserUpdates(item);
+            var validationResult = await ValidateUserUpdates(user, userDto.AsDbModel());
             if (validationResult != null)
                 return validationResult;
 
-            item.Password = GeneratePasswordHash(item.Password);
-            await _userRepository.Update(item);
-            return new OkObjectResult(item);
-        }
+            if (!VerifyPassword(userDto.Password, user.Password))
+                return new BadRequestObjectResult("The password is wrong.");
 
+            userDto.Password = userDto.NewPassword != null
+                ? GeneratePasswordHash(userDto.NewPassword)
+                : user.Password;
 
-        public async Task<ActionResult<User>> UpdatePartial(ClaimsPrincipal claims, User item)
-        {
-            var user = await _userRepository.FirstOrDefault(u => u.Id == item.Id);
-            if (user == null)
-                return new NotFoundObjectResult(item.Id);
-            
-            user = UpdateUserInstance(user, item);
-            return await Update(claims, user);
+            user = userDto.AsDbModel();
+            await _userRepository.Update(user);
+            return new NoContentResult();
         }
         #endregion UPDATE
 
@@ -121,35 +119,32 @@ namespace CE.Service.Implementations
         #endregion CRUD
 
         #region AUTHENTICATE
-        public async Task<User> Authenticate(string email, string password)
+        public async Task<UserDto> Authenticate(string email, string password)
         {
             var user = await _userRepository.FirstOrDefault(u => u.Email == email);
-            if (user != null && BCrypt.Net.BCrypt.Verify(password, user.Password))
-                return user;
+            if (user != null && VerifyPassword(password, user.Password))
+                return user.AsDto();
 
             return null;
         }
         #endregion AUTHENTICATE
 
         #region PRIVATE_TASKS
-        private async Task<ActionResult> ValidateUserUpdates(User item)
+        private async Task<ActionResult> ValidateUserUpdates(User savedUser, User userToUpdate)
         {
             var roles = (await _unitOfWork.RoleRepository.GetAll())
                 .Select(r => r.Name)
                 .ToArray();
 
-            if (!roles.Contains(item.Role))
-                return new BadRequestObjectResult($"The role '{item.Role}' does not exist.");
+            if (!roles.Contains(userToUpdate.Role))
+                return new BadRequestObjectResult("The provided role does not exist.");
 
-            var user = await _userRepository.FirstOrDefault(u => u.Id == item.Id);
-            if (user.Email != item.Email)
-            {
-                user = await _userRepository.FirstOrDefault(u => u.Email == item.Email);
-                if (user != null)
-                    return new BadRequestObjectResult($"The email '{item.Email}' is already in use by another user.");
-            }
+            if (savedUser.Email == userToUpdate.Email) return null;
 
-            return null;
+            var user = await _userRepository.FirstOrDefault(u => u.Email == userToUpdate.Email);
+            return user != null
+                ? new BadRequestObjectResult("That e-mail already registered.")
+                : null;
         }
 
         private async Task<User> CreateUser(User user, Role role)
@@ -160,9 +155,8 @@ namespace CE.Service.Implementations
             if (candidate != null)
                 return null;
 
-            var passwordHash = GeneratePasswordHash(user.Password);
             user.Role = role.Name;
-            user.Password = passwordHash;
+            user.Password = GeneratePasswordHash(user.Password);
 
             return await _userRepository.Create(user);
         }
@@ -195,19 +189,15 @@ namespace CE.Service.Implementations
         #endregion PUBLIC_STATIC
 
         #region PRIVATE_STATIC
+
+        private static bool VerifyPassword(string password, string hash)
+        {
+            return BCrypt.Net.BCrypt.Verify(password, hash);
+        }
+
         private static string GeneratePasswordHash(string password)
         {
             return BCrypt.Net.BCrypt.HashPassword(password);
-        }
-
-        private static User UpdateUserInstance(User savedUser, User user)
-        {
-            savedUser.Name = user.Name ?? savedUser.Name;
-            savedUser.Email = user.Email ?? savedUser.Email;
-            savedUser.Role = user.Role ?? savedUser.Role;
-            savedUser.Password = user.Password ?? savedUser.Password;
-
-            return savedUser;
         }
         #endregion PRIVATE_STATIC
     }

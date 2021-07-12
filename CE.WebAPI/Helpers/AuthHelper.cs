@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using CE.DataAccess.Models;
+using CE.DataAccess.Dtos;
 
 namespace CE.WebAPI.Helpers
 {
@@ -22,7 +22,7 @@ namespace CE.WebAPI.Helpers
             return user.IsInRole(RolesConstants.Admin) || GetUserId(user) == id;
         }
 
-        public static string GenerateToken(User user, AuthOptions authOptions)
+        public static string GenerateToken(UserDto user, AuthOptions authOptions)
         {
             var claims = new List<Claim>
             {
