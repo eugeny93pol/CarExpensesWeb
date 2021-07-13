@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using System.Threading.Tasks;
+using CE.DataAccess.Dtos;
 using CE.Service.Interfaces;
-using CE.WebAPI.RequestModels;
 
 namespace CE.WebAPI.Controllers
 {
@@ -23,9 +23,9 @@ namespace CE.WebAPI.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginRequest request)
+        public async Task<IActionResult> Login(AuthenticateUserDto dto)
         {
-            var user = await _userService.Authenticate(request.Email, request.Password);
+            var user = await _userService.Authenticate(dto.Email, dto.Password);
             if (user == null)
                 return Unauthorized();
             var accessToken = _authOptions.GenerateToken(user);

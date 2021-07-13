@@ -103,6 +103,9 @@ namespace CE.DataAccess.Dtos
 
         public static UserSettingsDto AsDto(this UserSettings settings)
         {
+            if (settings is null)
+                return null;
+
             return new UserSettingsDto
             {
                 Id = settings.Id,

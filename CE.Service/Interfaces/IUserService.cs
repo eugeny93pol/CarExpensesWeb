@@ -27,11 +27,11 @@ namespace CE.Service.Interfaces
         Task<IActionResult> Delete(ClaimsPrincipal claims, Guid id);
 
         /// <summary>
-        /// Returns the <see cref="User"/> instance if email and password are correct, otherwise null if they are not correct or email is not registered.
+        /// Returns the <see cref="UserDto"/> instance if email and password are correct, otherwise null if they are not correct or email is not registered.
         /// </summary>
         /// <param name="email">User's e-mail address</param>
         /// <param name="password">User password</param>
-        /// <returns>The <see cref="User"/> instance if email and password are correct, or null if they are not correct or email is not registered</returns>
+        /// <returns>The <see cref="UserDto"/> instance if email and password are correct, or null if they are not correct or email is not registered</returns>
         Task<UserDto> Authenticate(string email, string password);
     }
 }

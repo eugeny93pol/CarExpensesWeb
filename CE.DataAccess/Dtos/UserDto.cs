@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using CE.DataAccess.Models;
 
 namespace CE.DataAccess.Dtos
 {

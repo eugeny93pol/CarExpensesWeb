@@ -43,6 +43,9 @@ namespace CE.Service.Implementations
             ClaimsPrincipal claims, Guid id, 
             params Expression<Func<Role, object>>[] includeProperties)
         {
+            if (!UserService.IsHasAccess(claims))
+                return new ForbidResult();
+
             var role = await _roleRepository.GetById(id, includeProperties);
             return role != null ? new OkObjectResult(role) : new NotFoundObjectResult(new Role {Id = id});
         }
@@ -53,6 +56,9 @@ namespace CE.Service.Implementations
             Func<IQueryable<Role>, IOrderedQueryable<Role>> orderBy = null,
             params Expression<Func<Role, object>>[] includeProperties)
         {
+            if (!UserService.IsHasAccess(claims))
+                return new ForbidResult();
+
             var roles = await _roleRepository.GetAll(filter, orderBy, includeProperties);
             return new OkObjectResult(roles.ToList());
         }
