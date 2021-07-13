@@ -1,5 +1,4 @@
 ﻿using System;
-using CE.WebAPI.Helpers;
 using CE.WebAPI.Options;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +14,7 @@ namespace CE.WebAPI.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IUserService _userService;
-        private readonly AuthOptions _authOptions;
+        private readonly IAuthOptions _authOptions;
 
         public AuthController(IUserService userService, IOptions<AuthOptions> authOptions)
         {
@@ -29,7 +28,7 @@ namespace CE.WebAPI.Controllers
             var user = await _userService.Authenticate(request.Email, request.Password);
             if (user == null)
                 return Unauthorized();
-            var accessToken = AuthHelper.GenerateToken(user, _authOptions);
+            var accessToken = _authOptions.GenerateToken(user);
             return Ok(new { accessToken });
         }
 
