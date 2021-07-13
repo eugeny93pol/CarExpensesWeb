@@ -1,4 +1,5 @@
-﻿using CE.DataAccess.Models;
+﻿using System.Linq;
+using CE.DataAccess.Models;
 
 namespace CE.DataAccess.Dtos
 {
@@ -35,11 +36,57 @@ namespace CE.DataAccess.Dtos
                 Email = user.Email,
                 Name = user.Name,
                 Role = user.Role,
-                Cars = user.Cars,
-                Settings = user.Settings
+                Cars = user.Cars.Select(car => car.AsDto()).ToList(),
+                Settings = user.Settings.AsDto()
             };
         }
         #endregion USER'S DTOS
+
+        #region CAR'S DTOS
+
+        public static Car AsDbModel(this CreateCarDto dto)
+        {
+            return new Car
+            {
+                UserId = dto.UserId,
+                Brand = dto.Brand,
+                Model = dto.Model,
+                Mileage = dto.Mileage,
+                Year = dto.Year,
+                Vin = dto.Vin
+            };
+        }
+
+        public static Car AsDbModel(this UpdateCarDto dto)
+        {
+            return new Car
+            {
+                Id = dto.Id,
+                UserId = dto.UserId,
+                Brand = dto.Brand,
+                Model = dto.Model,
+                Mileage = dto.Mileage,
+                Year = dto.Year,
+                Vin = dto.Vin
+            };
+        }
+
+        public static CarDto AsDto(this Car car)
+        {
+            return new CarDto
+            {
+                Id = car.Id,
+                UserId = car.UserId,
+                Brand = car.Brand,
+                Model = car.Model,
+                Mileage = car.Mileage,
+                Year = car.Year,
+                Vin = car.Vin,
+                Actions = car.Actions,
+                Settings = car.Settings
+            };
+        }
+        #endregion CAR'S DTOS
 
         public static UserSettings AsDbModel(this UserSettingsDto dto)
         {
