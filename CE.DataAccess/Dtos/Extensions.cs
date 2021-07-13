@@ -88,7 +88,20 @@ namespace CE.DataAccess.Dtos
         }
         #endregion CAR'S DTOS
 
-        public static UserSettings AsDbModel(this UserSettingsDto dto)
+        #region USER SETTINGS DTOS
+        public static UserSettings AsDbModel(this CreateUserSettingsDto dto)
+        {
+            return new UserSettings
+            {
+                UserId = dto.UserId,
+                DefaultCarId = dto.DefaultCarId,
+                Language = dto.Language,
+                MeasurementSystem = dto.MeasurementSystem,
+                Theme = dto.Theme
+            };
+        }
+
+        public static UserSettings AsDbModel(this UpdateUserSettingsDto dto)
         {
             return new UserSettings
             {
@@ -101,12 +114,12 @@ namespace CE.DataAccess.Dtos
             };
         }
 
-        public static UserSettingsDto AsDto(this UserSettings settings)
+        public static GetUserSettingsDto AsDto(this UserSettings settings)
         {
             if (settings is null)
                 return null;
 
-            return new UserSettingsDto
+            return new GetUserSettingsDto
             {
                 Id = settings.Id,
                 UserId = settings.UserId,
@@ -116,6 +129,6 @@ namespace CE.DataAccess.Dtos
                 Theme = settings.Theme
             };
         }
-
+        #endregion USER SETTINGS DTOS
     }
 }

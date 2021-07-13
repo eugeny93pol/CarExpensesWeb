@@ -41,7 +41,7 @@ namespace CE.Service.Implementations
             if (user == null)
                 return new BadRequestObjectResult("That e-mail already registered.");
 
-            await _userSettingsService.CreateUserSettings(user.Id);
+            await _userSettingsService.Create(user.Id);
             return new OkObjectResult(user.AsDto());
         }
         #endregion CREATE

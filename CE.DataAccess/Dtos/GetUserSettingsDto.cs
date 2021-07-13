@@ -1,14 +1,11 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 
 namespace CE.DataAccess.Dtos
 {
-    public class UserSettingsDto
+    public class GetUserSettingsDto
     {
-        [Required]
         public Guid Id { get; set; }
 
-        [Required]
         public Guid UserId { get; set; }
 
         public Guid? DefaultCarId { set; get; }

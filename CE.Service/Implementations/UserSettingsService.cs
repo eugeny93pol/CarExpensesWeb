@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using CE.DataAccess.Dtos;
 using CE.DataAccess.Models;
 using CE.Repository;
 using CE.Repository.Interfaces;
@@ -21,57 +25,73 @@ namespace CE.Service.Implementations
         }
 
         #region CREATE
-        public async Task<UserSettings> CreateUserSettings(Guid userId)
+        public async Task<GetUserSettingsDto> Create(Guid userId)
         {
-            return await _userSettingsRepository.Create(new UserSettings(userId));
+            var settings = await _userSettingsRepository.Create(new UserSettings(userId));
+            return settings.AsDto();
         }
 
-        public async Task<ActionResult<UserSettings>> CreateUserSettings(ClaimsPrincipal claims, UserSettings item)
+        public async Task<ActionResult<GetUserSettingsDto>> Create(ClaimsPrincipal claims, CreateUserSettingsDto dto)
         {
-            if (!UserService.IsHasAccess(claims, item.UserId))
+            if (!UserService.IsHasAccess(claims, dto.UserId))
                 return new ForbidResult();
             
-            var existingSettings = await _userSettingsRepository.FirstOrDefault(s => s.UserId == item.UserId);
+            var existingSettings = await _userSettingsRepository.FirstOrDefault(s => s.UserId == dto.UserId);
 
             if (existingSettings != null)
                 return new BadRequestObjectResult("The user already has settings.");
 
-            await _userSettingsRepository.Create(item);
+            var settings = dto.AsDbModel();
+            await _userSettingsRepository.Create(settings);
 
-            return new OkObjectResult(item);
+            return new OkObjectResult(settings.AsDto());
         }
         #endregion CREATE
 
         #region GET
-        public async Task<ActionResult<UserSettings>> GetUserSettings(ClaimsPrincipal claims)
+        public async Task<ActionResult<GetUserSettingsDto>> GetOne(ClaimsPrincipal claims)
         {
             var userId = UserService.GetUserId(claims);
 
-            var settings = await  GetSettingsByUserId(userId) ?? await CreateUserSettings(userId);
+            var settings = (await GetSettingsByUserId(userId)).AsDto() ?? await Create(userId);
 
             return new OkObjectResult(settings);
         }
 
-        public async Task<ActionResult<UserSettings>> GetUserSettings(ClaimsPrincipal claims, Guid id)
+        public async Task<ActionResult<GetUserSettingsDto>> GetOne(ClaimsPrincipal claims, Guid id)
         {
             var settings = await _userSettingsRepository.GetById(id);
 
             var checkAccessResult = CheckAccessToSettings(claims, settings);
-            return checkAccessResult ?? new OkObjectResult(settings);
+            return checkAccessResult ?? new OkObjectResult(settings.AsDto());
         }
+
+        public async Task<ActionResult<IEnumerable<GetUserSettingsDto>>> GetAll(ClaimsPrincipal claims,
+            Expression<Func<UserSettings, bool>> filter = null,
+            Func<IQueryable<UserSettings>, IOrderedQueryable<UserSettings>> orderBy = null,
+            params Expression<Func<UserSettings, object>>[] includeProperties)
+        {
+            if (!UserService.IsHasAccess(claims))
+                return new ForbidResult();
+
+            var settings = await _userSettingsRepository.GetAll(filter, orderBy, includeProperties);
+            return new OkObjectResult(settings.Select(s => s.AsDto()));
+        }
+
         #endregion GET
 
         #region UPDATE
-        public async Task<ActionResult<UserSettings>> Update(ClaimsPrincipal claims, UserSettings item)
+        public async Task<ActionResult> Update(ClaimsPrincipal claims, UpdateUserSettingsDto dto)
         {
-            var checkResult = await CheckBeforeUpdate(claims, item);
+            var settings = dto.AsDbModel();
+            var checkResult = await CheckBeforeUpdate(claims, settings);
 
             if (checkResult != null)
                 return checkResult;
 
-            await _userSettingsRepository.Update(item);
+            await _userSettingsRepository.Update(settings);
 
-            return new OkObjectResult(item);
+            return new NoContentResult();
         }
         #endregion UPDATE
 

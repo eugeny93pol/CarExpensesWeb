@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using CE.DataAccess.Dtos;
 using CE.DataAccess.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,15 +12,20 @@ namespace CE.Service.Interfaces
 {
     public interface IUserSettingsService
     {
-        Task<UserSettings> CreateUserSettings(Guid userId);
+        Task<GetUserSettingsDto> Create(Guid userId);
 
-        Task<ActionResult<UserSettings>> CreateUserSettings(ClaimsPrincipal claims, UserSettings item);
+        Task<ActionResult<GetUserSettingsDto>> Create(ClaimsPrincipal claims, CreateUserSettingsDto dto);
 
-        Task<ActionResult<UserSettings>> GetUserSettings(ClaimsPrincipal claims);
+        Task<ActionResult<GetUserSettingsDto>> GetOne(ClaimsPrincipal claims);
 
-        Task<ActionResult<UserSettings>> GetUserSettings(ClaimsPrincipal claims, Guid id);
+        Task<ActionResult<GetUserSettingsDto>> GetOne(ClaimsPrincipal claims, Guid id);
 
-        Task<ActionResult<UserSettings>> Update(ClaimsPrincipal claims, UserSettings item);
+        Task<ActionResult<IEnumerable<GetUserSettingsDto>>> GetAll(ClaimsPrincipal claims,
+            Expression<Func<UserSettings, bool>> filter = null,
+            Func<IQueryable<UserSettings>, IOrderedQueryable<UserSettings>> orderBy = null,
+            params Expression<Func<UserSettings, object>>[] includeProperties);
+
+        Task<ActionResult> Update(ClaimsPrincipal claims, UpdateUserSettingsDto dto);
 
         Task<ActionResult> Delete(ClaimsPrincipal claims, Guid id);
     }

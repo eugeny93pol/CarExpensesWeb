@@ -17,7 +17,7 @@ namespace CE.DataAccess.Dtos
         [Required]
         public string Role { get; set; }
 
-        public UserSettingsDto Settings { get; set; }
+        public GetUserSettingsDto Settings { get; set; }
 
         public ICollection<CarDto> Cars { get; set; }
     }
