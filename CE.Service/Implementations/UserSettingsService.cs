@@ -75,7 +75,7 @@ namespace CE.Service.Implementations
                 return new ForbidResult();
 
             var settings = await _userSettingsRepository.GetAll(filter, orderBy, includeProperties);
-            return new OkObjectResult(settings.Select(s => s.AsDto()));
+            return new OkObjectResult(settings.ToList().Select(s => s.AsDto()));
         }
 
         #endregion GET

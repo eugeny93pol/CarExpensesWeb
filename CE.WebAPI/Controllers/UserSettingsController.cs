@@ -30,13 +30,6 @@ namespace CE.WebAPI.Controllers
             return await _userSettingsService.GetAll(User);
         }
 
-        [Authorize(Roles = RolesConstants.User)]
-        [HttpGet]
-        public async Task<ActionResult<GetUserSettingsDto>> GetUserSettings()
-        {
-            return await _userSettingsService.GetOne(User);
-        }
-
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<GetUserSettingsDto>> GetUserSettings(Guid id)
         {

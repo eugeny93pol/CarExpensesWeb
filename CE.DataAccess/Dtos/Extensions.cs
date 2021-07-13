@@ -130,5 +130,35 @@ namespace CE.DataAccess.Dtos
             };
         }
         #endregion USER SETTINGS DTOS
+
+        #region ROLE'S DTOS
+
+        public static Role AsDbModel(this CreateRoleDto dto)
+        {
+            return new Role
+            {
+                Name = dto.Name
+            };
+        }
+
+        public static Role AsDbModel(this UpdateRoleDto dto)
+        {
+            return new Role
+            {
+                Id = dto.Id,
+                Name = dto.Name
+            };
+        }
+
+        public static GetRoleDto AsDto(this Role role)
+        {
+            return new GetRoleDto
+            {
+                Id = role.Id,
+                Name = role.Name,
+                Users = role.Users.Select(u => u.AsDto()).ToList()
+            };
+        }
+        #endregion ROLE'S DTOS
     }
 }
