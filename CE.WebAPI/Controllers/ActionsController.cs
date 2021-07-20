@@ -8,8 +8,6 @@ using System.Threading.Tasks;
 using CE.DataAccess.Constants;
 using CE.DataAccess.Models;
 using CE.Service.Interfaces;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 
 namespace CE.WebAPI.Controllers
 {
@@ -19,12 +17,10 @@ namespace CE.WebAPI.Controllers
     public class ActionsController : ControllerBase
     {
         private readonly ICarActionService _carActionService;
-        private readonly ILogger<UsersController> _logger;
 
-        public ActionsController(ICarActionService carActionService, ILogger<UsersController> logger)
+        public ActionsController(ICarActionService carActionService)
         {
             _carActionService = carActionService;
-            _logger = logger;
         }
 
         #region GET
@@ -137,15 +133,7 @@ namespace CE.WebAPI.Controllers
         [HttpDelete("{id:Guid}")]
         public async Task<IActionResult> DeleteAction(Guid id)
         {
-            try
-            {
-                return await _carActionService.Delete(User, id);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, e.Message);
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            return await _carActionService.Delete(User, id);
         }
         #endregion DELETE
 
@@ -153,78 +141,46 @@ namespace CE.WebAPI.Controllers
         #region GENERIC_FUNCTIUONS
         private async Task<ActionResult<T>> CreateActionOfType<T>(T action) where T : CarAction
         {
-            try
-            {
-                return await _carActionService.Create(User, action);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, e.Message);
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            return await _carActionService.Create(User, action);
         }
 
         private async Task<ActionResult<T>> GetActionOfType<T>(
             Guid id, params Expression<Func<T, object>>[] includeProperties) where T : CarAction
         {
-            try
-            {
-                return await _carActionService.GetOne<T>(User, id, includeProperties);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, e.Message);
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            return await _carActionService.GetOne<T>(User, id, includeProperties);
         }
 
         private async Task<ActionResult<IEnumerable<T>>> GetAllActionsOfType<T>(
             Guid? carId, DateTime? from, DateTime? to,
             params Expression<Func<T, object>>[] includeProperties) where T : CarAction
         {
-            try
+            @from ??= new DateTime();
+            @to ??= DateTime.UtcNow;
+
+            if (from > to)
+                return BadRequest("The date 'from' is greater than the date 'to'.");
+
+            if (carId != null)
             {
-                @from ??= new DateTime();
-                @to ??= DateTime.UtcNow;
-
-                if (from > to)
-                    return BadRequest("The date 'from' is greater than the date 'to'.");
-
-                if (carId != null)
-                {
-                    return await _carActionService.GetActionsByCarId<T>(
-                        User, (Guid)carId,
-                        a => a.Date >= from && a.Date <= to,
-                        q => q.OrderByDescending(a => a.Date),
-                        includeProperties);
-                }
-                return await _carActionService.GetAll<T>(
-                    User,
+                return await _carActionService.GetActionsByCarId<T>(
+                    User, (Guid)carId,
                     a => a.Date >= from && a.Date <= to,
                     q => q.OrderByDescending(a => a.Date),
                     includeProperties);
             }
-            catch (Exception e)
-            {
-                _logger.LogError(e, e.Message);
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            return await _carActionService.GetAll<T>(
+                User,
+                a => a.Date >= from && a.Date <= to,
+                q => q.OrderByDescending(a => a.Date),
+                includeProperties);
         }
 
         private async Task<ActionResult<T>> UpdateAction<T>(Guid id, T action) where T : CarAction
         {
-            try
-            {
-                if (id != action.Id)
-                    return BadRequest("The route parameter 'id' does not match the 'id' parameter from body.");
+            if (id != action.Id)
+                return BadRequest("The route parameter 'id' does not match the 'id' parameter from body.");
 
-                return await _carActionService.Update(User, action);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, e.Message);
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            return await _carActionService.Update(User, action);
         }
         #endregion GENERICS_FUNCTIONS
     }

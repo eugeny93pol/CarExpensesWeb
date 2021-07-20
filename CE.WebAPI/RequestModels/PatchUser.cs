@@ -18,7 +18,7 @@ namespace CE.WebAPI.RequestModels
 
         public User ConvertToUser()
         {
-            return new()
+            return new User
             {
                 Id = Id,
                 Name = Name,
