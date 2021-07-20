@@ -35,7 +35,7 @@ namespace CE.Service.Interfaces
             params Expression<Func<T, object>>[] includeProperties) 
             where T : CarAction;
 
-        Task<ActionResult<T>> Update<T>(ClaimsPrincipal claims, T item) 
+        Task<IActionResult> Update<T>(ClaimsPrincipal claims, T item) 
             where T : CarAction;
 
         Task<IActionResult> Delete(ClaimsPrincipal claims, Guid id);

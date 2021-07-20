@@ -18,17 +18,16 @@ namespace CE.Service.Implementations
         private readonly UnitOfWork _unitOfWork;
         private readonly ICarActionRepository _carActionRepository;
         private readonly ICarService _carService;
-        private readonly ISparePartService _sparePartService;
+        private readonly ICarActionRefillService _carActionRefillService;
+        private readonly ICarActionRepairService _carActionRepairService;
 
-        public CarActionService(
-            IUnitOfWork unitOfWork, 
-            ICarService carService,
-            ISparePartService sparePartService)
+        public CarActionService(IUnitOfWork unitOfWork, ICarService carService)
         {
             _unitOfWork = unitOfWork as UnitOfWork;
             _carActionRepository = _unitOfWork?.CarActionRepository;
             _carService = carService;
-            _sparePartService = sparePartService;
+            _carActionRefillService = new CarActionRefillService(_unitOfWork);
+            _carActionRepairService = new CarActionRepairService(_unitOfWork);
         }
 
         #region CRUD
@@ -40,11 +39,20 @@ namespace CE.Service.Implementations
             if (checkResult != null)
                 return checkResult;
 
-            if (typeof(T) == typeof(CarActionRepair))
-                CalculateTotalSparePartsCost(item as CarActionRepair);
+            switch (item)
+            {
+                case CarActionRepair repair:
+                    await _carActionRepairService.CreateRepair(repair);
+                    break;
 
-            var repository = GetRepositoryByType<T>();
-            await repository.Create(item);
+                case CarActionRefill refill:
+                    await _carActionRefillService.CreateRefill(refill);
+                    break;
+
+                default:
+                    await GetRepositoryByType<T>().Create(item);
+                    break;
+            }
 
             return new OkObjectResult(item);
         }
@@ -107,29 +115,26 @@ namespace CE.Service.Implementations
         #endregion GET
 
         #region UPDATE
-        public async Task<ActionResult<T>> Update<T>(ClaimsPrincipal claims, T item) where T : CarAction
+        public async Task<IActionResult> Update<T>(ClaimsPrincipal claims, T item) where T : CarAction
         {
             var checkResult = await CheckBeforeUpdating(claims, item);
             if (checkResult != null)
                 return checkResult;
 
-            if (typeof(T) == typeof(CarActionRepair))
+            switch (item)
             {
-                try
-                {
-                    await _sparePartService.UpdateSpareParts(item as CarActionRepair);
-                    CalculateTotalSparePartsCost(item as CarActionRepair);
-                }
-                catch (ArgumentException exception)
-                {
-                    return new BadRequestObjectResult(exception.Message);
-                }
+                case CarActionRepair repair:
+                    return await _carActionRepairService.UpdateRepair(repair);
+
+                case CarActionRefill refill:
+                    return await _carActionRefillService.UpdateRefill(refill);
+
+                default:
+                    await GetRepositoryByType<T>().Update(item);
+                    break;
             }
 
-            var repository = GetRepositoryByType<T>();
-            await repository.Update(item);
-
-            return new OkObjectResult(item);
+            return new NoContentResult();
         }
         #endregion UPDATE
 
@@ -184,16 +189,17 @@ namespace CE.Service.Implementations
 
         private async Task<bool> CheckDateAndMileage(CarAction action)
         {
-            var beforeActions = (await _carActionRepository.Actions.GetAll(
-                    a => a.CarId == action.CarId && a.Date < action.Date && a.Id != action.Id))
-                .OrderBy(a => a.Date).ToList();
+            var previousAction = (await _carActionRepository.Actions.GetAll(
+                    a => a.Id != action.Id && a.CarId == action.CarId && a.Date < action.Date,
+                    q => q.OrderBy(a => a.Date)))
+                .LastOrDefault();
+            
+            var nextAction = (await _carActionRepository.Actions.GetAll(
+                    a => a.Id != action.Id && a.CarId == action.CarId && a.Date >= action.Date,
+                    q => q.OrderBy(a => a.Date)))
+                .FirstOrDefault();
 
-            var afterActions = (await _carActionRepository.Actions.GetAll(
-                    a => a.CarId == action.CarId && a.Date >= action.Date && a.Id != action.Id))
-                .OrderBy(a => a.Date).ToList();
-
-            return !(beforeActions.Any() && beforeActions.Last()?.Mileage > action.Mileage) && 
-                   !(afterActions.Any() && afterActions.First()?.Mileage < action.Mileage);
+            return !(previousAction?.Mileage > action.Mileage) && !(nextAction?.Mileage < action.Mileage);
         }
 
         private async Task<ActionResult> CheckAccessToAction(ClaimsPrincipal claims, CarAction item)
@@ -227,19 +233,5 @@ namespace CE.Service.Implementations
             };
         }
         #endregion PRIVATE
-
-        #region PRIVATE_STATIC
-        private static void CalculateTotalSparePartsCost(CarActionRepair item)
-        {
-            if (item.Total.HasValue) return;
-
-            item.Total = 0;
-            foreach (var sparePart in item.SpareParts)
-            {
-                if (sparePart.Price.HasValue)
-                    item.Total += sparePart.Price * sparePart.Quantity;
-            }
-        }
-        #endregion PRIVATE_STATIC
     }
 }

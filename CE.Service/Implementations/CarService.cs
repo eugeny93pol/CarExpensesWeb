@@ -140,6 +140,11 @@ namespace CE.Service.Implementations
             car ??= await _carRepository.GetById(carId);
             return UserService.IsHasAccess(claims, car?.UserId);
         }
+
+        public static bool IsUserHasAccessToCar(ClaimsPrincipal claims, Car car)
+        {
+            return UserService.IsHasAccess(claims, car.UserId);
+        }
         #endregion HELPERS
 
         #region PRIVATE STATIC
