@@ -76,7 +76,6 @@ namespace CE.WebAPI
             services.AddTransient<ICarService, CarService>();
             services.AddTransient<ICarSettingsService, CarSettingsService>();
             services.AddTransient<IRoleService, RoleService>();
-            services.AddTransient<ISparePartService, SparePartService>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IUserSettingsService, UserSettingsService>();
         }

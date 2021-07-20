@@ -10,7 +10,7 @@ namespace CE.DataAccess.Models
         public string Type { get; protected set; }
 
         [Required]
-        public uint? Mileage { get; set; }
+        public uint Mileage { get; set; }
 
         [Required]
         public DateTime? Date { get; set; }

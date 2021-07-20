@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CE.DataAccess.Constants;
-using CE.DataAccess.Models;
+using CE.DataAccess.Dtos;
 using CE.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,7 +23,7 @@ namespace CE.WebAPI.Controllers
 
         #region GET
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Role>>> GetRoles(bool? fullInfo)
+        public async Task<ActionResult<IEnumerable<GetRoleDto>>> GetRoles(bool? fullInfo)
         {
             fullInfo ??= Request.Query.Keys.Contains(nameof(fullInfo));
             if ((bool)fullInfo)
@@ -34,7 +34,7 @@ namespace CE.WebAPI.Controllers
         }
 
         [HttpGet("{id:Guid}")]
-        public async Task<ActionResult<Role>> GetRole(Guid id, bool? fullInfo)
+        public async Task<ActionResult<GetRoleDto>> GetRole(Guid id, bool? fullInfo)
         {
             fullInfo ??= Request.Query.Keys.Contains(nameof(fullInfo));
             if ((bool)fullInfo)
@@ -47,7 +47,7 @@ namespace CE.WebAPI.Controllers
 
         #region POST
         [HttpPost]
-        public async Task<ActionResult<Role>> CreateRole([FromBody] Role role)
+        public async Task<ActionResult<GetRoleDto>> CreateRole(CreateRoleDto role)
         {
             return await _roleService.Create(User, role);
         }
@@ -55,7 +55,7 @@ namespace CE.WebAPI.Controllers
 
         #region PUT
         [HttpPut("{id:Guid}")]
-        public async Task<ActionResult<Role>> EditRole(Guid id, Role role)
+        public async Task<ActionResult> UpdateRole(Guid id, UpdateRoleDto role)
         {
             if (id != role.Id)
                 return BadRequest("The route parameter 'id' does not match the 'id' parameter from body.");

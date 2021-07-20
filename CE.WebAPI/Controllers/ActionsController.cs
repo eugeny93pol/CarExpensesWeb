@@ -105,25 +105,25 @@ namespace CE.WebAPI.Controllers
 
         #region PUT
         [HttpPut("{id:Guid}")]
-        public async Task<ActionResult<CarAction>> Update(Guid id, CarAction action)
+        public async Task<IActionResult> Update(Guid id, CarAction action)
         {
             return await UpdateAction(id, action);
         }
 
         [HttpPut(CarActionTypesConstants.Mileage + "/{id:Guid}")]
-        public async Task<ActionResult<CarActionMileage>> Update(Guid id, CarActionMileage action)
+        public async Task<IActionResult> Update(Guid id, CarActionMileage action)
         {
             return await UpdateAction(id, action);
         }
 
         [HttpPut(CarActionTypesConstants.Refill + "/{id:Guid}")]
-        public async Task<ActionResult<CarActionRefill>> Update(Guid id, CarActionRefill action)
+        public async Task<IActionResult> Update(Guid id, CarActionRefill action)
         {
             return await UpdateAction(id, action);
         }
 
         [HttpPut(CarActionTypesConstants.Repair + "/{id:Guid}")]
-        public async Task<ActionResult<CarActionRepair>> Update(Guid id, CarActionRepair action)
+        public async Task<IActionResult> Update(Guid id, CarActionRepair action)
         {
             return await UpdateAction(id, action);
         }
@@ -175,7 +175,7 @@ namespace CE.WebAPI.Controllers
                 includeProperties);
         }
 
-        private async Task<ActionResult<T>> UpdateAction<T>(Guid id, T action) where T : CarAction
+        private async Task<IActionResult> UpdateAction<T>(Guid id, T action) where T : CarAction
         {
             if (id != action.Id)
                 return BadRequest("The route parameter 'id' does not match the 'id' parameter from body.");

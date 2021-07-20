@@ -5,9 +5,9 @@
         public const string Metric = "metric";
         public const string Imperial = "imperial";
 
-        public static readonly string[] Systems = {Metric, Metric};
+        public static readonly string[] Systems = {Metric, Imperial};
 
-        public const string km = "km";
-        public const string mi = "mile";
+        public const string Kilometer = "km";
+        public const string Mile = "mile";
     }
 }

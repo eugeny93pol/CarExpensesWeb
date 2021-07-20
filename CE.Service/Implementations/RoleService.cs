@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using CE.DataAccess.Dtos;
 using CE.DataAccess.Models;
 using CE.Repository;
 using CE.Repository.Interfaces;
@@ -24,56 +25,62 @@ namespace CE.Service.Implementations
         }
 
         #region CREATE
-        public async Task<ActionResult<Role>> Create(ClaimsPrincipal claims, Role item)
+        public async Task<ActionResult<GetRoleDto>> Create(ClaimsPrincipal claims, CreateRoleDto dto)
         {
             if (!UserService.IsHasAccess(claims))
                 return new ForbidResult();
 
-            var role = await _roleRepository.FirstOrDefault(r => r.Name == item.Name);
+            var role = await _roleRepository.FirstOrDefault(r => r.Name == dto.Name);
             if (role != null)
-                return new BadRequestObjectResult($"The role named '{item.Name}' already exists.");
+                return new BadRequestObjectResult($"The role named '{dto.Name}' already exists.");
 
-            await _roleRepository.Create(item);
-            return new OkObjectResult(item);
+            role = dto.AsDbModel();
+            await _roleRepository.Create(role);
+            return new OkObjectResult(role.AsDto());
         }
         #endregion CREATE
 
         #region GET
-        public async Task<ActionResult<Role>> GetOne(
-            ClaimsPrincipal claims, Guid id, 
+        public async Task<ActionResult<GetRoleDto>> GetOne(ClaimsPrincipal claims, Guid id, 
             params Expression<Func<Role, object>>[] includeProperties)
         {
+            if (!UserService.IsHasAccess(claims))
+                return new ForbidResult();
+
             var role = await _roleRepository.GetById(id, includeProperties);
-            return role != null ? new OkObjectResult(role) : new NotFoundObjectResult(new Role {Id = id});
+            return role != null ? new OkObjectResult(role.AsDto()) : new NotFoundObjectResult(new Role {Id = id});
         }
 
-        public async Task<ActionResult<IEnumerable<Role>>> GetAll(
+        public async Task<ActionResult<IEnumerable<GetRoleDto>>> GetAll(
             ClaimsPrincipal claims = null, 
             Expression<Func<Role, bool>> filter = null, 
             Func<IQueryable<Role>, IOrderedQueryable<Role>> orderBy = null,
             params Expression<Func<Role, object>>[] includeProperties)
         {
+            if (!UserService.IsHasAccess(claims))
+                return new ForbidResult();
+
             var roles = await _roleRepository.GetAll(filter, orderBy, includeProperties);
-            return new OkObjectResult(roles.ToList());
+            return new OkObjectResult(roles.ToList().Select(r => r.AsDto()));
         }
         #endregion GET
 
         #region UPDATE
-        public async Task<ActionResult<Role>> Update(ClaimsPrincipal claims, Role item)
+        public async Task<ActionResult> Update(ClaimsPrincipal claims, UpdateRoleDto dto)
         {
             if (!UserService.IsHasAccess(claims))
                 return new ForbidResult();
 
-            var role = await _roleRepository.FirstOrDefault(r => r.Name == item.Name);
+            var role = await _roleRepository.FirstOrDefault(r => r.Name == dto.Name);
             if (role != null)
-                return new BadRequestObjectResult($"The role named '{item.Name}' already exists.");
+                return new BadRequestObjectResult($"The role named '{dto.Name}' already exists.");
 
-            role = await _roleRepository.FirstOrDefault(r => r.Id == item.Id);
+            role = await _roleRepository.FirstOrDefault(r => r.Id == dto.Id);
             if (role == null)
-                return new NotFoundObjectResult(new Role {Id = item.Id});
+                return new NotFoundObjectResult(new Role {Id = dto.Id});
 
-            var users = (await _roleRepository.GetById(item.Id, r => r.Users)).Users;
-            var roleToCreate = new Role {Name = item.Name};
+            var users = (await _roleRepository.GetById(dto.Id, r => r.Users)).Users;
+            var roleToCreate = new Role {Name = dto.Name};
 
             await _roleRepository.Create(roleToCreate);
 
@@ -84,7 +91,7 @@ namespace CE.Service.Implementations
             }
 
             await _roleRepository.Remove(role);
-            return new OkObjectResult(roleToCreate);
+            return new NoContentResult();
         }
         #endregion UPDATE
 

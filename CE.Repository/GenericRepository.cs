@@ -54,24 +54,24 @@ namespace CE.Repository
 
         public async Task<IEnumerable<T>> GetAll()
         {
-            return await _dbSet.ToListAsync();
+            return await _dbSet.AsNoTracking().ToListAsync();
         }
 
         public async Task<IEnumerable<T>> GetAll(params Expression<Func<T, object>>[] includeProperties)
         {
-            return await Include(includeProperties).ToListAsync();
+            return await Include(includeProperties).AsNoTracking().ToListAsync();
         }
         
         public async Task<IEnumerable<T>> GetAll(Expression<Func<T, bool>> filter)
         {
-            return await _dbSet.Where(filter).ToListAsync();
+            return await _dbSet.Where(filter).AsNoTracking().ToListAsync();
         }
 
         public async Task<IEnumerable<T>> GetAll(Expression<Func<T, bool>> filter = null,
             Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
             params Expression<Func<T, object>>[] includeProperties)
         {
-            var query = Include(includeProperties);
+            var query = Include(includeProperties).AsNoTracking();
             if (filter != null)
             {
                 query = query.Where(filter);
@@ -85,6 +85,7 @@ namespace CE.Repository
         {
             Context.Entry(item).State = EntityState.Modified;
             await Context.SaveChangesAsync();
+            Context.Entry(item).State = EntityState.Detached;
         }
 
         

@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CE.DataAccess.Constants;
-using CE.DataAccess.Models;
+using CE.DataAccess.Dtos;
 using CE.Service.Interfaces;
 
 namespace CE.WebAPI.Controllers
@@ -23,7 +23,7 @@ namespace CE.WebAPI.Controllers
 
         #region GET
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Car>>> GetCars(bool? fullInfo)
+        public async Task<ActionResult<IEnumerable<CarDto>>> GetCars(bool? fullInfo)
         {
             fullInfo ??= Request.Query.Keys.Contains(nameof(fullInfo));
             if ((bool) fullInfo)
@@ -37,7 +37,7 @@ namespace CE.WebAPI.Controllers
 
         [Authorize(Roles = RolesConstants.Admin)]
         [HttpGet("all")]
-        public async Task<ActionResult<IEnumerable<Car>>> GetAllCars(bool? fullInfo)
+        public async Task<ActionResult<IEnumerable<CarDto>>> GetAllCars(bool? fullInfo)
         {
             fullInfo ??= Request.Query.Keys.Contains(nameof(fullInfo));
             if ((bool)fullInfo)
@@ -50,7 +50,7 @@ namespace CE.WebAPI.Controllers
         }
 
         [HttpGet("{id:Guid}")]
-        public async Task<ActionResult<Car>> GetCar(Guid id, bool? fullInfo)
+        public async Task<ActionResult<CarDto>> GetCar(Guid id, bool? fullInfo)
         {
             fullInfo ??= Request.Query.Keys.Contains(nameof(fullInfo));
             if ((bool)fullInfo)
@@ -65,7 +65,7 @@ namespace CE.WebAPI.Controllers
 
         #region POST
         [HttpPost]
-        public async Task<ActionResult<Car>> CreateCar(Car car)
+        public async Task<ActionResult<CarDto>> CreateCar(CreateCarDto car)
         {
             return await _carService.Create(User, car);
         }
@@ -73,7 +73,7 @@ namespace CE.WebAPI.Controllers
 
         #region PUT
         [HttpPut("{id:Guid}")]
-        public async Task<ActionResult<Car>> UpdateCar(Guid id, Car car)
+        public async Task<ActionResult> UpdateCar(Guid id, UpdateCarDto car)
         {
             if (id != car.Id)
                 return BadRequest("The route parameter 'id' does not match the 'id' parameter from body.");
@@ -81,17 +81,6 @@ namespace CE.WebAPI.Controllers
             return await _carService.Update(User, car);
         }
         #endregion PUT
-
-        #region PATCH
-        [HttpPatch("{id:Guid}")]
-        public async Task<ActionResult<Car>> UpdatePartialCar(Guid id, Car car)
-        {
-            if (id != car.Id)
-                return BadRequest("The route parameter 'id' does not match the 'id' parameter from body.");
-
-            return await _carService.UpdatePartial(User, car);
-        }
-        #endregion PATCH
 
         #region DELETE
         [HttpDelete("{id:Guid}")]

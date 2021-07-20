@@ -4,14 +4,16 @@ using CE.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CE.Repository.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20210715080006_AverageFuelConsumption")]
+    partial class AverageFuelConsumption
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -131,12 +133,12 @@ namespace CE.Repository.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("901e4af6-0b52-46d8-8a45-423e4bb57c34"),
+                            Id = new Guid("30420df2-8e2f-40dc-a6db-79ab77e13efd"),
                             Name = "admin"
                         },
                         new
                         {
-                            Id = new Guid("d044de7a-5b08-4638-a09a-04ed5b1f2079"),
+                            Id = new Guid("dea3dc94-58ca-4009-a79b-b833404e1ce7"),
                             Name = "user"
                         });
                 });

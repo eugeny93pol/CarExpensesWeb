@@ -4,14 +4,16 @@ using CE.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CE.Repository.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20210714161532_CarSetttings")]
+    partial class CarSetttings
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -131,12 +133,12 @@ namespace CE.Repository.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("901e4af6-0b52-46d8-8a45-423e4bb57c34"),
+                            Id = new Guid("97c010de-5e25-482c-8689-170cedc4b048"),
                             Name = "admin"
                         },
                         new
                         {
-                            Id = new Guid("d044de7a-5b08-4638-a09a-04ed5b1f2079"),
+                            Id = new Guid("a5426fbb-c218-4c86-b522-e91fecdb2508"),
                             Name = "user"
                         });
                 });
@@ -247,9 +249,6 @@ namespace CE.Repository.Migrations
             modelBuilder.Entity("CE.DataAccess.Models.CarActionRefill", b =>
                 {
                     b.HasBaseType("CE.DataAccess.Models.CarAction");
-
-                    b.Property<decimal?>("AverageFuelConsumption")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("FuelType")
                         .IsRequired()
